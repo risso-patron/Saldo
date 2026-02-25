@@ -20,6 +20,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/tasks.json
 .idea
 .DS_Store
 *.suo
@@ -28,4 +29,35 @@ dist-ssr
 *.sln
 *.sw?
 build-log*.txt  
-build.bat 
+build.bat
+
+# Testing temporal
+test-api.js
+test-*.js
+src/__tests__/manual/
+
+# Datos sensibles o de prueba real
+docs/*-listo.csv
+docs/datos-reales-*
+*-real.*
+*-production.*
+
+# Backups
+*.backup
+*.old
+*-old.*
+*-backup.*
+backup/
+
+# OS específicos (Windows/Mac/Linux)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.directory
+
+# IDEs adicionales
+.fleet/
+*.code-workspace
+.project
+.classpath
+.settings/
