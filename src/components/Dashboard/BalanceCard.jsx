@@ -3,6 +3,7 @@ import { Card } from '../Shared/Card';
 import { formatCurrency } from '../../utils/formatters';
 import { addAmounts, subtractAmounts, calculatePercentage } from '../../utils/currencyHelpers';
 import { MoneyRainWebP } from '../Shared/WebPAnimation';
+import { Wallet, TrendUp, TrendDown, ArrowUp } from '@phosphor-icons/react';
 
 /**
  * Mini sparkline SVG — muestra la tendencia de los últimos 6 meses
@@ -58,13 +59,15 @@ export const BalanceCard = ({ totalIncome, totalExpenses, balance, creditCardDeb
       )}
       
       <div className="flex items-center gap-3 mb-6">
-        {realBalance > 500 ? (
-          <span className="text-3xl">💰</span>
-        ) : realBalance > 0 ? (
-          <span className="text-2xl">💰</span>
-        ) : (
-          <span className="text-2xl">😅</span>
-        )}
+        <div className="p-2 rounded-xl bg-white/15">
+          {realBalance > 500 ? (
+            <Wallet weight="fill" size={28} color="#4ade80" />
+          ) : realBalance > 0 ? (
+            <TrendUp weight="bold" size={26} color="#4ade80" />
+          ) : (
+            <TrendDown weight="bold" size={26} color="#f87171" />
+          )}
+        </div>
         <h2 className="text-xl font-medium opacity-90">Resumen Financiero</h2>
       </div>
       

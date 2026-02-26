@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { ChartBar, ChartLine, Wrench } from '@phosphor-icons/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
@@ -394,9 +395,9 @@ function AppContent() {
               {/* Tabs de navegación */}
               <div className="flex gap-1 bg-white/10 rounded-xl p-1 w-fit">
                 {[
-                  { id: 'resumen',      label: 'Resumen',      icon: '📊' },
-                  { id: 'graficos',     label: 'Gráficos',     icon: '📈' },
-                  { id: 'herramientas', label: 'Herramientas', icon: '🛠️' },
+                  { id: 'resumen',      label: 'Resumen',      Icon: ChartBar },
+                  { id: 'graficos',     label: 'Gráficos',     Icon: ChartLine },
+                  { id: 'herramientas', label: 'Herramientas', Icon: Wrench },
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -407,7 +408,7 @@ function AppContent() {
                         : 'text-white/75 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <span>{tab.icon}</span>
+                    <tab.Icon size={15} weight={activeTab === tab.id ? 'fill' : 'regular'} />
                     {tab.label}
                   </button>
                 ))}

@@ -1,7 +1,58 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import PropTypes from 'prop-types';
+import {
+  Trophy, Leaf, Receipt, PiggyBank, Target, Fire, Lightning, Lock,
+  Star, Sparkle, Medal, Crown, Diamond, CalendarCheck, Robot,
+  CreditCard, ChartLine, ArrowFatLinesUp,
+} from '@phosphor-icons/react';
 import { ACHIEVEMENT_CATEGORIES, getAllAchievements } from './achievementDefinitions';
+
+/** Mapeo de categoría → icono Phosphor */
+const CATEGORY_ICON = {
+  all:          Trophy,
+  beginner:     Leaf,
+  transactions: Receipt,
+  savings:      PiggyBank,
+  goals:        Target,
+  streak:       Fire,
+  advanced:     Lightning,
+};
+
+/** Mapeo de achievement.id → icono Phosphor específico */
+const ACHIEVEMENT_ICON = {
+  first_income:           ArrowFatLinesUp,
+  first_expense:          Receipt,
+  first_goal:             Target,
+  dark_mode:              Sparkle,
+  transaction_10:         CalendarCheck,
+  transaction_50:         Medal,
+  transaction_100:        Trophy,
+  savings_1000:           Star,
+  savings_5000:           Diamond,
+  savings_10000:          Crown,
+  goal_completed:         Target,
+  goal_3_completed:       Medal,
+  goal_on_track:          ChartLine,
+  streak_3:               Fire,
+  streak_7:               Star,
+  streak_30:              Fire,
+  export_data:            Receipt,
+  ai_insights:            Robot,
+  credit_card_manager:    CreditCard,
+  budget_master:          Trophy,
+};
+
+/** Colores de acento por achievement desbloqueado */
+const ACHIEVEMENT_COLOR = {
+  savings:      '#F59E0B',
+  goals:        '#667eea',
+  streak:       '#F97316',
+  transactions: '#10B981',
+  beginner:     '#6EE7B7',
+  advanced:     '#8B5CF6',
+  all:          '#F59E0B',
+};
 
 /**
  * Tarjeta individual de logro
@@ -30,10 +81,22 @@ const AchievementCard = ({ achievement, isUnlocked, unlockedAt }) => {
         </span>
       </div>
 
-      {/* Icono */}
-      <div className={`text-4xl mb-2 ${isUnlocked ? 'animate-bounce' : 'grayscale'}`}>
-        {achievement.icon}
-      </div>
+      {/* Icono Phosphor */}
+      {(() => {
+        const IconComp = ACHIEVEMENT_ICON[achievement.id] || CATEGORY_ICON[achievement.category] || Star;
+        const color = isUnlocked
+          ? (ACHIEVEMENT_COLOR[achievement.category] || '#F59E0B')
+          : '#6B7280';
+        return (
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+            isUnlocked
+              ? 'bg-yellow-100 dark:bg-yellow-900/30'
+              : 'bg-gray-200 dark:bg-gray-700'
+          }`}>
+            <IconComp weight="fill" size={26} color={color} />
+          </div>
+        );
+      })()}
 
       {/* Nombre */}
       <h3 className={`font-bold text-lg mb-1 ${
@@ -62,8 +125,8 @@ const AchievementCard = ({ achievement, isUnlocked, unlockedAt }) => {
 
       {/* Candado si está bloqueado */}
       {!isUnlocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/10 dark:bg-gray-900/30 rounded-lg">
-          <span className="text-4xl opacity-50">🔒</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/5 dark:bg-gray-900/20 rounded-lg">
+          <Lock weight="fill" size={28} color="#9CA3AF" className="opacity-60" />
         </div>
       )}
     </div>
@@ -100,13 +163,13 @@ export const AchievementsPanel = ({ unlockedAchievements, isAchievementUnlocked 
   };
 
   const categories = [
-    { id: 'all', name: 'Todos', icon: '🏆' },
-    { id: ACHIEVEMENT_CATEGORIES.BEGINNER, name: 'Principiante', icon: '🌱' },
-    { id: ACHIEVEMENT_CATEGORIES.TRANSACTIONS, name: 'Transacciones', icon: '📝' },
-    { id: ACHIEVEMENT_CATEGORIES.SAVINGS, name: 'Ahorros', icon: '💰' },
-    { id: ACHIEVEMENT_CATEGORIES.GOALS, name: 'Metas', icon: '🎯' },
-    { id: ACHIEVEMENT_CATEGORIES.STREAK, name: 'Rachas', icon: '🔥' },
-    { id: ACHIEVEMENT_CATEGORIES.ADVANCED, name: 'Avanzado', icon: '⚡' },
+    { id: 'all',                              name: 'Todos',         Icon: Trophy },
+    { id: ACHIEVEMENT_CATEGORIES.BEGINNER,     name: 'Principiante',  Icon: Leaf },
+    { id: ACHIEVEMENT_CATEGORIES.TRANSACTIONS, name: 'Transacciones', Icon: Receipt },
+    { id: ACHIEVEMENT_CATEGORIES.SAVINGS,      name: 'Ahorros',       Icon: PiggyBank },
+    { id: ACHIEVEMENT_CATEGORIES.GOALS,        name: 'Metas',         Icon: Target },
+    { id: ACHIEVEMENT_CATEGORIES.STREAK,       name: 'Rachas',        Icon: Fire },
+    { id: ACHIEVEMENT_CATEGORIES.ADVANCED,     name: 'Avanzado',      Icon: Lightning },
   ];
 
   return (
@@ -143,7 +206,11 @@ export const AchievementsPanel = ({ unlockedAchievements, isAchievementUnlocked 
                   }
                 `}
               >
-                <span>{category.icon}</span>
+                <category.Icon
+                  weight="fill"
+                  size={15}
+                  color={isActive ? '#ffffff' : ACHIEVEMENT_COLOR[category.id] || '#6B7280'}
+                />
                 <span>{category.name}</span>
                 {category.id !== 'all' && (
                   <span className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
