@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
-import { FireWebP, TrophyWebP } from '../../components/Shared/WebPAnimation';
+import { Fire, Star } from '@phosphor-icons/react';
+import { FireWebP } from '../../components/Shared/WebPAnimation';
 
 /**
  * Panel que muestra el progreso del usuario: nivel, puntos, racha
@@ -24,7 +25,7 @@ export const PlayerProgress = ({
         <div>
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-4xl">⭐</span>
+              <Star weight="fill" size={36} color="#F59E0B" />
               <div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Nivel</div>
                 <div className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -72,7 +73,11 @@ export const PlayerProgress = ({
         <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <FireWebP size="sm" />
+              {currentStreak > 0 ? (
+                <FireWebP size="sm" />
+              ) : (
+                <Fire weight="duotone" size={32} color="#9CA3AF" />
+              )}
               <div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Racha Actual</div>
                 <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">

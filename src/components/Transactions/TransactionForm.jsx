@@ -1,6 +1,8 @@
-import { useState, useId } from 'react';
+import { useState, useId, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NumericFormat } from 'react-number-format';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle } from '@phosphor-icons/react';
 import { Card } from '../Shared/Card';
 import { Button } from '../Shared/Button';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
@@ -97,6 +99,12 @@ export const TransactionForm = ({ onAddIncome, onAddExpense }) => {
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().split('T')[0]);
   const [expenseErrors, setExpenseErrors] = useState({});
   const [expenseTouched, setExpenseTouched] = useState({});
+
+  // Estados de feedback visual tras submit exitoso
+  const [showIncomeSuccess, setShowIncomeSuccess] = useState(false);
+  const [showExpenseSuccess, setShowExpenseSuccess] = useState(false);
+  const incomeTimerRef = useRef(null);
+  const expenseTimerRef = useRef(null);
 
   // Validación de campos en tiempo real
   const validateIncomeField = (field, value) => {
@@ -233,6 +241,9 @@ export const TransactionForm = ({ onAddIncome, onAddExpense }) => {
       setIncomeDate(new Date().toISOString().split('T')[0]);
       setIncomeErrors({});
       setIncomeTouched({});
+      setShowIncomeSuccess(true);
+      clearTimeout(incomeTimerRef.current);
+      incomeTimerRef.current = setTimeout(() => setShowIncomeSuccess(false), 2000);
     }
   };
 
@@ -263,6 +274,9 @@ export const TransactionForm = ({ onAddIncome, onAddExpense }) => {
       setExpenseDate(new Date().toISOString().split('T')[0]);
       setExpenseErrors({});
       setExpenseTouched({});
+      setShowExpenseSuccess(true);
+      clearTimeout(expenseTimerRef.current);
+      expenseTimerRef.current = setTimeout(() => setShowExpenseSuccess(false), 2000);
     }
   };
 
@@ -348,6 +362,22 @@ export const TransactionForm = ({ onAddIncome, onAddExpense }) => {
           <Button type="submit" variant="primary" className="w-full">
             Agregar Ingreso
           </Button>
+
+          <AnimatePresence>
+            {showIncomeSuccess && (
+              <motion.div
+                key="income-success"
+                initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                transition={{ duration: 0.25 }}
+                className="flex items-center gap-2 px-3 py-2 mt-1 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg text-emerald-700 dark:text-emerald-300 text-sm font-medium"
+              >
+                <CheckCircle weight="fill" size={18} color="#10B981" />
+                ¡Ingreso registrado!
+              </motion.div>
+            )}
+          </AnimatePresence>
         </form>
       </Card>
 
@@ -450,6 +480,22 @@ export const TransactionForm = ({ onAddIncome, onAddExpense }) => {
           <Button type="submit" variant="primary" className="w-full">
             Agregar Gasto
           </Button>
+
+          <AnimatePresence>
+            {showExpenseSuccess && (
+              <motion.div
+                key="expense-success"
+                initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                transition={{ duration: 0.25 }}
+                className="flex items-center gap-2 px-3 py-2 mt-1 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg text-emerald-700 dark:text-emerald-300 text-sm font-medium"
+              >
+                <CheckCircle weight="fill" size={18} color="#10B981" />
+                ¡Gasto registrado!
+              </motion.div>
+            )}
+          </AnimatePresence>
         </form>
       </Card>
     </div>

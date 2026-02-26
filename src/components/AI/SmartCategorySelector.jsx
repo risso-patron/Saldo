@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { Robot } from '@phosphor-icons/react'
+
+/** Icono animado de robot para estados de carga IA */
+const RobotIcon = () => (
+  <span className="inline-flex items-center animate-pulse">
+    <Robot weight="duotone" size={16} color="#7C3AED" />
+  </span>
+)
 
 /**
  * SmartCategorySelector - Categorizador inteligente con IA
@@ -128,9 +136,9 @@ export const SmartCategorySelector = ({
 
       {/* Loading state */}
       {loading && (
-        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-purple-700 dark:text-purple-300">
+            <RobotIcon />
             Analizando descripción...
           </div>
         </div>

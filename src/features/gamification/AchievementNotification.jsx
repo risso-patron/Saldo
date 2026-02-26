@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import PropTypes from 'prop-types';
-import { TrophyWebP, WebPWithGlow } from '../../components/Shared/WebPAnimation';
+import { Trophy } from '@phosphor-icons/react';
 
 /**
  * Notificación que aparece cuando se desbloquea un logro
@@ -18,14 +18,14 @@ export const AchievementNotification = ({ achievement, onClose }) => {
     >
       <div className="flex items-start gap-3">
         {/* Icono del logro con animación Simpson */}
-        <div className="flex-shrink-0">
-          <span className="text-6xl">🏆</span>
-          {/* <WebPWithGlow
-            src="/animations/Rocket.webp"
-            alt="Logro"
-            size="lg"
-            glowColor="yellow"
-          /> */}
+        <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-white/20">
+          <motion.div
+            initial={{ scale: 0, rotate: -30 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.15 }}
+          >
+            <Trophy weight="fill" size={40} color="#F59E0B" />
+          </motion.div>
         </div>
         
         {/* Contenido */}
