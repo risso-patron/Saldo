@@ -12,8 +12,9 @@
   functions = "netlify/functions"
 
 [build.environment]
-  # Versión de Node.js
   NODE_VERSION = "20"
+  NODE_ENV = "development"
+  NPM_FLAGS = "--include=dev"
 
 # Redirects para SPA (Single Page Application)
 [[redirects]]
