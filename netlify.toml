@@ -13,10 +13,7 @@
 
 [build.environment]
   # Versión de Node.js
-  NODE_VERSION = "18"
-  
-  # Optimizaciones de build
-  NPM_FLAGS = "--legacy-peer-deps"
+  NODE_VERSION = "20"
 
 # Redirects para SPA (Single Page Application)
 [[redirects]]
