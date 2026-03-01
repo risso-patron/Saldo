@@ -37,9 +37,9 @@ export default function AuthPage() {
 
         {/* Forms with glass morphism */}
         <div className="backdrop-blur-md bg-white/10 rounded-2xl p-8 shadow-2xl border border-white/20">
-          {mode === 'login' && <LoginForm />}
-          {mode === 'register' && <RegisterForm />}
-          {mode === 'forgot' && <ForgotPasswordForm />}
+          {mode === 'login' && <LoginForm onToggleForm={(m) => setMode(m === 'forgot-password' ? 'forgot' : m)} />}
+          {mode === 'register' && <RegisterForm onToggleForm={setMode} />}
+          {mode === 'forgot' && <ForgotPasswordForm onToggleForm={setMode} />}
         </div>
 
         {/* Toggle modes */}
