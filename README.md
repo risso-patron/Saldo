@@ -1,16 +1,16 @@
- # Budget Calculator - Gestión Inteligente de Finanzas Personales
+# Budget Calculator - Gestión Inteligente de Finanzas Personales
 
 <div align="center">
 
-**Aplicación web moderna para control total de tus finanzas personales con IA**
+**Aplicación web para control de finanzas personales con autenticación, gráficos interactivos e IA**
 
 [![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-7.1-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Ver Demo](#) · [Documentación](./docs) · [Reportar Bug](https://github.com/risso-patron/budget-calculator-react/issues) · [Solicitar Feature](https://github.com/risso-patron/budget-calculator-react/issues)
+[Reportar Bug](https://github.com/risso-patron/budget-calculator-react/issues) · [Solicitar Feature](https://github.com/risso-patron/budget-calculator-react/issues)
 
 </div>
 
@@ -33,12 +33,12 @@
 - Estadísticas detalladas por categoría
 
 ### Inteligencia Artificial
-- Análisis financiero con Claude AI
+- Análisis financiero multi-proveedor (Google Gemini, Groq Llama, Anthropic Claude)
 - Score de salud financiera (0-100)
 - Detección automática de patrones de gasto
 - Recomendaciones personalizadas
 - Predicciones de gastos futuros
-- Alertas inteligentes
+- Proxy seguro via Netlify Functions (las API keys nunca llegan al navegador)
 
 ### Metas Financieras
 - Creación de metas de ahorro personalizadas
@@ -100,7 +100,7 @@ cp .env.example .env
 npm run dev
 ```
 
-La aplicación estará disponible en [http://localhost:3000](http://localhost:3000)
+La aplicación estará disponible en [http://localhost:5174](http://localhost:5174)
 
 Guía completa de instalación: [docs/SETUP.md](./docs/SETUP.md)
 
@@ -114,7 +114,7 @@ Guía completa de instalación: [docs/SETUP.md](./docs/SETUP.md)
 
 ### Frontend
 - **React 19.1** - Framework UI
-- **Vite 7.1** - Build tool ultra-rápido (Rolldown)
+- **Vite 5.4** - Build tool
 - **TailwindCSS 3.4** - Utility-first CSS
 - **Framer Motion 12** - Animaciones fluidas
 - **Recharts 3** - Gráficos interactivos
@@ -125,11 +125,10 @@ Guía completa de instalación: [docs/SETUP.md](./docs/SETUP.md)
 ### Backend & Servicios
 - **Supabase** - BaaS completo
   - PostgreSQL database
-  - Auth (Email, OAuth)
-  - Real-time subscriptions
+  - Auth (Email)
   - Row Level Security
-- **Anthropic Claude** - IA para análisis
-- **Stripe** - Pagos (opcional)
+- **IA multi-proveedor** - Google Gemini (gratis), Groq (gratis), Anthropic Claude
+- **Netlify Functions** - Proxy seguro para API keys
 
 </td>
 </tr>
@@ -145,25 +144,7 @@ Guía completa de instalación: [docs/SETUP.md](./docs/SETUP.md)
 
 ## Capturas de Pantalla
 
-### Vista Desktop
-
-**Dashboard Principal**
-![Dashboard](https://via.placeholder.com/800x450/667eea/ffffff?text=Dashboard+Principal)
-
-**Análisis con IA**
-![AI Analysis](https://via.placeholder.com/800x450/764ba2/ffffff?text=Análisis+con+IA)
-
-### Vista Móvil
-
-<div align="center">
-<img src="https://via.placeholder.com/300x600/667eea/ffffff?text=Móvil+1" width="250" />
-<img src="https://via.placeholder.com/300x600/764ba2/ffffff?text=Móvil+2" width="250" />
-<img src="https://via.placeholder.com/300x600/2ecc71/ffffff?text=Móvil+3" width="250" />
-</div>
-
-### Dark Mode
-
-![Dark Mode](https://via.placeholder.com/800x450/1a202c/ffffff?text=Modo+Oscuro)
+> Screenshots pendientes de producción.
 
 ---
 
@@ -171,21 +152,18 @@ Guía completa de instalación: [docs/SETUP.md](./docs/SETUP.md)
 
 ```bash
 # Desarrollo
-npm run dev              # Servidor de desarrollo (puerto 3000)
+npm run dev              # Servidor de desarrollo (puerto 5174)
 npm run build            # Build de producción
-npm run preview          # Preview del build
+npm run preview          # Preview del build (puerto 4173)
 
 # Calidad de código
 npm run lint             # Ejecutar ESLint
 npm run format           # Formatear con Prettier
-npm run type-check       # Verificar tipos TypeScript
 
-# Testing (próximamente)
-npm run test             # Ejecutar tests
-npm run test:ui          # UI de tests
-
-# Deployment
-npm run deploy           # Deploy a GitHub Pages
+# Testing
+npm run test             # Ejecutar tests con Vitest
+npm run test:ui          # UI interactiva de tests
+npm run test:coverage    # Reporte de cobertura
 ```
 
 ---
@@ -309,16 +287,29 @@ Guía completa: [docs/API.md](./docs/API.md#supabase)
 
 ## Configuración de IA (Opcional)
 
-Para habilitar análisis con IA:
+Soporta 3 proveedores. Al menos uno es suficiente:
 
-1. Crea cuenta en [console.anthropic.com](https://console.anthropic.com/)
-2. Genera API key
-3. Agrégala a `.env`:
-   ```
-   VITE_ANTHROPIC_API_KEY=sk-ant-api03-tu_key
-   ```
+| Proveedor | Costo | Límite | Obtener key |
+|-----------|-------|--------|-------------|
+| Google Gemini | Gratis | 1500 req/día | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| Groq | Gratis | 30 req/min | [console.groq.com](https://console.groq.com/keys) |
+| Anthropic Claude | Pago | Según plan | [console.anthropic.com](https://console.anthropic.com/) |
 
-Nota: La aplicación funciona sin esto, solo no tendrás features de IA.
+**Desarrollo local** — agregar al `.env`:
+```
+VITE_GOOGLE_GEMINI_API_KEY=tu_key
+VITE_GROQ_API_KEY=tu_key
+VITE_ANTHROPIC_API_KEY=tu_key  # opcional
+```
+
+**Producción (Netlify)** — configurar en el dashboard **sin prefijo VITE_**:
+```
+GOOGLE_GEMINI_API_KEY=tu_key
+GROQ_API_KEY=tu_key
+```
+Las keys de producción pasan por `netlify/functions/ai-proxy.js` y nunca llegan al navegador.
+
+Nota: La app funciona completamente sin IA configurada.
 
 ---
 
@@ -373,7 +364,7 @@ Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
 
 - GitHub: [@risso-patron](https://github.com/risso-patron)
 - Email: luisrissopa@gmail.com
-- LinkedIn: [jorge-luis-risso-patron](https://www.linkedin.com/in/jorge-luis-risso-patron)
+- LinkedIn: [jorge-luis-risso-](https://www.linkedin.com/in/jorge-luis-risso-)
 
 ---
 
