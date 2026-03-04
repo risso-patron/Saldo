@@ -177,6 +177,10 @@ budget-calculator-react/
 │   ├── icons/              # Iconos 3D de categorías
 │   └── manifest.json       # PWA manifest
 │
+├── netlify/
+│   └── functions/
+│       └── ai-proxy.js        # Proxy serverless para API keys de IA
+│
 ├── src/
 │   ├── components/         # Componentes React
 │   │   ├── AI/            # Componentes de IA
@@ -204,11 +208,12 @@ budget-calculator-react/
 │   ├── utils/             # Funciones helper
 │   │   ├── formatters.js
 │   │   ├── validators.js
-│   │   └── chartHelpers.js
+│   │   ├── chartHelpers.js
+│   │   └── sanitize.js        # Sanitización de inputs (XSS)
 │   │
 │   ├── lib/               # Configuración de librerías
 │   │   ├── supabase.js
-│   │   └── anthropic.js
+│   │   └── ai-providers.js    # Cliente multi-proveedor IA
 │   │
 │   └── constants/         # Constantes
 │       ├── categories.js
@@ -220,10 +225,37 @@ budget-calculator-react/
 │   ├── CHANGELOG.md      # Historial de cambios
 │   └── setup/            # Guías de configuración
 │
-└── supabase/             # Esquemas de DB
-    ├── schema.sql
-    └── subscriptions-schema.sql
+└── supabase-setup.sql    # Esquema de base de datos
 ```
+
+---
+
+## Capacidad y Escalabilidad
+
+La app usa Supabase (BaaS) + Netlify (hosting + functions). No hay servidor propio que escalar.
+
+### Plan Gratuito (actual)
+
+| Servicio | Límite | Impacto |
+|----------|--------|---------|
+| Supabase Auth | **50,000 usuarios activos/mes** | Máximo de cuentas registradas |
+| Supabase DB bandwidth | 2 GB/mes | ~5,000 usuarios con uso normal |
+| Supabase storage | 500 MB | ~20,000 usuarios con 200 tx cada uno |
+| Netlify Functions | 125,000 req/mes | ~4,200 análisis de IA por día |
+| Netlify CDN | 100 GB/mes | Prácticamente ilimitado para la web estática |
+
+**Simultáneos estimados:** 500–2,000 sesiones activas sin degradación.
+
+### Escalado a Pago (~$44/mes)
+
+| Servicio | Costo | Lo que agrega |
+|----------|-------|---------------|
+| Supabase Pro | $25/mes | Usuarios ilimitados, 8 GB storage, 50 GB bandwidth |
+| Netlify Pro | $19/mes | 1M function invocations/mes, builds prioritarios |
+
+Con Pro: **+100,000 usuarios activos** sin tocar el código.
+
+> Esta arquitectura (React SPA + Supabase + Netlify) es la misma que usan productos como Pocketbase, Habit trackers y herramientas SaaS pequeñas-medianas. El free tier es suficiente para validar el producto y los primeros miles de usuarios.
 
 ---
 
