@@ -14,15 +14,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Code-splitting manual: divide el bundle de 2.38 MB en chunks cacheables
+        // NOTA: React NO se separa en vendor-react porque framer-motion llama
+        // React.createContext() al inicializarse (efecto lateral de módulo).
+        // Si React está en un chunk separado puede no estar cargado a tiempo → crash.
+        // React queda en el index principal (~320 kB) garantizando orden de carga.
         manualChunks: (id) => {
-          // React core → cacheado indefinidamente, raramente cambia
-          if (id.includes('node_modules/react/') ||
-              id.includes('node_modules/react-dom/') ||
-              id.includes('node_modules/react-is/') ||
-              id.includes('node_modules/scheduler/')) {
-            return 'vendor-react';
-          }
-
           // Recharts + dependencias de gráficos → chunk separado
           if (id.includes('node_modules/recharts') ||
               id.includes('node_modules/es-toolkit') ||
