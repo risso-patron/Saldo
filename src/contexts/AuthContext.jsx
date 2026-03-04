@@ -16,11 +16,36 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Garantiza que el perfil exista en user_profiles.
+  // Fallback por si el trigger de Supabase falla al registrar.
+  const ensureUserProfile = async (authUser) => {
+    if (!authUser) return
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .upsert(
+          {
+            id: authUser.id,
+            email: authUser.email,
+            full_name:
+              authUser.user_metadata?.full_name ||
+              authUser.email?.split('@')[0] ||
+              '',
+          },
+          { onConflict: 'id', ignoreDuplicates: true }
+        )
+      if (error) console.warn('ensureUserProfile:', error.message)
+    } catch (err) {
+      console.warn('ensureUserProfile exception:', err.message)
+    }
+  }
+
   useEffect(() => {
     // Obtener sesión actual
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (session?.user) ensureUserProfile(session.user)
       setLoading(false)
     })
 
@@ -30,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (session?.user) ensureUserProfile(session.user)
       setLoading(false)
     })
 
