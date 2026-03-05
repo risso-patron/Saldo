@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Fondo oscuro redondeado -->
+  <rect width="100" height="100" rx="22" fill="#0f172a"/>
+
+  <!-- Círculo exterior punteado -->
+  <circle cx="50" cy="50" r="42" stroke="#22c55e" stroke-width="2" stroke-dasharray="5 3" fill="none" opacity="0.7"/>
+
+  <!-- Líneas de conexión (nodos externos al centro) -->
+  <line x1="50" y1="50" x2="50" y2="18" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+  <line x1="50" y1="50" x2="76" y2="30" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+  <line x1="50" y1="50" x2="80" y2="60" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+  <line x1="50" y1="50" x2="62" y2="82" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+  <line x1="50" y1="50" x2="32" y2="82" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+  <line x1="50" y1="50" x2="20" y2="60" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+  <line x1="50" y1="50" x2="24" y2="30" stroke="#6366f1" stroke-width="1.2" opacity="0.6"/>
+
+  <!-- Conexiones entre nodos externos (anillo) -->
+  <line x1="50" y1="18" x2="76" y2="30" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+  <line x1="76" y1="30" x2="80" y2="60" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+  <line x1="80" y1="60" x2="62" y2="82" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+  <line x1="62" y1="82" x2="32" y2="82" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+  <line x1="32" y1="82" x2="20" y2="60" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+  <line x1="20" y1="60" x2="24" y2="30" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+  <line x1="24" y1="30" x2="50" y2="18" stroke="#6366f1" stroke-width="0.8" opacity="0.35"/>
+
+  <!-- Nodos externos (índigo/púrpura) -->
+  <circle cx="50" cy="18" r="4" fill="#818cf8"/>
+  <circle cx="76" cy="30" r="4" fill="#818cf8"/>
+  <circle cx="80" cy="60" r="4" fill="#818cf8"/>
+  <circle cx="62" cy="82" r="4" fill="#818cf8"/>
+  <circle cx="32" cy="82" r="4" fill="#818cf8"/>
+  <circle cx="20" cy="60" r="4" fill="#818cf8"/>
+  <circle cx="24" cy="30" r="4" fill="#818cf8"/>
+
+  <!-- Nodo central verde (con halo) -->
+  <circle cx="50" cy="50" r="10" fill="#22c55e" opacity="0.2"/>
+  <circle cx="50" cy="50" r="7" fill="#22c55e"/>
+
+  <!-- Símbolo $ en el centro -->
+  <text x="50" y="54" text-anchor="middle" font-size="7" fill="#0f172a" font-weight="bold" font-family="monospace">$</text>
+</svg>
