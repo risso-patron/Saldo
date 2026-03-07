@@ -37,6 +37,15 @@ import { GamificationDashboard, AchievementNotifications } from './features/gami
 import { useAchievements } from './hooks/gamification/useAchievements';// NUEVAS FEATURES: Presupuestos + Chat IA
 import { BudgetManager } from './features/budgets/BudgetManager'
 import { AIChat } from './features/chat/AIChat'
+// FEATURE 1: Transacciones Recurrentes
+import { useRecurring } from './hooks/useRecurring'
+import { RecurringManager } from './features/recurring/RecurringManager'
+// FEATURE 2: Multi-moneda
+import { CurrencyProvider } from './contexts/CurrencyContext'
+import { CurrencySelector } from './features/currency/CurrencySelector'
+// FEATURE 3: Espacio Compartido / Sync en tiempo real
+import { useSharedSpace } from './hooks/useSharedSpace'
+import { SharedSpaceManager } from './features/sharing/SharedSpaceManager'
 
 /**
  * Componente principal de la aplicación con autenticación
@@ -85,6 +94,12 @@ function AppContent() {
 
   // Hook de gamificación
   const achievements = useAchievements();
+
+  // FEATURE 1: Transacciones Recurrentes — procesa vencidos al montar
+  const { recurring, addRecurring, toggleRecurring, removeRecurring } = useRecurring(addIncome, addExpense);
+
+  // FEATURE 3: Espacio Compartido con Supabase Realtime
+  const sharedSpace = useSharedSpace();
 
   // Combinar todas las transacciones para IA (memoizado — evita objetos nuevos en cada render)
   const allTransactions = useMemo(() => [
@@ -397,6 +412,7 @@ function AppContent() {
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              <CurrencySelector />
               <ThemeToggle />
               <ProfileMenu />
             </div>
@@ -576,6 +592,32 @@ function AppContent() {
             {/* Presupuestos por categoría */}
             <BudgetManager expenses={filteredExpenses} />
 
+            {/* FEATURE 1: Transacciones Recurrentes */}
+            <RecurringManager
+              recurring={recurring}
+              onAdd={addRecurring}
+              onToggle={toggleRecurring}
+              onRemove={removeRecurring}
+            />
+
+            {/* FEATURE 3: Presupuesto Compartido en tiempo real */}
+            {user && (
+              <SharedSpaceManager
+                space={sharedSpace.space}
+                members={sharedSpace.members}
+                sharedTransactions={sharedSpace.sharedTransactions}
+                loading={sharedSpace.loading}
+                actionLoading={sharedSpace.actionLoading}
+                error={sharedSpace.error}
+                onCreateSpace={sharedSpace.createSpace}
+                onJoinSpace={sharedSpace.joinSpace}
+                onLeaveSpace={sharedSpace.leaveSpace}
+                onAddTransaction={sharedSpace.addSharedTransaction}
+                onRemoveTransaction={sharedSpace.removeSharedTransaction}
+                currentUser={user}
+              />
+            )}
+
             <GoalManager
               goals={goals}
               onAddGoal={handleAddGoal}
@@ -643,7 +685,9 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppContent />
+        <CurrencyProvider>
+          <AppContent />
+        </CurrencyProvider>
       </AuthProvider>
     </ThemeProvider>
   );

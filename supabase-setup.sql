@@ -190,6 +190,94 @@ WHERE schemaname = 'public'
 AND tablename IN ('user_profiles', 'transactions');
 
 -- =====================================================
+-- PASO 11: ESPACIO COMPARTIDO (Presupuesto en tiempo real)
+-- =====================================================
+
+-- Tabla: shared_spaces (espacios de presupuesto compartido)
+CREATE TABLE IF NOT EXISTS public.shared_spaces (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    invite_code TEXT UNIQUE NOT NULL,
+    owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabla: shared_space_members (miembros de cada espacio)
+CREATE TABLE IF NOT EXISTS public.shared_space_members (
+    space_id UUID NOT NULL REFERENCES public.shared_spaces(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'member')),
+    joined_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (space_id, user_id)
+);
+
+-- Tabla: shared_transactions (transacciones visibles para todo el grupo)
+CREATE TABLE IF NOT EXISTS public.shared_transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    space_id UUID NOT NULL REFERENCES public.shared_spaces(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL CHECK (amount > 0),
+    category TEXT NOT NULL DEFAULT 'other',
+    type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Índices
+CREATE INDEX IF NOT EXISTS idx_shared_spaces_owner ON public.shared_spaces(owner_id);
+CREATE INDEX IF NOT EXISTS idx_shared_spaces_code  ON public.shared_spaces(invite_code);
+CREATE INDEX IF NOT EXISTS idx_shared_members_user ON public.shared_space_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_shared_tx_space     ON public.shared_transactions(space_id);
+CREATE INDEX IF NOT EXISTS idx_shared_tx_date      ON public.shared_transactions(date DESC);
+
+-- RLS
+ALTER TABLE public.shared_spaces       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shared_space_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shared_transactions  ENABLE ROW LEVEL SECURITY;
+
+-- Políticas shared_spaces: sólo miembros del espacio pueden verlo
+CREATE POLICY "space_select" ON public.shared_spaces FOR SELECT
+    USING (
+        auth.uid() = owner_id OR
+        EXISTS (SELECT 1 FROM public.shared_space_members m
+                WHERE m.space_id = id AND m.user_id = auth.uid())
+    );
+CREATE POLICY "space_insert" ON public.shared_spaces FOR INSERT
+    WITH CHECK (auth.uid() = owner_id);
+CREATE POLICY "space_delete" ON public.shared_spaces FOR DELETE
+    USING (auth.uid() = owner_id);
+
+-- Políticas shared_space_members
+CREATE POLICY "members_select" ON public.shared_space_members FOR SELECT
+    USING (
+        EXISTS (SELECT 1 FROM public.shared_space_members m
+                WHERE m.space_id = space_id AND m.user_id = auth.uid())
+    );
+CREATE POLICY "members_insert" ON public.shared_space_members FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "members_delete" ON public.shared_space_members FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- Políticas shared_transactions: cualquier miembro del espacio puede leer/agregar
+CREATE POLICY "shared_tx_select" ON public.shared_transactions FOR SELECT
+    USING (
+        EXISTS (SELECT 1 FROM public.shared_space_members m
+                WHERE m.space_id = space_id AND m.user_id = auth.uid())
+    );
+CREATE POLICY "shared_tx_insert" ON public.shared_transactions FOR INSERT
+    WITH CHECK (
+        auth.uid() = user_id AND
+        EXISTS (SELECT 1 FROM public.shared_space_members m
+                WHERE m.space_id = space_id AND m.user_id = auth.uid())
+    );
+CREATE POLICY "shared_tx_delete" ON public.shared_transactions FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- Habilitar Realtime para las nuevas tablas
+ALTER PUBLICATION supabase_realtime ADD TABLE public.shared_transactions;
+
+-- =====================================================
 -- CONFIGURACIÓN COMPLETADA
 -- =====================================================
 

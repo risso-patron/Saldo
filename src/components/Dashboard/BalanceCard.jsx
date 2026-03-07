@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Card } from '../Shared/Card';
 import { formatCurrency } from '../../utils/formatters';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { addAmounts, subtractAmounts, calculatePercentage } from '../../utils/currencyHelpers';
 import { MoneyRainWebP } from '../Shared/WebPAnimation';
 import { Wallet, TrendUp, TrendDown, ArrowUp } from '@phosphor-icons/react';
@@ -41,6 +42,17 @@ export const BalanceCard = ({ totalIncome, totalExpenses, balance, creditCardDeb
   const totalExpensesWithDebt = addAmounts(totalExpenses, creditCardDebt);
   const realBalance = subtractAmounts(balance, creditCardDebt);
 
+  // Contexto de moneda — si no está disponible (test/storybook), usa formatCurrency
+  let fmt;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { formatAmount, currencyInfo } = useCurrency();
+    fmt = (v) => formatAmount(v);
+    void currencyInfo; // consumido para mantener la dep activa
+  } catch {
+    fmt = formatCurrency;
+  }
+
   // Porcentaje con precisión decimal
   const percentage = calculatePercentage(Math.max(0, realBalance), totalIncome);
   const isPositive = realBalance >= 0;
@@ -75,17 +87,17 @@ export const BalanceCard = ({ totalIncome, totalExpenses, balance, creditCardDeb
         {/* Total Ingresos */}
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 transform transition-transform hover:scale-105">
           <div className="text-sm opacity-80 mb-1">Total Ingresos</div>
-          <div className="text-2xl sm:text-3xl font-bold">{formatCurrency(totalIncome)}</div>
+          <div className="text-2xl sm:text-3xl font-bold">{fmt(totalIncome)}</div>
           <MiniSparkline values={ingresosSpark} color="#4ade80" />
         </div>
 
         {/* Total Gastos */}
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 transform transition-transform hover:scale-105">
           <div className="text-sm opacity-80 mb-1">Total Gastos</div>
-          <div className="text-2xl sm:text-3xl font-bold">{formatCurrency(totalExpensesWithDebt)}</div>
+          <div className="text-2xl sm:text-3xl font-bold">{fmt(totalExpensesWithDebt)}</div>
           {creditCardDebt > 0 && (
             <div className="text-xs opacity-70 mt-1">
-              Gastos: {formatCurrency(totalExpenses)} + Tarjetas: {formatCurrency(creditCardDebt)}
+              Gastos: {fmt(totalExpenses)} + Tarjetas: {fmt(creditCardDebt)}
             </div>
           )}
           <MiniSparkline values={gastosSpark} color="#f87171" />
@@ -95,7 +107,7 @@ export const BalanceCard = ({ totalIncome, totalExpenses, balance, creditCardDeb
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 transform transition-transform hover:scale-105">
           <div className="text-sm opacity-80 mb-1">Balance</div>
           <div className={`text-2xl sm:text-3xl font-bold ${isPositive ? 'text-accent-green' : 'text-accent-red'}`}>
-            {formatCurrency(realBalance)}
+            {fmt(realBalance)}
           </div>
           <MiniSparkline values={balanceSpark} color={isPositive ? '#4ade80' : '#f87171'} />
           
