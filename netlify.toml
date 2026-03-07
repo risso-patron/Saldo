@@ -71,7 +71,12 @@
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: https: blob:;
       font-src 'self' data:;
-      connect-src 'self' https://*.supabase.co;
+      connect-src 'self'
+        https://*.supabase.co
+        https://api.frankfurter.app
+        https://generativelanguage.googleapis.com
+        https://api.groq.com
+        https://api.anthropic.com;
       frame-ancestors 'none';
       base-uri 'self';
       form-action 'self';

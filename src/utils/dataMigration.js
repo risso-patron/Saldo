@@ -43,7 +43,8 @@ export function getLocalTransactionsSnapshot() {
 
   const incomes = readArrayFromStorage(STORAGE_KEYS.INCOMES).map(tx => ({
     ...normalizeTransaction(tx, TRANSACTION_TYPES.INCOME),
-    category: tx.category ?? null,
+    // Los ingresos no tienen categoría; se usa 'income' para cumplir con NOT NULL de Supabase
+    category: tx.category || 'income',
   }))
 
   const expenses = readArrayFromStorage(STORAGE_KEYS.EXPENSES).map(tx =>
@@ -117,13 +118,16 @@ export async function migrateFromLocalStorage() {
         id = crypto.randomUUID();
       }
       
+      const txType = tx.type || (tx.category ? TRANSACTION_TYPES.EXPENSE : TRANSACTION_TYPES.INCOME);
       return {
         id: id,
         user_id: user.id,
         description: tx.description,
         amount: tx.amount,
-        category: tx.category || null,
-        type: tx.type || (tx.category ? TRANSACTION_TYPES.EXPENSE : TRANSACTION_TYPES.INCOME),
+        // La columna 'category' es NOT NULL en Supabase.
+        // Los ingresos no tienen categoría → usar el tipo como valor por defecto.
+        category: tx.category || (txType === TRANSACTION_TYPES.INCOME ? 'income' : 'other'),
+        type: txType,
         date: toISODate(tx.date),
       };
     });
