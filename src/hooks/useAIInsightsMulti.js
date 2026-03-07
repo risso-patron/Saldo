@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { 
   analyzeFinances, 
   suggestCategory, 
+  bulkCategorizeTransactions,
   predictNextMonthExpenses,
   detectAnomalies,
   getProviderStatus,
@@ -212,35 +213,20 @@ export const useAIInsights = (transactions = []) => {
       return transactionsArray.map(t => ({ ...t, category: 'Otros' }))
     }
 
-    console.log('🔄 Categorizando', transactionsArray.length, 'transacciones...')
+    const total = transactionsArray.length
+    console.log(`🔄 Categorizando ${total} transacciones en lote (batches de 80)...`)
 
-    const categorized = []
-    let successCount = 0
-    let errorCount = 0
+    const descriptions = transactionsArray.map(t => t.description)
+    const batchResults = await bulkCategorizeTransactions(descriptions)
 
-    for (const transaction of transactionsArray) {
-      try {
-        const suggestion = await suggestCategory(transaction.description)
-        
-        categorized.push({
-          ...transaction,
-          category: suggestion.category,
-          aiConfidence: suggestion.confidence,
-          aiProvider: suggestion.provider,
-        })
-        
-        successCount++
-      } catch {
-        categorized.push({
-          ...transaction,
-          category: 'Otros',
-          aiConfidence: 0,
-        })
-        errorCount++
-      }
-    }
+    const categorized = transactionsArray.map((t, i) => ({
+      ...t,
+      category: batchResults[i]?.category || 'Otros',
+      aiConfidence: batchResults[i]?.aiConfidence ?? 0,
+    }))
 
-    console.log(`✅ Categorización completada: ${successCount} exitosas, ${errorCount} errores`)
+    const success = categorized.filter(c => c.category !== 'Otros').length
+    console.log(`✅ Categorización en lote completada: ${success}/${total} asignadas`)
 
     return categorized
   }, [checkProviders])

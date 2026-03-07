@@ -467,6 +467,58 @@ Responde en JSON:
 };
 
 /**
+ * CATEGORIZACIÓN EN LOTE — 1 llamada por hasta BATCH_SIZE transacciones
+ * Elimina duplicados, respeta rate limits con pausa entre batches.
+ */
+const BULK_BATCH_SIZE = 80;
+
+export const bulkCategorizeTransactions = async (descriptions) => {
+  const CATEGORIES = ['Comida', 'Transporte', 'Entretenimiento', 'Salud', 'Educación', 'Vivienda', 'Servicios', 'Otros'];
+
+  // Deduplicar para ahorrar tokens
+  const uniqueDescriptions = [...new Set(descriptions)];
+  const catMap = new Map();
+
+  for (let i = 0; i < uniqueDescriptions.length; i += BULK_BATCH_SIZE) {
+    const batch = uniqueDescriptions.slice(i, i + BULK_BATCH_SIZE);
+
+    const prompt = `Categoriza estas ${batch.length} transacciones bancarias usando SOLO estas categorías: ${CATEGORIES.join(', ')}.
+Responde EXCLUSIVAMENTE con un JSON array en el mismo orden, sin texto adicional:
+[{"i":0,"cat":"..."},{"i":1,"cat":"..."}]
+
+Transacciones:
+${batch.map((desc, idx) => `${idx}: "${desc}"`).join('\n')}`;
+
+    try {
+      const result = await callAI(prompt, 1200, true);
+      const jsonMatch = result.content.match(/\[[\s\S]*?\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        parsed.forEach(item => {
+          if (typeof item.i === 'number' && batch[item.i]) {
+            catMap.set(batch[item.i], CATEGORIES.includes(item.cat) ? item.cat : 'Otros');
+          }
+        });
+      }
+    } catch {
+      // Asignar 'Otros' al batch completo si falla
+      batch.forEach(desc => catMap.set(desc, 'Otros'));
+    }
+
+    // Pausa entre batches para respetar los rate limits (30 req/min en Groq)
+    if (i + BULK_BATCH_SIZE < uniqueDescriptions.length) {
+      await new Promise(r => setTimeout(r, 2500));
+    }
+  }
+
+  return descriptions.map(desc => ({
+    description: desc,
+    category: catMap.get(desc) || 'Otros',
+    aiConfidence: catMap.has(desc) ? 0.85 : 0,
+  }));
+};
+
+/**
  * PREDICCIÓN DE GASTOS
  */
 export const predictNextMonthExpenses = async (transactions, userId) => {
