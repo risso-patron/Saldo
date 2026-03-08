@@ -15,6 +15,7 @@ import { ThemeToggle } from './components/Shared/ThemeToggle';
 import { ProfileMenu } from './components/Auth/ProfileMenu';
 import MigrationDialog from './components/MigrationDialog';
 import AuthPage from './pages/AuthPage';
+import LandingPage from './pages/LandingPage';
 import { hasPendingMigration } from './utils/dataMigration';
 import { CreditCardManager } from './components/CreditCard/CreditCardManager';
 // Nuevos gráficos avanzados
@@ -52,6 +53,7 @@ import { SharedSpaceManager } from './features/sharing/SharedSpaceManager'
  */
 function AppContent() {
   const { user, loading: authLoading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
@@ -340,6 +342,14 @@ function AppContent() {
 
   // Mostrar página de autenticación si no hay usuario
   if (!user && !authLoading) {
+    if (!showAuth) {
+      return (
+        <LandingPage
+          onGetStarted={() => setShowAuth(true)}
+          onLogin={() => setShowAuth(true)}
+        />
+      );
+    }
     return <AuthPage />;
   }
 
