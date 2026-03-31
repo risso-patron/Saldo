@@ -4,11 +4,11 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { STORAGE_KEYS } from './constants/categories';
-import { TransactionForm } from './components/Transactions/TransactionForm';
-import { TransactionList } from './components/Transactions/TransactionList';
-import { BalanceCard } from './components/Dashboard/BalanceCard';
-import { CategoryChart } from './components/Dashboard/CategoryChart';
+import { STORAGE_KEYS, STRATEGIC_MESSAGES } from './constants/categories';
+import { BudgetForm } from './components/BudgetForm';
+import { ExpenseList } from './components/ExpenseList';
+import { Summary } from './components/Summary';
+import { calculateTotal, calculateBalance, filterByYear, getAvailableYears } from './utils/calculations';
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
 import { ThemeToggle } from './components/Shared/ThemeToggle';
@@ -44,9 +44,6 @@ import { RecurringManager } from './features/recurring/RecurringManager'
 // FEATURE 2: Multi-moneda
 import { CurrencyProvider } from './contexts/CurrencyContext'
 import { CurrencySelector } from './features/currency/CurrencySelector'
-// FEATURE 3: Espacio Compartido / Sync en tiempo real
-import { useSharedSpace } from './hooks/useSharedSpace'
-import { SharedSpaceManager } from './features/sharing/SharedSpaceManager'
 
 /**
  * Componente principal de la aplicación con autenticación
@@ -65,6 +62,13 @@ function AppContent() {
     variant: 'danger',
     onConfirm: null,
   });
+
+  // Frase inspiradora aleatoria
+  const [quote, setQuote] = useState('');
+  useEffect(() => {
+    const quotes = STRATEGIC_MESSAGES.QUOTES;
+    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+  }, []);
 
   const closeConfirm = useCallback(() => {
     setConfirmDialog(prev => ({ ...prev, isOpen: false, onConfirm: null }));
@@ -100,9 +104,6 @@ function AppContent() {
   // FEATURE 1: Transacciones Recurrentes — procesa vencidos al montar
   const { recurring, addRecurring, toggleRecurring, removeRecurring } = useRecurring(addIncome, addExpense);
 
-  // FEATURE 3: Espacio Compartido con Supabase Realtime
-  const sharedSpace = useSharedSpace();
-
   // Combinar todas las transacciones para IA (memoizado — evita objetos nuevos en cada render)
   const allTransactions = useMemo(() => [
     ...incomes.map(income => ({ ...income, type: 'income' })),
@@ -116,59 +117,21 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('resumen');
   const [selectedYear, setSelectedYear] = useState(null);
 
-  const availableYears = useMemo(() => {
-    const years = new Set();
-    [...incomes, ...expenses].forEach(t => {
-      if (t.date) years.add(new Date(t.date + 'T12:00:00').getFullYear());
-    });
-    return [...years].sort((a, b) => b - a);
-  }, [incomes, expenses]);
+  const availableYears = useMemo(() => 
+    getAvailableYears(incomes, expenses), 
+  [incomes, expenses]);
 
-  const filteredIncomes = useMemo(() =>
-    selectedYear
-      ? incomes.filter(t => t.date && new Date(t.date + 'T12:00:00').getFullYear() === selectedYear)
-      : incomes,
+  const filteredIncomes = useMemo(() => 
+    filterByYear(incomes, selectedYear), 
   [incomes, selectedYear]);
 
-  const filteredExpenses = useMemo(() =>
-    selectedYear
-      ? expenses.filter(t => t.date && new Date(t.date + 'T12:00:00').getFullYear() === selectedYear)
-      : expenses,
+  const filteredExpenses = useMemo(() => 
+    filterByYear(expenses, selectedYear), 
   [expenses, selectedYear]);
 
-  const filteredTotalIncome   = useMemo(() => filteredIncomes.reduce((s, t)  => s + t.amount, 0), [filteredIncomes]);
-  const filteredTotalExpenses = useMemo(() => filteredExpenses.reduce((s, t) => s + t.amount, 0), [filteredExpenses]);
-  const filteredBalance = filteredTotalIncome - filteredTotalExpenses;
-
-  // Datos para sparklines — últimos 6 meses con actividad real
-  const sparklineData = useMemo(() => {
-    // Recopilar todos los meses que tienen al menos una transacción
-    const monthSet = new Set();
-    [...filteredIncomes, ...filteredExpenses].forEach(t => {
-      if (t.date) monthSet.add(t.date.substring(0, 7));
-    });
-
-    // Tomar los últimos 6 meses con datos, ordenados
-    const activeMonths = [...monthSet].sort().slice(-6);
-
-    if (activeMonths.length === 0) return [];
-
-    const months = {};
-    activeMonths.forEach(key => {
-      months[key] = { mes: key, ingresos: 0, gastos: 0 };
-    });
-
-    filteredIncomes.forEach(t => {
-      const key = t.date?.substring(0, 7);
-      if (months[key]) months[key].ingresos += t.amount;
-    });
-    filteredExpenses.forEach(t => {
-      const key = t.date?.substring(0, 7);
-      if (months[key]) months[key].gastos += t.amount;
-    });
-
-    return Object.values(months);
-  }, [filteredIncomes, filteredExpenses]);
+  const filteredTotalIncome   = useMemo(() => calculateTotal(filteredIncomes), [filteredIncomes]);
+  const filteredTotalExpenses = useMemo(() => calculateTotal(filteredExpenses), [filteredExpenses]);
+  const filteredBalance = useMemo(() => calculateBalance(filteredTotalIncome, filteredTotalExpenses), [filteredTotalIncome, filteredTotalExpenses]);
 
   // Funciones para tarjetas de crédito
   const handleAddCard = (card) => {
@@ -359,7 +322,7 @@ function AppContent() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-600 dark:text-slate-300">Cargando...</p>
         </div>
       </div>
     );
@@ -406,22 +369,24 @@ function AppContent() {
       />
 
       {/* Container principal */}
-      <div className="max-w-7xl mx-auto">
-        {/* Header con Profile Menu */}
-        <header className="bg-gradient-dark dark:bg-gray-800 text-white rounded-2xl px-4 sm:px-6 pt-5 pb-4 mb-6 sm:mb-8 shadow-xl">
+      <div className="max-w-7xl mx-auto py-10">
+        {/* Header Pastel minimalista */}
+        <header className="relative z-50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl rounded-4xl px-8 pt-8 pb-6 mb-10 shadow-glass border border-white/40 dark:border-white/5">
 
           {/* Fila 1: Título + controles */}
-          <div className="flex justify-between items-start gap-3 mb-4">
+          <div className="flex justify-between items-start gap-4 mb-8">
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl md:text-4xl font-light leading-tight">
-                <span className="hidden sm:inline">Calculadora de Presupuesto Personal</span>
-                <span className="sm:hidden">Presupuesto Personal</span>
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
+                <span className="hidden sm:inline">Calculadora Presupuestaria</span>
+                <span className="sm:hidden text-3xl leading-none">Mi Presupuesto</span>
               </h1>
-              <p className="hidden sm:block text-sm opacity-70 mt-0.5">
-                Gestiona tus finanzas personales de manera inteligente con IA
-              </p>
+              <div className="h-6 flex items-center mt-2 ml-1">
+                <p className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] animate-fade-in-slide">
+                  {quote}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
               <CurrencySelector />
               <ThemeToggle />
               <ProfileMenu
@@ -433,37 +398,37 @@ function AppContent() {
 
           {/* Fila 2: Tabs + selector de año */}
           <div className="flex flex-wrap items-center gap-2">
-            {/* Tabs de navegación */}
-            <div className="flex gap-1 bg-white/10 rounded-xl p-1">
+            {/* Tabs de navegación Estilo Pastel */}
+            <div className="flex gap-2 bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-2xl">
               {[
                 { id: 'resumen',      label: 'Resumen',      Icon: ChartBar },
                 { id: 'graficos',     label: 'Gráficos',     Icon: ChartLine },
-                { id: 'herramientas', label: 'Herramientas', Icon: Wrench },
+                { id: 'herramientas', label: 'Historial',    Icon: Wrench },
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-500 ${
                     activeTab === tab.id
-                      ? 'bg-white text-indigo-700 shadow-md'
-                      : 'text-white/75 hover:text-white hover:bg-white/10'
+                      ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-premium'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-primary-600 hover:bg-white/20'
                   }`}
                 >
-                  <tab.Icon size={14} weight={activeTab === tab.id ? 'fill' : 'regular'} />
+                  <tab.Icon size={16} weight={activeTab === tab.id ? 'fill' : 'regular'} />
                   <span className="hidden xs:inline">{tab.label}</span>
                 </button>
               ))}
             </div>
 
-            {/* Selector de año */}
+            {/* Selector de año Pastel */}
             {availableYears.length > 0 && (
-              <div className="flex gap-1 bg-white/10 rounded-xl p-1">
+              <div className="flex gap-1.5 bg-slate-100/50 dark:bg-slate-800/80 p-1 rounded-2xl">
                 <button
                   onClick={() => setSelectedYear(null)}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
                     selectedYear === null
-                      ? 'bg-white text-indigo-700 shadow'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-premium'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-primary-600'
                   }`}
                 >
                   Todo
@@ -472,10 +437,10 @@ function AppContent() {
                   <button
                     key={year}
                     onClick={() => setSelectedYear(year)}
-                    className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
                       selectedYear === year
-                        ? 'bg-white text-indigo-700 shadow'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                        ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-premium'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-primary-600'
                     }`}
                   >
                     {year}
@@ -491,12 +456,11 @@ function AppContent() {
 
           {/* ── TAB: RESUMEN ──────────────────────────────────────────────── */}
           {activeTab === 'resumen' && <>
-            <BalanceCard
+            <Summary
               totalIncome={filteredTotalIncome}
               totalExpenses={filteredTotalExpenses}
               balance={filteredBalance}
               creditCardDebt={creditCards.reduce((sum, card) => sum + card.debt, 0)}
-              sparklineData={sparklineData}
             />
 
             <AIProviderStatus />
@@ -521,7 +485,6 @@ function AppContent() {
                 totalIncome={filteredTotalIncome}
                 totalExpenses={filteredTotalExpenses}
               />
-              <CategoryChart expenses={filteredExpenses} />
             </div>
           </>}
 
@@ -557,12 +520,12 @@ function AppContent() {
 
           {/* ── TAB: HERRAMIENTAS ─────────────────────────────────────────── */}
           {activeTab === 'herramientas' && <>
-            <TransactionForm
+            <BudgetForm
               onAddIncome={handleAddIncome}
               onAddExpense={handleAddExpense}
             />
 
-            <TransactionList
+            <ExpenseList
               incomes={incomes}
               expenses={expenses}
               onRemoveIncome={(id) => openConfirm({
@@ -598,24 +561,6 @@ function AppContent() {
               onToggle={toggleRecurring}
               onRemove={removeRecurring}
             />
-
-            {/* FEATURE 3: Presupuesto Compartido en tiempo real */}
-            {user && (
-              <SharedSpaceManager
-                space={sharedSpace.space}
-                members={sharedSpace.members}
-                sharedTransactions={sharedSpace.sharedTransactions}
-                loading={sharedSpace.loading}
-                actionLoading={sharedSpace.actionLoading}
-                error={sharedSpace.error}
-                onCreateSpace={sharedSpace.createSpace}
-                onJoinSpace={sharedSpace.joinSpace}
-                onLeaveSpace={sharedSpace.leaveSpace}
-                onAddTransaction={sharedSpace.addSharedTransaction}
-                onRemoveTransaction={sharedSpace.removeSharedTransaction}
-                currentUser={user}
-              />
-            )}
 
             <GoalManager
               goals={goals}
@@ -654,22 +599,22 @@ function AppContent() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-white/80 text-sm">
+        <footer className="mt-12 text-center text-slate-500 dark:text-slate-400 text-sm">
           <p>
             © 2025 Budget Calculator | Desarrollado por{' '}
             <a 
               href="https://www.linkedin.com/in/jorge-luis-risso-/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 transition-colors underline"
+              className="text-primary-600 dark:text-primary-400 hover:text-primary-500 transition-colors underline font-bold"
             >
               R P
             </a>
           </p>
-          <p className="mt-2 text-xs text-white/50">
-            <a href="/privacy.html" className="hover:text-white/80 transition-colors">Política de Privacidad</a>
+          <p className="mt-2 text-xs opacity-70">
+            <a href="/privacy.html" className="hover:text-primary-600 transition-colors">Política de Privacidad</a>
             {' · '}
-            <a href="/terms.html" className="hover:text-white/80 transition-colors">Términos de Servicio</a>
+            <a href="/terms.html" className="hover:text-primary-600 transition-colors">Términos de Servicio</a>
           </p>
         </footer>
       </div>

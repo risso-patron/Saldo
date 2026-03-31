@@ -12,16 +12,14 @@ export const validateDescription = (description) => {
   
   const trimmed = description.trim();
   
-  if (trimmed.length === 0) {
-    return { isValid: false, error: 'La descripción no puede estar vacía' };
+  if (!description || description.trim() === '') {
+    return { isValid: false, error: 'La descripción es obligatoria' };
   }
-  
-  if (trimmed.length < 3) {
+  if (description.length < 3) {
     return { isValid: false, error: 'La descripción debe tener al menos 3 caracteres' };
   }
-  
-  if (trimmed.length > 100) {
-    return { isValid: false, error: 'La descripción no puede exceder 100 caracteres' };
+  if (description.length > 100) {
+    return { isValid: false, error: 'La descripción no debe exceder los 100 caracteres' };
   }
   
   // Validar caracteres peligrosos

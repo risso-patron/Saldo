@@ -22,12 +22,12 @@ export const CurrencySelector = () => {
         aria-expanded={open}
       >
         <span aria-hidden="true">{current.flag}</span>
-        <span>{current.code}</span>
+        <span className="text-slate-700 dark:text-white font-bold">{current.code}</span>
         {ratesLoading && (
-          <span className="w-2 h-2 rounded-full bg-yellow-300 animate-pulse" aria-label="actualizando tasas" />
+          <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" aria-label="actualizando tasas" />
         )}
         <svg
-          className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`w-3 h-3 text-slate-400 dark:text-white transition-transform ${open ? 'rotate-180' : ''}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />

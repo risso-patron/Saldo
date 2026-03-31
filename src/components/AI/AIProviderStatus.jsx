@@ -51,87 +51,61 @@ export default function AIProviderStatus() {
       </div>
 
       {/* Estado de proveedores */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {/* Google Gemini */}
-        <div className={`p-3 rounded-lg border-2 ${
+        <div className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
           status.gemini.configured 
-            ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700' 
-            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+            ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800 shadow-sm shadow-emerald-500/10' 
+            : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800'
         }`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">✨</span>
-            <span className="font-semibold text-sm text-gray-900 dark:text-white">Gemini</span>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-md flex items-center justify-center text-xl">
+              ✨
+            </div>
+            <div>
+              <span className="font-black text-slate-800 dark:text-white block uppercase tracking-wider text-xs">Gemini</span>
+              <span className={`text-[10px] font-bold uppercase ${
+                status.gemini.configured 
+                  ? 'text-emerald-600 dark:text-emerald-400' 
+                  : 'text-slate-400'
+              }`}>
+                {status.gemini.configured ? '● Activo' : '○ Offline'}
+              </span>
+            </div>
           </div>
-          <span className={`text-xs ${
-            status.gemini.configured 
-              ? 'text-green-600 dark:text-green-400' 
-              : 'text-gray-500 dark:text-gray-400'
-          }`}>
-            {status.gemini.configured ? '✅ Activo' : '⚪ No configurado'}
-          </span>
           {status.gemini.configured && (
-            <p className="text-xs text-green-600 dark:text-green-400 mt-1">🎁 Gratis</p>
+            <div className="flex items-center gap-1.5 mt-2 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full w-fit">
+              <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-tighter">Plan Gratuito</span>
+            </div>
           )}
         </div>
 
         {/* Groq */}
-        <div className={`p-3 rounded-lg border-2 ${
+        <div className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
           status.groq.configured 
-            ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700' 
-            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+            ? 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800 shadow-sm shadow-amber-500/10' 
+            : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800'
         }`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">⚡</span>
-            <span className="font-semibold text-sm text-gray-900 dark:text-white">Groq</span>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-md flex items-center justify-center text-xl">
+              ⚡
+            </div>
+            <div>
+              <span className="font-black text-slate-800 dark:text-white block uppercase tracking-wider text-xs">Groq</span>
+              <span className={`text-[10px] font-bold uppercase ${
+                status.groq.configured 
+                  ? 'text-amber-600 dark:text-amber-400' 
+                  : 'text-slate-400'
+              }`}>
+                {status.groq.configured ? '● Activo' : '○ Offline'}
+              </span>
+            </div>
           </div>
-          <span className={`text-xs ${
-            status.groq.configured 
-              ? 'text-green-600 dark:text-green-400' 
-              : 'text-gray-500 dark:text-gray-400'
-          }`}>
-            {status.groq.configured ? '✅ Activo' : '⚪ No configurado'}
-          </span>
           {status.groq.configured && (
-            <p className="text-xs text-green-600 dark:text-green-400 mt-1">🎁 Gratis</p>
+            <div className="flex items-center gap-1.5 mt-2 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 rounded-full w-fit">
+              <span className="text-[10px] font-black text-amber-700 dark:text-amber-300 uppercase tracking-tighter">Alta Velocidad</span>
+            </div>
           )}
-        </div>
-
-        {/* Claude */}
-        <div className={`p-3 rounded-lg border-2 ${
-          status.claude.configured 
-            ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700' 
-            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
-        }`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">🧠</span>
-            <span className="font-semibold text-sm text-gray-900 dark:text-white">Claude</span>
-          </div>
-          <span className={`text-xs ${
-            status.claude.configured 
-              ? 'text-green-600 dark:text-green-400' 
-              : 'text-gray-500 dark:text-gray-400'
-          }`}>
-            {status.claude.configured ? '✅ Activo' : '⚪ No configurado'}
-          </span>
-          {status.claude.configured && (
-            <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">💰 Pago</p>
-          )}
-        </div>
-
-        {/* Ollama */}
-        <div className={`p-3 rounded-lg border-2 ${
-          status.ollama.configured 
-            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' 
-            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
-        }`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">🏠</span>
-            <span className="font-semibold text-sm text-gray-900 dark:text-white">Ollama</span>
-          </div>
-          <span className="text-xs text-blue-600 dark:text-blue-400">
-            🔧 Requiere instalación
-          </span>
-          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">🎁 Gratis</p>
         </div>
       </div>
 

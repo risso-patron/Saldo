@@ -16,43 +16,50 @@ export default {
     },
     extend: {
       colors: {
-        // Paleta morado/azul del diseño original
+        // Paleta Celeste Cielo Pastel (Nuevo Color Maestro)
         primary: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#667eea', // Color principal
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9', // Celeste Cielo (Más humano y claro)
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
         },
-        secondary: {
-          500: '#764ba2', // Color secundario del gradiente
-        },
-        accent: {
-          green: '#2ecc71',
-          red: '#e74c3c',
-          'green-dark': '#27ae60',
-          'red-dark': '#c0392b',
+        // Variantes Pastel Específicas
+        pastel: {
+          lavender: '#E9D5FF', // Soft Purple
+          mint: '#DCFCE7',    // Soft Green
+          rose: '#FFE4E6',    // Soft Red
+          sky: '#E0F2FE',     // Soft Blue
+          peach: '#FFEDD5',   // Soft Orange
+          cream: '#FFFBEB',   // Background tint
+          midnight: '#0F172A', // Deep Midnight (Dark Mode)
         },
         dark: {
-          500: '#2c3e50',
-          600: '#34495e',
+          500: '#1E293B',
+          600: '#0F172A',
         }
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #2c3e50, #34495e)',
-        'gradient-success': 'linear-gradient(90deg, #2ecc71, #27ae60)',
-        'gradient-danger': 'linear-gradient(90deg, #e74c3c, #c0392b)',
+        'gradient-celestial': 'radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.4) 0, transparent 50%), radial-gradient(at 100% 0%, rgba(186, 230, 253, 0.3) 0, transparent 50%), radial-gradient(at 50% 100%, rgba(240, 249, 255, 0.5) 0, transparent 50%)',
+        'gradient-pastel-lavender': 'linear-gradient(135deg, #F3E8FF 0%, #D8B4FE 100%)',
+        'gradient-pastel-mint': 'linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%)',
+        'gradient-pastel-rose': 'linear-gradient(135deg, #FFE4E6 0%, #FECACA 100%)',
+        'gradient-pastel-sky': 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+        'gradient-soft-dark': 'linear-gradient(135deg, #0F172A, #1E293B)',
       },
       boxShadow: {
-        'card': '0 8px 25px rgba(0, 0, 0, 0.1)',
-        'card-hover': '0 12px 35px rgba(0, 0, 0, 0.15)',
-        'xl': '0 20px 40px rgba(0, 0, 0, 0.1)',
+        'premium': '0 10px 40px -10px rgba(0, 0, 0, 0.05)',
+        'premium-hover': '0 20px 50px -12px rgba(0, 0, 0, 0.1)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+      },
+      borderRadius: {
+        '3xl': '1.5rem',
+        '4xl': '2rem',
       },
       scale: {
         '102': '1.02',

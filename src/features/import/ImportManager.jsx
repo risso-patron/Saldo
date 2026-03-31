@@ -34,12 +34,15 @@ const COLUMN_ALIASES = {
     'retiro', 'retiros', 'withdrawal', 'salida', 'salidas',
     'debe', 'debit amount', 'monto debito', 'debitos', 'charges',
     'debito usd', 'importe debito', 'monto cargo', 'debito (usd)',
+    'cargos (db)', 'cargo (db)', 'salida total', 'egreso usd',
   ],
   credito: [
     'credito', 'credit', 'abono', 'abonos', 'ingreso en cuenta',
     'deposito', 'depositos', 'deposit', 'haber', 'credit amount',
     'monto credito', 'creditos', 'credits', 'credito usd',
     'importe credito', 'monto abono', 'credito (usd)',
+    'abono usd', 'ingreso usd', 'pagos (cr)', 'pago (cr)', 
+    'entrada total', 'abono (usd)',
   ],
   tipo: [
     'tipo', 'type', 'tipo movimiento', 'tipo de movimiento',
@@ -74,13 +77,32 @@ const normalizeHeader = (h) =>
  */
 const tryPatternMapping = (normalizedHeaders, rawHeaders) => {
   const map = {};
+  const foundFields = new Set();
+  
+  // Mapeo exhaustivo por cada campo conocido
   for (const [field, aliases] of Object.entries(COLUMN_ALIASES)) {
-    const idx = normalizedHeaders.findIndex(h => aliases.includes(h));
-    if (idx !== -1) map[field] = rawHeaders[idx];
+    // Buscar coincidencia exacta primero
+    let idx = normalizedHeaders.findIndex(h => aliases.includes(h));
+    
+    // Si no hay exacta, buscar si el header CONTIENE algún alias (ej: "Monto Neto" contiene "monto")
+    if (idx === -1) {
+      idx = normalizedHeaders.findIndex(h => 
+        aliases.some(alias => h.includes(alias) || alias.includes(h))
+      );
+    }
+    
+    if (idx !== -1) {
+      map[field] = rawHeaders[idx];
+      foundFields.add(field);
+    }
   }
-  const hasFecha = !!map.fecha;
-  const hasDesc  = !!map.descripcion;
-  const hasMonto = !!map.monto || !!map.debito || !!map.credito;
+
+  // Requisitos mínimos para un auto-mapeo exitoso:
+  // Fecha Y Descripción Y (Monto O (Débito Y Crédito))
+  const hasFecha = foundFields.has('fecha');
+  const hasDesc  = foundFields.has('descripcion');
+  const hasMonto = foundFields.has('monto') || (foundFields.has('debito') && foundFields.has('credito'));
+
   return (hasFecha && hasDesc && hasMonto) ? map : null;
 };
 
@@ -112,6 +134,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
   const [importStats, setImportStats] = useState(null);
   const [autoCategorize, setAutoCategorize] = useState(true);
   const [categorizingProgress, setCategorizingProgress] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Estados para detección flexible de formato bancario
   const [rawCSVMeta, setRawCSVMeta] = useState(null); // { lines, separator, rawHeaders, normalizedHeaders }
@@ -247,8 +270,8 @@ export default function ImportManager({ onImport, onBulkImport }) {
   };
 
   // Manejar selección de archivo
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
+
+  const processFile = (file) => {
     if (!file) return;
 
     if (!file.name.endsWith('.csv') && !file.name.endsWith('.txt')) {
@@ -256,9 +279,6 @@ export default function ImportManager({ onImport, onBulkImport }) {
       return;
     }
 
-    // flushSync fuerza a React a pintar el spinner de forma síncrona
-    // ANTES de que el hilo principal empiece a leer el archivo.
-    // Es la única API que garantiza un render real antes de trabajo CPU.
     flushSync(() => {
       setError(null);
       setPreviewData(null);
@@ -299,6 +319,34 @@ export default function ImportManager({ onImport, onBulkImport }) {
       setError('Error al leer el archivo. Guárdalo como CSV UTF-8.');
     };
     reader.readAsText(file, 'UTF-8');
+  };
+
+  const handleFileSelect = (e) => {
+    processFile(e.target.files[0]);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      // Tomamos solo el primero (uno por vez)
+      processFile(e.dataTransfer.files[0]);
+      e.dataTransfer.clearData();
+    }
   };
 
   /** Aplica el mapa definido manualmente y opcionalmente guarda el perfil del banco */
@@ -948,52 +996,86 @@ gasto,Amazon,75.99,2025-11-30,Compras`;
         </div>
       )}
 
-      {/* Selector de archivo */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          1. Seleccionar archivo CSV:
+      {/* Selector de archivo / Drop Zone */}
+      <div className="mb-8">
+        <label className="block text-sm font-black text-slate-500 uppercase tracking-widest mb-3">
+          1. Seleccionar archivo CSV o TXT:
         </label>
 
-        {/* Spinner: reemplaza el input mientras se analiza el archivo */}
         {loadingFile ? (
-          <div className="flex items-center gap-4 py-3 px-4 rounded-xl
-            bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-200 dark:border-purple-800">
+          <div className="flex flex-col items-center justify-center p-12 rounded-[2.5rem]
+            bg-primary-50/50 dark:bg-primary-950/20 border-4 border-primary-100 dark:border-primary-900/50 border-dashed">
             <Lottie
               animationData={loadingAnimation}
               loop
               autoplay
-              style={{ width: 64, height: 64, flexShrink: 0 }}
+              style={{ width: 120, height: 120 }}
             />
-            <div>
-              <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">
-                Analizando archivo…
+            <div className="text-center mt-4">
+              <p className="text-lg font-black text-primary-600 dark:text-primary-400">
+                Analizando Estructura...
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                Detectando formato del banco
+              <p className="text-sm text-slate-400 font-medium mt-1">
+                Detectando formato del banco y codificación
               </p>
             </div>
           </div>
         ) : (
-          <div className="flex gap-3 items-center">
+          <div 
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`
+              relative group cursor-pointer transition-all duration-500 rounded-[2.5rem] border-4 border-dashed
+              flex flex-col items-center justify-center p-10 text-center
+              ${isDragging 
+                ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/30 scale-[1.02] shadow-2xl shadow-primary-500/10' 
+                : 'border-slate-100 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700 bg-slate-50/30 dark:bg-slate-900/20'
+              }
+            `}
+            onClick={() => document.getElementById('file-upload').click()}
+          >
+            <div className={`
+              w-16 h-16 rounded-3xl mb-4 flex items-center justify-center transition-all duration-500
+              ${isDragging 
+                ? 'bg-primary-500 text-white rotate-12 scale-110 shadow-lg shadow-primary-500/30' 
+                : 'bg-white dark:bg-slate-800 text-primary-500 shadow-xl'
+              }
+            `}>
+              {isDragging ? (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              ) : (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-xl font-black text-slate-800 dark:text-white">
+                {isDragging ? '¡Suéltalo ahora!' : 'Arrastra tu archivo aquí'}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                o haz clic para buscar en tu dispositivo
+              </p>
+            </div>
+
             <input
+              id="file-upload"
               type="file"
               accept=".csv,.txt"
               onChange={handleFileSelect}
-              className="flex-1 text-sm text-gray-500 dark:text-gray-400
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-lg file:border-0
-                file:text-sm file:font-semibold
-                file:bg-purple-50 file:text-purple-700
-                dark:file:bg-purple-900/30 dark:file:text-purple-300
-                hover:file:bg-purple-100 dark:hover:file:bg-purple-900/50
-                file:cursor-pointer cursor-pointer"
+              className="hidden"
             />
+            
             {previewData && previewData.length > 0 && (
-              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <div className="mt-6 flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-4 py-2 rounded-2xl border border-emerald-100 dark:border-emerald-900/50 animate-bounce-subtle">
+                <svg className="w-5 h-5 font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="font-medium">{previewData.length} transacciones detectadas</span>
+                <span className="text-sm font-black uppercase tracking-tight">{previewData.length} Transacciones Listas</span>
               </div>
             )}
           </div>
@@ -1009,14 +1091,22 @@ gasto,Amazon,75.99,2025-11-30,Compras`;
 
       {/* Vista previa */}
       {previewData && previewData.length > 0 && (
-        <div className="mb-6 border-2 border-purple-200 dark:border-purple-800 rounded-xl p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h4 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-              2. Vista previa
-            </h4>
+        <div className="mb-6 border-2 border-purple-200 dark:border-purple-800 rounded-[2.5rem] p-8 bg-white dark:bg-slate-900 shadow-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-6 mb-8">
+            <div>
+              <h4 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                </div>
+                2. Vista Previa de Movimientos
+              </h4>
+              <p className="text-slate-500 font-medium mt-1 ml-13">
+                Revisa los totales antes de confirmar la importación
+              </p>
+            </div>
+            
             <div className="flex flex-wrap gap-2">
               {/* Badge: modo de detección de columnas */}
               {mappingMode === 'template' && (
@@ -1047,54 +1137,132 @@ gasto,Amazon,75.99,2025-11-30,Compras`;
               <span className="text-sm font-semibold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/50 px-3 py-1 rounded-full">
                 {previewData.length} transacciones
               </span>
+              
+              {/* ⚙️ BOTÓN DE AJUSTE MANUAL (OCULTO POR DEFECTO SI TODO ESTÁ BIEN) */}
+              <button
+                onClick={() => {
+                  setMappingMode('manual');
+                  setManualMap({}); // Limpiar para que el usuario elija
+                  setShowColumnMapper(true);
+                  setPreviewData(null); // Volver al paso anterior
+                }}
+                className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1"
+                title="Si el sistema se equivocó detectando las columnas, haz clic aquí"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Ajustar Columnas
+              </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-purple-200 dark:border-purple-700 bg-white dark:bg-gray-800">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50">
+          {/* 📊 RESUMEN DINÁMICO DE TOTALES */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="p-5 rounded-[1.5rem] bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4">
+              <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs font-black text-emerald-800 dark:text-emerald-400 uppercase tracking-widest">Total Ingresos</p>
+                <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+                  ${previewData.reduce((acc, curr) => acc + (curr.tipo === 'ingreso' ? parseFloat(curr.monto) : 0), 0).toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-[1.5rem] bg-rose-50 dark:bg-rose-950/20 border-2 border-rose-100 dark:border-rose-900/30 flex items-center gap-4">
+              <div className="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs font-black text-rose-800 dark:text-rose-400 uppercase tracking-widest">Total Gastos</p>
+                <p className="text-2xl font-black text-rose-700 dark:text-rose-300">
+                  ${previewData.reduce((acc, curr) => acc + (curr.tipo === 'gasto' ? parseFloat(curr.monto) : 0), 0).toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-[1.5rem] bg-indigo-50 dark:bg-indigo-950/20 border-2 border-indigo-100 dark:border-indigo-900/30 flex items-center gap-4">
+              <div className="w-12 h-12 bg-indigo-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs font-black text-indigo-800 dark:text-indigo-400 uppercase tracking-widest">Balance Neto</p>
+                <p className="text-2xl font-black text-indigo-700 dark:text-indigo-300">
+                  ${(
+                    previewData.reduce((acc, curr) => acc + (curr.tipo === 'ingreso' ? parseFloat(curr.monto) : 0), 0) -
+                    previewData.reduce((acc, curr) => acc + (curr.tipo === 'gasto' ? parseFloat(curr.monto) : 0), 0)
+                  ).toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto rounded-[1.5rem] border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <table className="min-w-full divide-y-2 divide-slate-100 dark:divide-slate-800">
+              <thead className="bg-slate-50/50 dark:bg-slate-800/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider">Tipo</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider">Descripción</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider">Monto</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider">Fecha</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider">Categoría</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Estado</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Descripción</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Monto</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Fecha</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Categoría</th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {previewData.slice(0, 10).map((row, idx) => (
-                  <tr key={idx} className="hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                    <td className="px-4 py-3 text-sm">
-                      <span className={`px-3 py-1 rounded-full font-semibold ${
-                        row.tipo.toLowerCase() === 'ingreso'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                      }`}>
-                        {row.tipo}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-300 font-medium">{row.descripcion}</td>
-                    <td className="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">${parseFloat(row.monto).toFixed(2)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{row.fecha}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      {row.categoria ? (
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">{row.categoria}</span>
-                          {row.aiCategorized && (
-                            <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded text-xs font-semibold flex items-center gap-1">
-                              🤖 IA
-                              {row.aiConfidence && (
-                                <span className="text-blue-600 dark:text-blue-400">({Math.round(row.aiConfidence)}%)</span>
-                              )}
-                            </span>
-                          )}
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {previewData.slice(0, 10).map((row, idx) => {
+                  const isIngreso = row.tipo.toLowerCase() === 'ingreso';
+                  return (
+                    <tr key={idx} className={`group transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/30 ${isIngreso ? 'bg-emerald-50/20' : 'bg-rose-50/10'}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className={`flex items-center gap-3 font-black text-xs uppercase tracking-wider ${isIngreso ? 'text-emerald-600' : 'text-rose-500'}`}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isIngreso ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-500'}`}>
+                            {isIngreso ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                              </svg>
+                            )}
+                          </div>
+                          {row.tipo}
                         </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate max-w-[250px]">{row.descripcion}</p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`text-base font-black ${isIngreso ? 'text-emerald-600' : 'text-slate-900 dark:text-white'}`}>
+                          {isIngreso ? '+' : '-'}${parseFloat(row.monto).toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-bold text-slate-400">{row.fecha}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {row.categoria ? (
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-black uppercase tracking-tighter">
+                              {row.categoria}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

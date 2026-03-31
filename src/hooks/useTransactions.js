@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { STORAGE_KEYS, TRANSACTION_TYPES, EXPENSE_CATEGORIES } from '../constants/categories';
 import { validateTransaction } from '../utils/validators';
-import { addAmounts, subtractAmounts, calculatePercentage } from '../utils/currencyHelpers';
+import { calculateTotal, calculateBalance, calculateCategoryAnalysis } from '../utils/calculations';
 
 /**
  * Custom hook para manejar toda la lógica de transacciones (ingresos y gastos)
@@ -219,39 +219,18 @@ export const useTransactions = () => {
   }, [setIncomes, setExpenses, showAlert]);
 
   // Cálculos automáticos con precisión decimal (memoizados para performance)
-  const totalIncome = useMemo(() => {
-    return incomes.reduce((sum, income) => addAmounts(sum, income.amount), 0);
-  }, [incomes]);
+  const totalIncome = useMemo(() => calculateTotal(incomes), [incomes]);
 
-  const totalExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => addAmounts(sum, expense.amount), 0);
-  }, [expenses]);
+  const totalExpenses = useMemo(() => calculateTotal(expenses), [expenses]);
 
-  const balance = useMemo(() => {
-    return subtractAmounts(totalIncome, totalExpenses);
-  }, [totalIncome, totalExpenses]);
+  const balance = useMemo(() => calculateBalance(totalIncome, totalExpenses), [totalIncome, totalExpenses]);
 
   /**
    * Análisis de gastos por categoría con precisión decimal
    */
-  const categoryAnalysis = useMemo(() => {
-    const categories = {};
-    
-    expenses.forEach(expense => {
-      if (!categories[expense.category]) {
-        categories[expense.category] = 0;
-      }
-      categories[expense.category] = addAmounts(categories[expense.category], expense.amount);
-    });
-
-    return Object.entries(categories)
-      .map(([category, amount]) => ({
-        category,
-        amount,
-        percentage: calculatePercentage(amount, totalExpenses),
-      }))
-      .sort((a, b) => b.amount - a.amount);
-  }, [expenses, totalExpenses]);
+  const categoryAnalysis = useMemo(() => 
+    calculateCategoryAnalysis(expenses, totalExpenses), 
+  [expenses, totalExpenses]);
 
   /**
    * Transacciones filtradas

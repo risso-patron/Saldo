@@ -152,6 +152,35 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Actualizar perfil (Nombre + Avatar Personalizado)
+  const updateProfile = async ({ fullName, customAvatar }) => {
+    try {
+      const updateData = { full_name: fullName }
+      if (customAvatar !== undefined) updateData.custom_avatar = customAvatar
+
+      const { data, error } = await supabase.auth.updateUser({
+        data: updateData
+      })
+      
+      if (error) throw error
+
+      // Sincronizar con user_profiles
+      if (data.user) {
+        const dbUpdate = { full_name: fullName }
+        if (customAvatar !== undefined) dbUpdate.custom_avatar = customAvatar
+        
+        await supabase
+          .from('user_profiles')
+          .update(dbUpdate)
+          .eq('id', data.user.id)
+      }
+
+      return { data, error: null }
+    } catch (error) {
+      return { data: null, error: error.message }
+    }
+  }
+
   const value = {
     user,
     session,
@@ -161,6 +190,7 @@ export const AuthProvider = ({ children }) => {
     signOut,
     resetPassword,
     updatePassword,
+    updateProfile,
     signInWithGoogle
   }
 
