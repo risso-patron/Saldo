@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { flushSync } from 'react-dom';
+import { useAIInsights } from '../../hooks/useAIInsightsMulti';
 import { parseRawText, parseCSVLineFlexible } from '../../core/parserEngine';
 import { findHeaderIndex, normalizeHeader } from '../../core/headerDetector';
 import { findColumnIndices } from '../../core/mappingEngine';

@@ -24,13 +24,25 @@
     
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/vite.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/vite.svg" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/vite.svg" />
-    <link rel="manifest" href="/manifest.json" /> -->
+    <!-- PWA -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1e1b4b" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Registrar Service Worker de la PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('📦 PWA Service Worker registrado con éxito.', reg.scope))
+            .catch(err => console.log('❌ PWA SW Fallido:', err));
+        });
+      }
+    </script>
   </body>
 </html>

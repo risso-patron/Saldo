@@ -12,6 +12,7 @@ import {
   TrendUp,
   Shield,
   UploadSimple,
+  Heart,
 } from '@phosphor-icons/react'
 import BudgetLogo from '../components/Shared/BudgetLogo'
 
@@ -96,7 +97,7 @@ const stats = [
   { value: '150+', label: 'Monedas soportadas' },
   { value: '8', label: 'Tipos de gráficos' },
   { value: '24', label: 'Logros desbloqueables' },
-  { value: '4', label: 'Proveedores de IA' },
+  { value: '3', label: 'Motores de IA' },
 ]
 
 // ─── Beneficios del hero ──────────────────────────────────────────────────────
@@ -299,12 +300,35 @@ export default function LandingPage({ onGetStarted, onLogin }) {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="relative z-10 border-t border-white/10 py-8 px-6 text-center text-sm text-gray-500">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <BudgetLogo size={20} />
-          <span className="text-gray-400 font-medium">Budget Calculator</span>
+      <footer className="relative z-10 border-t border-white/10 mt-12 py-12 px-6 text-center text-sm text-gray-400">
+        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6">
+          <div className="flex items-center gap-2">
+            <BudgetLogo size={24} />
+            <span className="text-gray-300 font-black text-base tracking-widest uppercase">Budget RP</span>
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-8 text-gray-400/80 font-medium">
+            <span className="flex items-center gap-2">
+              Gestión Inteligente de Finanzas Personales
+            </span>
+            <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+            <span className="flex items-center gap-1.5">
+              Diseñado y codeado con <Heart size={16} weight="fill" className="text-rose-500 animate-pulse" /> por 
+              <a 
+                href="https://www.risso-patron.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="font-bold text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-tight"
+              >
+                Luis Risso Patrón
+              </a>
+            </span>
+          </div>
+          
+          <p className="text-xs text-gray-600 font-semibold tracking-wider">
+            TECNOLOGÍAS: REACT · TAILWIND CSS · SUPABASE · IA MULTI-MOTOR
+          </p>
         </div>
-        <p>Gestión de finanzas personales con IA · Hecho con React + Supabase</p>
       </footer>
     </div>
   )

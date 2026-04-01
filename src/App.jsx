@@ -26,9 +26,15 @@ import { ComparativeChart } from './components/Charts/ComparativeChart';
 import { MonthlyCashFlowChart } from './components/Charts/MonthlyCashFlowChart';
 import { SpendingByDayChart } from './components/Charts/SpendingByDayChart';
 import { TopMerchantsChart } from './components/Charts/TopMerchantsChart';
-// COMPONENTES DE IA - HABILITADOS CON GEMINI GRATIS
 import { AIInsightsPanel, AIAlerts, PredictiveChart, AIProviderStatus } from './components/AI';
 import { useAIInsights } from './hooks/useAIInsightsMulti';
+// GRÁFICOS NUEVOS (Fase UX 3: Chart.js)
+import { ExpensePieChart } from './components/Charts/ChartJS/ExpensePieChart';
+import { IncomeExpenseBarChart } from './components/Charts/ChartJS/IncomeExpenseBarChart';
+// FASE UX 4: Sistema de Presupuestos
+import { GlobalBudgetTracker } from './components/Budget/GlobalBudgetTracker';
+// FASE UX 5: Notificaciones / Recordatorios
+import { DailyReminder } from './components/Notifications/DailyReminder';
 // FEATURES PREMIUM
 import { GoalManager } from './features/goals/GoalManager';
 import { ExportManager } from './features/export/ExportManager';
@@ -44,6 +50,7 @@ import { RecurringManager } from './features/recurring/RecurringManager'
 // FEATURE 2: Multi-moneda
 import { CurrencyProvider } from './contexts/CurrencyContext'
 import { CurrencySelector } from './features/currency/CurrencySelector'
+import { InstallPWA } from './components/InstallPWA';
 
 /**
  * Componente principal de la aplicación con autenticación
@@ -113,9 +120,9 @@ function AppContent() {
   // Hook de IA con multi-proveedores (Gemini, Groq, Claude, Ollama)
   const aiInsights = useAIInsights(allTransactions);
 
-  // ── Tabs y filtro de período ─────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState('resumen');
-  const [selectedYear, setSelectedYear] = useState(null);
+  // ── Tabs y filtro de período persistentes (Fase UX 1) ───────────────────
+  const [activeTab, setActiveTab] = useLocalStorage('budgetrp_ui_activeTab', 'resumen');
+  const [selectedYear, setSelectedYear] = useLocalStorage('budgetrp_ui_selectedYear', null);
 
   const availableYears = useMemo(() => 
     getAvailableYears(incomes, expenses), 
@@ -453,9 +460,14 @@ function AppContent() {
 
         {/* Main content grid */}
         <div className="space-y-8">
+          
+          <DailyReminder />
 
           {/* ── TAB: RESUMEN ──────────────────────────────────────────────── */}
           {activeTab === 'resumen' && <>
+            {/* Límite de Gasto Mensual (UX 4) */}
+            <GlobalBudgetTracker totalExpenses={filteredTotalExpenses} />
+
             <Summary
               totalIncome={filteredTotalIncome}
               totalExpenses={filteredTotalExpenses}
@@ -484,6 +496,21 @@ function AppContent() {
               <BalanceDonutChart
                 totalIncome={filteredTotalIncome}
                 totalExpenses={filteredTotalExpenses}
+              />
+              
+              {/* Fase UX 3: Nuevo gráfico en Chart.js (Pastel) */}
+              <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                <h3 className="text-white font-bold mb-4">Análisis de Gastos (Directo)</h3>
+                <ExpensePieChart categoryAnalysis={categoryAnalysis} />
+              </div>
+            </div>
+
+            {/* Fase UX 3: Nuevo gráfico en Chart.js (Barras) */}
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-2xl shadow-xl mt-8">
+              <h3 className="text-white font-bold mb-4">Balance General Comparativo</h3>
+              <IncomeExpenseBarChart 
+                totalIncome={filteredTotalIncome} 
+                totalExpenses={filteredTotalExpenses} 
               />
             </div>
           </>}
@@ -597,6 +624,9 @@ function AppContent() {
           </>}
 
         </div>
+
+        {/* Banner de instalación PWA si el navegador lo permite */}
+        <InstallPWA />
 
         {/* Footer */}
         <footer className="mt-12 text-center text-slate-500 dark:text-slate-400 text-sm">

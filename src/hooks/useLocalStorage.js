@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { saveToStorage, loadFromStorage } from '../core/storageEngine';
 
 /**
  * Custom hook para manejar localStorage de manera reactiva
@@ -10,19 +11,8 @@ export const useLocalStorage = (key, initialValue) => {
   // Estado para almacenar el valor
   // Pasamos una función de inicialización a useState para que solo se ejecute una vez
   const [storedValue, setStoredValue] = useState(() => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
-
-    try {
-      // Obtener del localStorage por clave
-      const item = window.localStorage.getItem(key);
-      // Parsear el JSON almacenado o devolver initialValue
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(`Error al leer localStorage key "${key}":`, error);
-      return initialValue;
-    }
+    // Carga segura centralizada
+    return loadFromStorage(key, initialValue);
   });
 
   // Función para actualizar el estado y localStorage
@@ -31,26 +21,18 @@ export const useLocalStorage = (key, initialValue) => {
       // Permitir que value sea una función (como en useState)
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       
-      // Guardar estado
+      // Guardar estado en memoria React
       setStoredValue(valueToStore);
       
-      // Guardar en localStorage
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
+      // Guardar en Storage Motorizado
+      saveToStorage(key, valueToStore);
     } catch (error) {
-      console.error(`Error al guardar en localStorage key "${key}":`, error);
+      console.error(`Error de lógica al guardar la key "${key}":`, error);
     }
   };
 
-  // Fuerza una re-lectura del valor actual en localStorage
   const refresh = () => {
-    try {
-      const item = window.localStorage.getItem(key);
-      setStoredValue(item ? JSON.parse(item) : initialValue);
-    } catch (error) {
-      console.error(`Error al refrescar localStorage key "${key}":`, error);
-    }
+    setStoredValue(loadFromStorage(key, initialValue));
   };
 
   // Sincronizar con cambios en otras pestañas/ventanas
