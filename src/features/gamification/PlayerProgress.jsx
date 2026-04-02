@@ -25,7 +25,9 @@ export const PlayerProgress = ({
         <div>
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2">
-              <Star weight="fill" size={36} color="#F59E0B" />
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                <Star weight="light" size={28} color="#F59E0B" />
+              </div>
               <div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Nivel</div>
                 <div className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -76,7 +78,9 @@ export const PlayerProgress = ({
               {currentStreak > 0 ? (
                 <FireWebP size="sm" />
               ) : (
-                <Fire weight="duotone" size={32} color="#9CA3AF" />
+                <div className="w-12 h-12 rounded-xl bg-gray-500/10 border border-gray-500/20 flex items-center justify-center shrink-0">
+                  <Fire weight="light" size={28} color="#9CA3AF" />
+                </div>
               )}
               <div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Racha Actual</div>

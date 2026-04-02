@@ -88,12 +88,12 @@ const AchievementCard = ({ achievement, isUnlocked, unlockedAt }) => {
           ? (ACHIEVEMENT_COLOR[achievement.category] || '#F59E0B')
           : '#6B7280';
         return (
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 border ${
             isUnlocked
-              ? 'bg-yellow-100 dark:bg-yellow-900/30'
-              : 'bg-gray-200 dark:bg-gray-700'
+              ? 'bg-amber-500/10 border-amber-500/20'
+              : 'bg-gray-500/10 border-gray-500/20'
           }`}>
-            <IconComp weight="fill" size={26} color={color} />
+            <IconComp weight="light" size={26} color={color} />
           </div>
         );
       })()}
@@ -126,7 +126,7 @@ const AchievementCard = ({ achievement, isUnlocked, unlockedAt }) => {
       {/* Candado si está bloqueado */}
       {!isUnlocked && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900/5 dark:bg-gray-900/20 rounded-lg">
-          <Lock weight="fill" size={28} color="#9CA3AF" className="opacity-60" />
+          <Lock weight="light" size={28} color="#9CA3AF" className="opacity-60" />
         </div>
       )}
     </div>
