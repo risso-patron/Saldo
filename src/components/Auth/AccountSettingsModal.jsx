@@ -132,8 +132,8 @@ export const AccountSettingsModal = ({ isOpen, onClose, onShowAlert }) => {
         {/* Sidebar Navigation */}
         <div className="w-full md:w-64 bg-slate-50 dark:bg-slate-950 p-8 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800 flex flex-col">
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center text-white shadow-lg">
-              <IdentificationCard size={24} weight="fill" />
+            <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center">
+              <IdentificationCard size={24} weight="light" className="text-primary-500" />
             </div>
             <h2 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tighter">Ajustes</h2>
           </div>

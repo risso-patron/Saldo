@@ -113,12 +113,14 @@ export const ExpenseList = ({
               className="flex items-center justify-between p-5 bg-white/50 dark:bg-slate-800/30 border border-slate-50 dark:border-slate-800/50 rounded-3xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-premium transition-all duration-300 group animate-fade-in-slide"
             >
               <div className="flex items-center gap-5">
-                <div className={`p-4 rounded-2xl shadow-sm ${
-                  item.type === 'income' 
-                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500' 
-                    : 'bg-rose-50 dark:bg-rose-900/20 text-rose-500'
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+                  item.type === 'income'
+                    ? 'bg-emerald-500/10 border border-emerald-500/20'
+                    : 'bg-rose-500/10 border border-rose-500/20'
                 }`}>
-                  {item.type === 'income' ? <ArrowUp size={22} weight="bold" /> : <ArrowDown size={22} weight="bold" />}
+                  {item.type === 'income'
+                    ? <ArrowUp size={22} weight="light" className="text-emerald-500" />
+                    : <ArrowDown size={22} weight="light" className="text-rose-500" />}
                 </div>
                 <div>
                   <h4 className="text-sm font-black text-slate-800 dark:text-white leading-tight tracking-tight">

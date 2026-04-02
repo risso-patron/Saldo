@@ -79,8 +79,8 @@ export const RecurringManager = ({ recurring, onAdd, onToggle, onRemove }) => {
       {/* Encabezado */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-xl">
-            <ArrowsClockwise size={20} weight="fill" className="text-violet-600 dark:text-violet-400" />
+          <div className="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
+            <ArrowsClockwise size={20} weight="light" className="text-violet-500" />
           </div>
           <div>
             <h3 className="text-base font-bold text-gray-800 dark:text-white">

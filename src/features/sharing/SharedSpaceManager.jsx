@@ -122,8 +122,8 @@ export const SharedSpaceManager = ({
     return (
       <Card>
         <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 bg-sky-100 dark:bg-sky-900/30 rounded-xl">
-            <UsersThree size={20} weight="fill" className="text-sky-600 dark:text-sky-400" />
+          <div className="w-9 h-9 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
+            <UsersThree size={20} weight="light" className="text-sky-500" />
           </div>
           <div>
             <h3 className="text-base font-bold text-gray-800 dark:text-white">
@@ -211,8 +211,8 @@ export const SharedSpaceManager = ({
       {/* Header del espacio */}
       <div className="flex items-start justify-between mb-4 gap-3">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="p-2 bg-sky-100 dark:bg-sky-900/30 rounded-xl shrink-0">
-            <UsersThree size={20} weight="fill" className="text-sky-600 dark:text-sky-400" />
+          <div className="w-9 h-9 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
+            <UsersThree size={20} weight="light" className="text-sky-500" />
           </div>
           <div className="min-w-0">
             <h3 className="text-base font-bold text-gray-800 dark:text-white truncate">
