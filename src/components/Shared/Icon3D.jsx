@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ICONS_EMOJI, ICON_SIZES } from '../../constants/icons';
+import { ICON_SIZES } from '../../constants/icons';
+import { House, ForkKnife, Car, FilmSlate, Heart, Books, Lightning, Package } from '@phosphor-icons/react';
 
 /**
  * Componente para mostrar iconos 3D con fallback a emoji
@@ -61,31 +62,35 @@ Icon3D.propTypes = {
 
 /**
  * Componente especializado para iconos de logros
+ * Usa emojis directos — consistentes en todos los navegadores modernos
  */
 export const AchievementIcon = ({ type = 'bronze', size = 'lg', unlocked = false }) => {
-  const icons = {
-    bronze: { src: '/icons/3d/medal-bronze.png', emoji: '🥉' },
-    silver: { src: '/icons/3d/medal-silver.png', emoji: '🥈' },
-    gold: { src: '/icons/3d/medal-gold.png', emoji: '🥇' },
-    trophy: { src: '/icons/3d/trophy-gold.png', emoji: '🏆' },
-    star: { src: '/icons/3d/star.png', emoji: '⭐' },
-    fire: { src: '/icons/3d/fire.png', emoji: '🔥' },
-    diamond: { src: '/icons/3d/diamond.png', emoji: '💎' },
+  const emojiMap = {
+    bronze:  '🥉',
+    silver:  '🥈',
+    gold:    '🥇',
+    trophy:  '🏆',
+    star:    '⭐',
+    fire:    '🔥',
+    diamond: '💎',
   };
 
-  const icon = icons[type] || icons.bronze;
+  const sizeStyle = {
+    xs: '1rem', sm: '1.5rem', md: '2rem', lg: '3rem', xl: '4rem', '2xl': '5rem', '3xl': '6rem',
+  };
+
+  const emoji = emojiMap[type] || emojiMap.bronze;
 
   return (
     <div className="relative inline-block">
-      <Icon3D
-        src={icon.src}
-        alt={`${type} achievement`}
-        emoji={icon.emoji}
-        size={size}
-        animate={unlocked}
-        glow={unlocked}
-        className={`${!unlocked ? 'opacity-30 grayscale' : ''}`}
-      />
+      <span
+        role="img"
+        aria-label={`${type} achievement`}
+        className={`inline-block select-none ${!unlocked ? 'opacity-30 grayscale' : ''}`}
+        style={{ fontSize: sizeStyle[size] || '3rem' }}
+      >
+        {emoji}
+      </span>
       {unlocked && (
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse" />
       )}
@@ -101,30 +106,36 @@ AchievementIcon.propTypes = {
 
 /**
  * Componente para iconos de categorías
+ * Usa Phosphor Icons con colores semánticos — cross-platform y dark-mode-ready
  */
 export const CategoryIcon = ({ category, size = 'md', className = '' }) => {
-  const categoryIcons = {
-    'Vivienda': { src: '/icons/3d/house.png', emoji: '🏠' },
-    'Alimentación': { src: '/icons/3d/food-cart.png', emoji: '🍽️' },
-    'Transporte': { src: '/icons/3d/car.png', emoji: '🚗' },
-    'Entretenimiento': { src: '/icons/3d/popcorn.png', emoji: '🎬' },
-    'Salud': { src: '/icons/3d/medical.png', emoji: '⚕️' },
-    'Educación': { src: '/icons/3d/books.png', emoji: '📚' },
-    'Servicios': { src: '/icons/3d/lightbulb.png', emoji: '💡' },
-    'Otros': { src: '/icons/3d/box.png', emoji: '📦' },
+  const categoryMap = {
+    'Vivienda':        { Icon: House,      color: 'text-green-500',  bg: 'bg-green-50 dark:bg-green-950/40' },
+    'Alimentación':    { Icon: ForkKnife,  color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-950/40' },
+    'Transporte':      { Icon: Car,        color: 'text-blue-500',   bg: 'bg-blue-50 dark:bg-blue-950/40' },
+    'Entretenimiento': { Icon: FilmSlate,  color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-950/40' },
+    'Salud':           { Icon: Heart,      color: 'text-red-500',    bg: 'bg-red-50 dark:bg-red-950/40' },
+    'Educación':       { Icon: Books,      color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-950/40' },
+    'Servicios':       { Icon: Lightning,  color: 'text-cyan-500',   bg: 'bg-cyan-50 dark:bg-cyan-950/40' },
+    'Otros':           { Icon: Package,    color: 'text-slate-500',  bg: 'bg-slate-50 dark:bg-slate-800/40' },
   };
 
-  const icon = categoryIcons[category] || categoryIcons['Otros'];
+  const sizeMap = {
+    xs: 12, sm: 16, md: 20, lg: 28, xl: 36, '2xl': 48, '3xl': 64,
+  };
+
+  const containerSizeMap = {
+    xs: 'w-5 h-5', sm: 'w-7 h-7', md: 'w-9 h-9', lg: 'w-12 h-12', xl: 'w-16 h-16', '2xl': 'w-20 h-20', '3xl': 'w-24 h-24',
+  };
+
+  const { Icon, color, bg } = categoryMap[category] || categoryMap['Otros'];
+  const iconSize = sizeMap[size] ?? 20;
+  const containerSize = containerSizeMap[size] ?? 'w-9 h-9';
 
   return (
-    <Icon3D
-      src={icon.src}
-      alt={category}
-      emoji={icon.emoji}
-      size={size}
-      animate
-      className={className}
-    />
+    <div className={`inline-flex items-center justify-center rounded-xl ${bg} ${containerSize} ${className}`}>
+      <Icon size={iconSize} weight="fill" className={color} />
+    </div>
   );
 };
 

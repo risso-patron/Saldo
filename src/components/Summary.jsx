@@ -1,16 +1,70 @@
 import PropTypes from 'prop-types';
 import { 
-  Wallet, 
   TrendUp, 
   TrendDown, 
   HandCoins, 
   CreditCard,
-  ChartPieSlice
+  ChartPieSlice,
+  Minus,
 } from '@phosphor-icons/react';
 import { Card } from './UI/Card';
 import { formatCurrency } from '../utils/formatters';
 import { calculatePercentage } from '../utils/currencyHelpers';
 import { STRATEGIC_MESSAGES } from '../constants/categories';
+
+/**
+ * Calcula el delta porcentual entre valor actual y anterior.
+ * Devuelve null cuando no hay datos del mes anterior.
+ */
+function calcDelta(current, previous) {
+  if (previous === 0) return null;
+  return Math.round(((current - previous) / Math.abs(previous)) * 100);
+}
+
+/**
+ * Badge de delta con ícono, color semántico y porcentaje.
+ * inverseColor=true cuando "subir" es malo (gastos).
+ */
+function DeltaBadge({ current, previous, inverseColor = false }) {
+  const delta = calcDelta(current, previous);
+
+  if (delta === null) {
+    return (
+      <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-400 dark:text-slate-500">
+        <Minus size={10} weight="bold" />
+        sin datos previos
+      </span>
+    );
+  }
+
+  const isUp   = delta > 0;
+  const isNeutral = delta === 0;
+
+  // Para ingresos/balance: subir = bueno (verde). Para gastos: subir = malo (rojo).
+  const positive = inverseColor ? !isUp : isUp;
+
+  const colorClass = isNeutral
+    ? 'text-slate-400 dark:text-slate-500'
+    : positive
+      ? 'text-emerald-500 dark:text-emerald-400'
+      : 'text-rose-500 dark:text-rose-400';
+
+  const Icon = isNeutral ? Minus : isUp ? TrendUp : TrendDown;
+
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold ${colorClass}`}>
+      <Icon size={11} weight="bold" />
+      {isNeutral ? 'igual' : `${isUp ? '+' : ''}${delta}%`}
+      <span className="text-slate-400 dark:text-slate-500 font-normal">vs mes ant.</span>
+    </span>
+  );
+}
+
+DeltaBadge.propTypes = {
+  current: PropTypes.number.isRequired,
+  previous: PropTypes.number.isRequired,
+  inverseColor: PropTypes.bool,
+};
 
 /**
  * Componente Summary - Panel de estadísticas Pastel Premium
@@ -19,7 +73,10 @@ export const Summary = ({
   totalIncome = 0, 
   totalExpenses = 0, 
   balance = 0, 
-  creditCardDebt = 0 
+  creditCardDebt = 0,
+  prevTotalIncome = 0,
+  prevTotalExpenses = 0,
+  prevBalance = 0,
 }) => {
   const totalOut = totalExpenses + creditCardDebt;
   const savingsRate = totalIncome > 0 ? calculatePercentage(Math.max(0, balance - creditCardDebt), totalIncome) : 0;
@@ -38,6 +95,8 @@ export const Summary = ({
     {
       label: 'Ingresos Totales',
       value: totalIncome,
+      prevValue: prevTotalIncome,
+      inverseColor: false,
       icon: <HandCoins size={22} weight="fill" />,
       color: 'text-emerald-500',
       bgColor: 'bg-emerald-50 dark:bg-emerald-950/40',
@@ -47,6 +106,8 @@ export const Summary = ({
     {
       label: 'Gastos + Deudas',
       value: totalOut,
+      prevValue: prevTotalExpenses,
+      inverseColor: true,
       icon: <CreditCard size={22} weight="fill" />,
       color: 'text-rose-500',
       bgColor: 'bg-rose-50 dark:bg-rose-950/40',
@@ -56,6 +117,8 @@ export const Summary = ({
     {
       label: 'Balance Neto',
       value: balance - creditCardDebt,
+      prevValue: prevBalance,
+      inverseColor: false,
       icon: isPositive ? <TrendUp size={22} weight="fill" /> : <TrendDown size={22} weight="fill" />,
       color: isPositive ? 'text-primary-500' : 'text-rose-500',
       bgColor: isPositive ? 'bg-primary-50 dark:bg-primary-950/40' : 'bg-rose-50 dark:bg-rose-950/40',
@@ -82,9 +145,16 @@ export const Summary = ({
                 </p>
               </div>
             </div>
-            {/* Sutil indicador visual de tendencia */}
-            <div className={`h-1 w-full rounded-full ${stat.bgColor} overflow-hidden`}>
-              <div className={`h-full ${stat.iconColor} opacity-20 w-3/4 animate-pulse`} />
+            {/* Delta vs mes anterior */}
+            <div className="flex items-center justify-between">
+              <DeltaBadge
+                current={stat.value}
+                previous={stat.prevValue}
+                inverseColor={stat.inverseColor}
+              />
+              <div className={`h-1 w-1/2 rounded-full ${stat.bgColor} overflow-hidden`}>
+                <div className={`h-full ${stat.iconColor} opacity-20 w-3/4 animate-pulse`} />
+              </div>
             </div>
           </div>
         </Card>
@@ -135,4 +205,7 @@ Summary.propTypes = {
   totalExpenses: PropTypes.number,
   balance: PropTypes.number,
   creditCardDebt: PropTypes.number,
+  prevTotalIncome: PropTypes.number,
+  prevTotalExpenses: PropTypes.number,
+  prevBalance: PropTypes.number,
 };

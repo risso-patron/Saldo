@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChartBar, ChartLine, Wrench } from '@phosphor-icons/react';
+import { ChartBar, ChartLine, ClockCounterClockwise } from '@phosphor-icons/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
@@ -8,7 +8,7 @@ import { STORAGE_KEYS, STRATEGIC_MESSAGES } from './constants/categories';
 import { BudgetForm } from './components/BudgetForm';
 import { ExpenseList } from './components/ExpenseList';
 import { Summary } from './components/Summary';
-import { calculateTotal, calculateBalance, filterByYear, getAvailableYears } from './utils/calculations';
+import { calculateTotal, calculateBalance, filterByYear, filterByMonth, getAvailableYears } from './utils/calculations';
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
 import { ThemeToggle } from './components/Shared/ThemeToggle';
@@ -139,6 +139,24 @@ function AppContent() {
   const filteredTotalIncome   = useMemo(() => calculateTotal(filteredIncomes), [filteredIncomes]);
   const filteredTotalExpenses = useMemo(() => calculateTotal(filteredExpenses), [filteredExpenses]);
   const filteredBalance = useMemo(() => calculateBalance(filteredTotalIncome, filteredTotalExpenses), [filteredTotalIncome, filteredTotalExpenses]);
+
+  // ── Totales del mes actual y anterior para deltas en Summary ────────────
+  const monthlyComparison = useMemo(() => {
+    const now = new Date();
+    const curYear  = now.getFullYear();
+    const curMonth = now.getMonth();
+    const prevYear  = curMonth === 0 ? curYear - 1 : curYear;
+    const prevMonth = curMonth === 0 ? 11 : curMonth - 1;
+
+    const prevIncomes  = filterByMonth(incomes, prevYear, prevMonth);
+    const prevExpenses = filterByMonth(expenses, prevYear, prevMonth);
+
+    const prevTotalIncome   = calculateTotal(prevIncomes);
+    const prevTotalExpenses = calculateTotal(prevExpenses);
+    const prevBalance = calculateBalance(prevTotalIncome, prevTotalExpenses);
+
+    return { prevTotalIncome, prevTotalExpenses, prevBalance };
+  }, [incomes, expenses]);
 
   // Funciones para tarjetas de crédito
   const handleAddCard = (card) => {
@@ -388,7 +406,7 @@ function AppContent() {
                 <span className="sm:hidden text-3xl leading-none">Mi Presupuesto</span>
               </h1>
               <div className="h-6 flex items-center mt-2 ml-1">
-                <p className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] animate-fade-in-slide">
+                <p className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider animate-fade-in-slide">
                   {quote}
                 </p>
               </div>
@@ -410,7 +428,7 @@ function AppContent() {
               {[
                 { id: 'resumen',      label: 'Resumen',      Icon: ChartBar },
                 { id: 'graficos',     label: 'Gráficos',     Icon: ChartLine },
-                { id: 'herramientas', label: 'Historial',    Icon: Wrench },
+                { id: 'herramientas', label: 'Historial',    Icon: ClockCounterClockwise },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -473,6 +491,9 @@ function AppContent() {
               totalExpenses={filteredTotalExpenses}
               balance={filteredBalance}
               creditCardDebt={creditCards.reduce((sum, card) => sum + card.debt, 0)}
+              prevTotalIncome={monthlyComparison.prevTotalIncome}
+              prevTotalExpenses={monthlyComparison.prevTotalExpenses}
+              prevBalance={monthlyComparison.prevBalance}
             />
 
             <AIProviderStatus />

@@ -2,9 +2,8 @@ import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NumericFormat } from 'react-number-format';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Coins, PlusCircle } from '@phosphor-icons/react';
+import { CheckCircle, Coins, PlusCircle, ArrowRight } from '@phosphor-icons/react';
 import { Card } from './UI/Card';
-import { Button } from './UI/Button';
 import { Input } from './UI/Input';
 import { Select } from './UI/Select';
 import { EXPENSE_CATEGORIES, STRATEGIC_MESSAGES } from '../constants/categories';
@@ -24,6 +23,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   const [category, setCategory] = useState(EXPENSE_CATEGORIES[0].value);
   const [errors, setErrors] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [motivationalMessage, setMotivationalMessage] = useState('');
   const successTimerRef = useRef(null);
 
@@ -67,8 +67,12 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
       setAmount('');
       setMotivationalMessage(getRandomMessage());
       setShowSuccess(true);
+      setSubmitted(true);
       clearTimeout(successTimerRef.current);
-      successTimerRef.current = setTimeout(() => setShowSuccess(false), 3000);
+      successTimerRef.current = setTimeout(() => {
+        setShowSuccess(false);
+        setSubmitted(false);
+      }, 1800);
     }
   };
 
@@ -167,28 +171,68 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
         </div>
 
         <div className="flex flex-col items-center gap-4 pt-4">
-          <Button 
-            type="submit" 
-            variant={activeType === 'income' ? 'primary' : 'danger'} 
-            size="lg"
-            className="w-full sm:w-auto sm:min-w-[240px] uppercase tracking-widest text-[11px]"
+          {/* Botón con microinteracción: morphea a ✓ Confirmado al guardar */}
+          <motion.button
+            type="submit"
+            disabled={submitted}
+            layout
+            className={`
+              relative inline-flex items-center justify-center overflow-hidden
+              w-full sm:w-auto sm:min-w-[240px]
+              px-8 py-4 rounded-2xl
+              font-black uppercase tracking-widest text-[11px]
+              transition-colors duration-300
+              focus:outline-none focus:ring-4
+              disabled:cursor-not-allowed
+              active:scale-95
+              ${submitted
+                ? 'bg-emerald-500 text-white ring-emerald-100 shadow-glass'
+                : activeType === 'income'
+                  ? 'bg-primary-500 text-white hover:bg-primary-600 ring-primary-100 shadow-glass'
+                  : 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-900/50 ring-rose-50'
+              }
+            `}
           >
-            {activeType === 'income' ? 'Confirmar Ingreso' : 'Confirmar Gasto'}
-          </Button>
+            <AnimatePresence mode="wait" initial={false}>
+              {submitted ? (
+                <motion.span
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.7, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, y: -8 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="flex items-center gap-2"
+                >
+                  <CheckCircle weight="fill" size={16} />
+                  Confirmado
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="label"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  className="flex items-center gap-2"
+                >
+                  {activeType === 'income' ? 'Confirmar Ingreso' : 'Confirmar Gasto'}
+                  <ArrowRight size={14} weight="bold" />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
+          {/* Mensaje motivacional secundario */}
           <AnimatePresence>
             {showSuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
+              <motion.p
+                initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col items-center gap-2 text-emerald-500 dark:text-emerald-400 font-bold text-center px-4"
+                className="text-[10px] sm:text-xs uppercase tracking-wider text-emerald-500 dark:text-emerald-400 font-bold text-center px-4"
               >
-                <CheckCircle weight="fill" size={28} className="text-emerald-500" />
-                <span className="text-[10px] sm:text-xs uppercase tracking-wider leading-relaxed">
-                  {motivationalMessage}
-                </span>
-              </motion.div>
+                {motivationalMessage}
+              </motion.p>
             )}
           </AnimatePresence>
         </div>

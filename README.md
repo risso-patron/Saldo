@@ -2,15 +2,16 @@
 
 <div align="center">
 
-**Aplicación web para control de finanzas personales con autenticación, gráficos interactivos e IA**
+**Aplicación web completa para control de finanzas personales con IA, gráficos interactivos, gamificación y sincronización en la nube**
 
 [![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![Netlify](https://img.shields.io/badge/Netlify-deployed-00C7B7?logo=netlify&logoColor=white)](https://netlify.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Reportar Bug](https://github.com/risso-patron/budget-calculator-react/issues) · [Solicitar Feature](https://github.com/risso-patron/budget-calculator-react/issues)
+[Ver Demo](https://budget-calculator.netlify.app) · [Reportar Bug](https://github.com/risso-patron/budget-calculator-react/issues) · [Solicitar Feature](https://github.com/risso-patron/budget-calculator-react/issues)
 
 </div>
 
@@ -18,59 +19,90 @@
 
 ## Features Principales
 
+### Landing Page Promocional
+- Página de inicio con hero, estadísticas y grilla de features
+- Navegación directa al login/registro sin perder el flujo
+- Diseño glassmorphism consistente con el resto de la app
+
 ### Gestión de Transacciones
 - Registro de ingresos y gastos con categorías personalizadas
 - Filtros avanzados por fecha, categoría y monto
-- Edición y eliminación de transacciones
-- Importación masiva desde CSV/Excel
+- Edición y eliminación con confirmación
+- Importación masiva desde CSV/Excel bancarios con mapeo automático por IA
 - Exportación profesional a PDF y CSV
+- Transacciones recurrentes (se auto-procesan al vencer)
+
+### Presupuestos por Categoría
+- Definición de presupuestos mensuales por categoría
+- Seguimiento en tiempo real vs. gasto real
+- Alertas visuales al superar límites
 
 ### Análisis y Reportes
 - Dashboard con métricas en tiempo real
-- 4 tipos de gráficos interactivos (Donut, Línea, Barras, Comparativo)
-- Análisis de tendencias por período
-- Reportes descargables con diseño profesional
-- Estadísticas detalladas por categoría
+- 8 tipos de gráficos interactivos: Donut, Línea de tendencia, Barras, Comparativo, Flujo mensual, Gasto diario, Top comercios, Categorías
+- Filtros por período: 15d, 30d, 3m, Todo
+- Reportes descargables en PDF con gráficos incrustados y análisis por categoría
 
-### Inteligencia Artificial
-- Análisis financiero multi-proveedor (Google Gemini, Groq Llama, Anthropic Claude)
+### Inteligencia Artificial (multi-proveedor)
+- Google Gemini API — gratis, 1500 req/día
+- Groq Llama 3.3 — gratis, 30 req/min
+- Anthropic Claude — opcional, pago
+- Ollama — local, ilimitado
 - Score de salud financiera (0-100)
 - Detección automática de patrones de gasto
-- Recomendaciones personalizadas
-- Predicciones de gastos futuros
-- Proxy seguro via Netlify Functions (las API keys nunca llegan al navegador)
+- Recomendaciones personalizadas y predicciones
+- Categorización automática en importación CSV
+- Chat financiero conversacional
+- Proxy seguro via Netlify Functions (las API keys nunca expuestas al navegador)
 
 ### Metas Financieras
-- Creación de metas de ahorro personalizadas
-- Seguimiento visual de progreso
-- Proyecciones de cumplimiento
-- Notificaciones de logros
+- Creación de metas de ahorro con fecha objetivo
+- Seguimiento visual de progreso con barra porcentual
+- Proyección de cumplimiento ("¿llegas a tiempo?")
+- Confetti y animaciones al alcanzar una meta
 
-### Gestión de Tarjetas
-- Múltiples tarjetas de crédito
-- Control de límites de crédito
-- Alertas de vencimiento
-- Cálculo automático de intereses
+### Espacios Compartidos
+- Presupuesto compartido con pareja, familia o equipo
+- Sincronización en tiempo real con Supabase Realtime
+- Código de invitación para unirse a un espacio
+- Transacciones compartidas con atribución por miembro
+
+### Gestión de Tarjetas de Crédito
+- Múltiples tarjetas con límites personalizados
+- Control de deuda del mes actual
+- Integración con el balance (resta la deuda del balance real)
 
 ### Gamificación
-- Sistema de logros (24 achievements desbloqueables)
-- Niveles y experiencia
-- Rachas de uso consistente
-- Recompensas por metas alcanzadas
+- 24 achievements desbloqueables por uso consistente
+- Logros por transacciones, metas, rachas, hitos de balance y exportaciones
+- Niveles y puntos de experiencia
+- Panel visual de logros con iconos
+
+### Multi-Moneda
+- Más de 150 monedas soportadas
+- Selector persistente por usuario
+- Formateo automático en toda la interfaz
 
 ### Autenticación y Seguridad
-- Login/Registro con Supabase Auth
-- Datos sincronizados en la nube
+- Login/Registro con email y contraseña
+- OAuth con Google
 - Recuperación de contraseña
-- Sesión persistente segura
-- Row Level Security (RLS)
+- Migración automática de datos localStorage → Supabase al registrarse
+- Row Level Security (RLS) activo en todas las tablas
+- Sanitización de inputs contra XSS
+- Precisión financiera con Decimal.js (sin errores de punto flotante)
 
-### UI/UX Moderna
-- Dark mode nativo con transiciones suaves
-- Diseño 100% responsive (móvil, tablet, desktop)
-- Animaciones optimizadas con WebP
-- Interfaz intuitiva y accesible
-- PWA instalable en móvil
+### Configuración de Cuenta
+- Modal de ajustes de cuenta (nombre, email, preferencias)
+- Gestión de perfil de usuario
+
+### UI/UX
+- Landing page promocional con CTA a login/registro
+- Dark mode nativo (detecta preferencia del sistema)
+- Diseño 100% responsive: móvil, tablet, desktop
+- Animaciones con Framer Motion y Lottie
+- PWA instalable en móvil y escritorio
+- Accesibilidad WCAG 2.1: `aria-*`, `useId()`, navegación por teclado
 
 ---
 
@@ -113,32 +145,38 @@ Guía completa de instalación: [docs/SETUP.md](./docs/SETUP.md)
 <td valign="top" width="50%">
 
 ### Frontend
-- **React 19.1** - Framework UI
-- **Vite 5.4** - Build tool
-- **TailwindCSS 3.4** - Utility-first CSS
-- **Framer Motion 12** - Animaciones fluidas
-- **Recharts 3** - Gráficos interactivos
+- **React 19.1** — Framework UI
+- **Vite 5.4** — Build tool
+- **TailwindCSS 3.4** — Utility-first CSS
+- **Framer Motion 12** — Animaciones fluidas
+- **Recharts 3** + **Chart.js 4** — Gráficos interactivos
+- **React Number Format** — Inputs de moneda
+- **Phosphor Icons** — Sistema de iconos
 
 </td>
 <td valign="top" width="50%">
 
 ### Backend & Servicios
-- **Supabase** - BaaS completo
-  - PostgreSQL database
-  - Auth (Email)
-  - Row Level Security
-- **IA multi-proveedor** - Google Gemini (gratis), Groq (gratis), Anthropic Claude
-- **Netlify Functions** - Proxy seguro para API keys
+- **Supabase** — BaaS completo
+  - PostgreSQL + Row Level Security
+  - Auth (Email/Password + Google OAuth)
+  - Realtime (espacios compartidos)
+- **IA multi-proveedor** — Gemini (gratis), Groq (gratis), Claude, Ollama
+- **Netlify Functions** — Proxy seguro para API keys
+- **Stripe** — Integración de pagos (configurado)
 
 </td>
 </tr>
 </table>
 
 ### Otras Librerías
-- **jsPDF** + **jsPDF-AutoTable** - Generación de PDFs
-- **PapaParse** - Procesamiento CSV
-- **React Confetti** - Celebraciones
-- **PropTypes** - Validación de props
+- **Decimal.js** — Precisión financiera (sin errores de punto flotante)
+- **jsPDF** + **jsPDF-AutoTable** — Generación de PDFs con gráficos
+- **PapaParse** — Procesamiento de CSV bancarios
+- **Lottie React** — Animaciones JSON
+- **React Confetti** — Celebraciones visuales
+- **es-toolkit** — Utilidades funcionales
+- **PropTypes** — Validación de props en runtime
 
 ---
 
@@ -173,59 +211,80 @@ npm run test:coverage    # Reporte de cobertura
 ```
 budget-calculator-react/
 ├── public/
-│   ├── animations/         # Animaciones WebP optimizadas
-│   ├── icons/              # Iconos 3D de categorías
-│   └── manifest.json       # PWA manifest
+│   ├── animations/            # Animaciones WebP optimizadas
+│   ├── icons/                 # Iconos 3D de categorías
+│   └── manifest.json          # PWA manifest
 │
 ├── netlify/
 │   └── functions/
 │       └── ai-proxy.js        # Proxy serverless para API keys de IA
 │
 ├── src/
-│   ├── components/         # Componentes React
-│   │   ├── AI/            # Componentes de IA
-│   │   ├── Auth/          # Autenticación
-│   │   ├── Charts/        # Gráficos
-│   │   ├── Dashboard/     # Dashboard
-│   │   ├── Shared/        # Componentes reutilizables
-│   │   └── Transactions/  # Transacciones
+│   ├── pages/
+│   │   ├── LandingPage.jsx    # Landing page promocional
+│   │   └── AuthPage.jsx       # Login / Registro / Recuperar contraseña
 │   │
-│   ├── features/          # Features completas
-│   │   ├── export/        # Exportación PDF/CSV
-│   │   ├── gamification/  # Sistema de logros
-│   │   ├── goals/         # Metas financieras
-│   │   └── import/        # Importación CSV
+│   ├── components/
+│   │   ├── AI/                # AIInsightsPanel, AIAlerts, PredictiveChart, AIProviderStatus
+│   │   ├── Auth/              # LoginForm, RegisterForm, ForgotPasswordForm, ProfileMenu
+│   │   ├── Charts/            # 8 componentes de gráficos (Recharts + Chart.js)
+│   │   ├── CreditCard/        # CreditCardManager
+│   │   ├── Dashboard/         # BalanceCard, CategoryChart
+│   │   ├── Shared/            # Button, Card, Alert, Modal, ConfirmDialog, BudgetLogo, ThemeToggle
+│   │   ├── Subscription/      # UpgradeModal, PricingPlans
+│   │   └── Transactions/      # TransactionForm, TransactionList, TransactionItem, EditTransactionModal
 │   │
-│   ├── hooks/             # Custom React hooks
-│   │   ├── useTransactions.js
-│   │   ├── useAIInsights.js
-│   │   └── useLocalStorage.js
+│   ├── features/
+│   │   ├── budgets/           # BudgetManager — presupuestos por categoría
+│   │   ├── chat/              # AIChat — chat financiero con IA
+│   │   ├── currency/          # CurrencySelector — 150+ monedas
+│   │   ├── export/            # ExportManager, exportUtils — PDF/CSV
+│   │   ├── gamification/      # GamificationDashboard, 24 logros, notificaciones
+│   │   ├── goals/             # GoalManager, GoalProgress
+│   │   ├── import/            # ImportManager — CSV bancario con mapeo IA
+│   │   ├── recurring/         # RecurringManager — transacciones recurrentes
+│   │   └── sharing/           # SharedSpaceManager — espacios compartidos Realtime
 │   │
-│   ├── contexts/          # React Context
-│   │   ├── AuthContext.jsx
-│   │   └── ThemeContext.jsx
+│   ├── hooks/
+│   │   ├── useTransactions.js          # CRUD transacciones + cálculos
+│   │   ├── useLocalStorage.js          # Sincronización reactiva con localStorage
+│   │   ├── useAIInsightsMulti.js       # IA multi-proveedor (activo)
+│   │   ├── useSubscription.js          # Gestión de plan Free/Pro
+│   │   ├── useRecurring.js             # Transacciones recurrentes
+│   │   ├── useSharedSpace.js           # Supabase Realtime sync
+│   │   └── gamification/useAchievements.js
 │   │
-│   ├── utils/             # Funciones helper
-│   │   ├── formatters.js
-│   │   ├── validators.js
-│   │   ├── chartHelpers.js
-│   │   └── sanitize.js        # Sanitización de inputs (XSS)
+│   ├── contexts/
+│   │   ├── AuthContext.jsx             # Autenticación global (Supabase)
+│   │   ├── ThemeContext.jsx            # Dark/light mode
+│   │   └── CurrencyContext.jsx         # Moneda activa y formateo
 │   │
-│   ├── lib/               # Configuración de librerías
-│   │   ├── supabase.js
-│   │   └── ai-providers.js    # Cliente multi-proveedor IA
+│   ├── utils/
+│   │   ├── formatters.js               # Moneda, porcentajes, fechas
+│   │   ├── validators.js               # Validación de campos de formulario
+│   │   ├── sanitize.js                 # Sanitización XSS de inputs
+│   │   ├── currencyHelpers.js          # Operaciones con Decimal.js
+│   │   ├── chartHelpers.jsx            # Helpers para gráficos
+│   │   ├── dataMigration.js            # localStorage → Supabase
+│   │   └── calculations.js             # Lógica financiera pura + tests
 │   │
-│   └── constants/         # Constantes
-│       ├── categories.js
-│       └── icons.js
+│   ├── lib/
+│   │   ├── supabase.js                 # Cliente Supabase
+│   │   └── ai-providers.js             # Integración multi-proveedor IA
+│   │
+│   └── constants/
+│       ├── categories.js               # Categorías + STORAGE_KEYS
+│       └── icons.js                    # Mapping de iconos
 │
-├── docs/                  # Documentación
-│   ├── SETUP.md          # Guía de instalación
-│   ├── API.md            # Documentación de APIs
-│   ├── CHANGELOG.md      # Historial de cambios
-│   └── setup/            # Guías de configuración
+├── supabase/
+│   ├── schema.sql                      # Tablas principales
+│   └── subscriptions-schema.sql        # Tabla de suscripciones
 │
-└── supabase-setup.sql    # Esquema de base de datos
+└── docs/                               # Documentación extendida
+    ├── SETUP.md
+    ├── API.md
+    ├── CHANGELOG.md
+    └── setup/                          # Guías específicas de configuración
 ```
 
 ---
@@ -261,29 +320,35 @@ Con Pro: **+100,000 usuarios activos** sin tocar el código.
 
 ## Roadmap
 
-### Completado
-- CRUD de transacciones
-- Autenticación con Supabase
-- Gráficos interactivos
-- Exportación PDF/CSV
-- Importación CSV
-- Sistema de gamificación
-- Integración de IA
-- Dark mode
-- PWA
+### Completado ✅
+- Landing page promocional con CTA a login/registro
+- CRUD completo de transacciones (ingresos / gastos)
+- Presupuestos por categoría con seguimiento en tiempo real
+- Autenticación con Supabase (email + Google OAuth)
+- 8 tipos de gráficos interactivos
+- Exportación PDF con gráficos incrustados y CSV
+- Importación CSV bancario con mapeo automático por IA
+- Transacciones recurrentes auto-procesadas
+- Multi-moneda (150+ divisas)
+- Espacios compartidos con Supabase Realtime
+- Chat financiero conversacional con IA
+- Sistema de gamificación (24 logros, niveles, rachas)
+- Metas de ahorro con proyección de cumplimiento
+- Gestión de tarjetas de crédito
+- Modal de configuración de cuenta
+- Dark mode + PWA instalable
+- Proxy seguro para API keys de IA (Netlify Functions)
 
-### En Desarrollo
-- Migración completa a TypeScript
-- Tests unitarios y de integración
+### En Desarrollo 🔄
+- Tests unitarios e integración (cobertura objetivo: 70%+)
 - CI/CD con GitHub Actions
+- Migración gradual a TypeScript
 
-### Próximas Features
-- Presupuestos mensuales
-- Recordatorios de pagos
-- Integración con bancos (Plaid)
+### Próximas Features 🔮
+- Recordatorios y alertas de pagos
+- Integración con APIs bancarias reales (Plaid)
 - App móvil nativa (React Native)
-- Modo colaborativo (finanzas familiares)
-- Inversiones y crypto tracking
+- Inversiones y seguimiento de crypto
 
 ---
 

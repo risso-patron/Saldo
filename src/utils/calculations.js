@@ -60,6 +60,21 @@ export const filterByYear = (items = [], year = null) => {
 };
 
 /**
+ * Filtra transacciones por año y mes específicos.
+ * @param {Array} items - Lista de transacciones.
+ * @param {number} year - Año (ej: 2026).
+ * @param {number} month - Mes (0-indexed: 0=enero, 11=diciembre).
+ * @returns {Array} Lista filtrada al mes exacto.
+ */
+export const filterByMonth = (items = [], year, month) => {
+  return items.filter(item => {
+    if (!item.date) return false;
+    const d = new Date(item.date + 'T12:00:00');
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+};
+
+/**
  * Obtiene una lista de años únicos con transacciones.
  * @param {Array} incomes - Lista de ingresos.
  * @param {Array} expenses - Lista de gastos.
