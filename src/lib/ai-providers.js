@@ -308,8 +308,19 @@ export const callAI = async (prompt, maxTokens = 2000, useCache = true) => {
   if (useCache && cacheKey) {
     const cached = responseCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      console.log('✅ Respuesta desde caché');
-      return cached.data;
+      // Validar que la caché contiene JSON parseable antes de usarla
+      try {
+        if (cached.data?.content) {
+          const jsonMatch = cached.data.content.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) throw new Error('caché inválida');
+          JSON.parse(jsonMatch[0]);
+        }
+        console.log('✅ Respuesta desde caché');
+        return cached.data;
+      } catch {
+        console.warn('⚠️ Caché inválida, eliminando...');
+        responseCache.delete(cacheKey);
+      }
     }
   }
 
