@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChartBar, ChartLine, ClockCounterClockwise } from '@phosphor-icons/react';
+import { ChartBar, ChartLine, Receipt, Target, Wrench } from '@phosphor-icons/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
@@ -426,9 +426,11 @@ function AppContent() {
             {/* Tabs de navegación Estilo Pastel */}
             <div className="flex gap-2 bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-2xl">
               {[
-                { id: 'resumen',      label: 'Resumen',      Icon: ChartBar },
-                { id: 'graficos',     label: 'Gráficos',     Icon: ChartLine },
-                { id: 'herramientas', label: 'Historial',    Icon: ClockCounterClockwise },
+                { id: 'resumen',       label: 'Resumen',       Icon: ChartBar },
+                { id: 'graficos',      label: 'Gráficos',      Icon: ChartLine },
+                { id: 'movimientos',   label: 'Movimientos',   Icon: Receipt },
+                { id: 'planificacion', label: 'Planificación', Icon: Target },
+                { id: 'herramientas',  label: 'Herramientas',  Icon: Wrench },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -566,8 +568,8 @@ function AppContent() {
             </div>
           </>}
 
-          {/* ── TAB: HERRAMIENTAS ─────────────────────────────────────────── */}
-          {activeTab === 'herramientas' && <>
+          {/* ── TAB: MOVIMIENTOS ─────────────────────────────────────────── */}
+          {activeTab === 'movimientos' && <>
             <BudgetForm
               onAddIncome={handleAddIncome}
               onAddExpense={handleAddExpense}
@@ -589,9 +591,10 @@ function AppContent() {
               onUpdateIncome={updateIncome}
               onUpdateExpense={updateExpense}
             />
+          </>}
 
-
-
+          {/* ── TAB: PLANIFICACIÓN ───────────────────────────────────────────── */}
+          {activeTab === 'planificacion' && <>
             <CreditCardManager
               creditCards={creditCards}
               onAddCard={handleAddCard}
@@ -602,7 +605,7 @@ function AppContent() {
             {/* Presupuestos por categoría */}
             <BudgetManager expenses={filteredExpenses} />
 
-            {/* FEATURE 1: Transacciones Recurrentes */}
+            {/* Transacciones Recurrentes */}
             <RecurringManager
               recurring={recurring}
               onAdd={addRecurring}
@@ -617,7 +620,10 @@ function AppContent() {
               onDeleteGoal={handleDeleteGoal}
               currentBalance={balance}
             />
+          </>}
 
+          {/* ── TAB: HERRAMIENTAS ─────────────────────────────────────────── */}
+          {activeTab === 'herramientas' && <>
             <GamificationDashboard
               currentLevel={achievements.currentLevel}
               totalPoints={achievements.totalPoints}
