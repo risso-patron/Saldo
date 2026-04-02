@@ -83,8 +83,8 @@ export const DailyReminder = () => {
   return (
     <div className="bg-slate-800/80 backdrop-blur-sm border border-pink-500/30 p-4 mx-6 mb-6 rounded-2xl shadow-xl flex items-center justify-between animate-fade-in">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-pink-500/20 text-pink-400 rounded-xl">
-          <BellRinging size={24} weight="duotone" className="animate-wiggle" />
+        <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center shrink-0">
+          <BellRinging size={24} weight="light" className="text-pink-500 animate-wiggle" />
         </div>
         <div>
           <h4 className="text-white font-bold text-sm">No olvides tus gastos</h4>

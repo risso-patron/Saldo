@@ -45,8 +45,8 @@ export const GlobalBudgetTracker = ({ totalExpenses }) => {
         
         {/* Cabecera y Título */}
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg">
-            <Target size={24} weight="bold" />
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
+            <Target size={24} weight="light" className="text-purple-500" />
           </div>
           <div>
             <h3 className="font-bold text-lg leading-tight">Presupuesto Mensual</h3>

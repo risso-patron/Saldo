@@ -97,10 +97,12 @@ export const Summary = ({
       value: totalIncome,
       prevValue: prevTotalIncome,
       inverseColor: false,
-      icon: <HandCoins size={22} weight="fill" />,
+      icon: <HandCoins size={22} weight="light" className="text-emerald-500" />,
       color: 'text-emerald-500',
       bgColor: 'bg-emerald-50 dark:bg-emerald-950/40',
-      iconColor: 'bg-emerald-500 text-white',
+      iconBg: 'bg-emerald-500/10',
+      iconBorder: 'border-emerald-500/20',
+      barColor: 'bg-emerald-500',
       tooltip: 'Suma de todas tus fuentes de ingresos.'
     },
     {
@@ -108,10 +110,12 @@ export const Summary = ({
       value: totalOut,
       prevValue: prevTotalExpenses,
       inverseColor: true,
-      icon: <CreditCard size={22} weight="fill" />,
+      icon: <CreditCard size={22} weight="light" className="text-rose-500" />,
       color: 'text-rose-500',
       bgColor: 'bg-rose-50 dark:bg-rose-950/40',
-      iconColor: 'bg-rose-500 text-white',
+      iconBg: 'bg-rose-500/10',
+      iconBorder: 'border-rose-500/20',
+      barColor: 'bg-rose-500',
       tooltip: 'Tus deudas y consumos actuales.'
     },
     {
@@ -119,10 +123,14 @@ export const Summary = ({
       value: balance - creditCardDebt,
       prevValue: prevBalance,
       inverseColor: false,
-      icon: isPositive ? <TrendUp size={22} weight="fill" /> : <TrendDown size={22} weight="fill" />,
+      icon: isPositive
+        ? <TrendUp size={22} weight="light" className="text-primary-500" />
+        : <TrendDown size={22} weight="light" className="text-rose-500" />,
       color: isPositive ? 'text-primary-500' : 'text-rose-500',
       bgColor: isPositive ? 'bg-primary-50 dark:bg-primary-950/40' : 'bg-rose-50 dark:bg-rose-950/40',
-      iconColor: isPositive ? 'bg-primary-500 text-white' : 'bg-rose-500 text-white',
+      iconBg: isPositive ? 'bg-primary-500/10' : 'bg-rose-500/10',
+      iconBorder: isPositive ? 'border-primary-500/20' : 'border-rose-500/20',
+      barColor: isPositive ? 'bg-primary-500' : 'bg-rose-500',
       tooltip: STRATEGIC_MESSAGES.DEFINITIONS.BALANCE
     }
   ];
@@ -133,7 +141,7 @@ export const Summary = ({
         <Card key={index} padding="p-5" className="group" title={stat.tooltip}>
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-start">
-              <div className={`p-3 rounded-2xl ${stat.iconColor} shadow-lg shadow-current/20 group-hover:scale-110 transition-transform duration-500`}>
+              <div className={`w-12 h-12 rounded-2xl ${stat.iconBg} ${stat.iconBorder} border flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500`}>
                 {stat.icon}
               </div>
               <div className="text-right">
@@ -153,7 +161,7 @@ export const Summary = ({
                 inverseColor={stat.inverseColor}
               />
               <div className={`h-1 w-1/2 rounded-full ${stat.bgColor} overflow-hidden`}>
-                <div className={`h-full ${stat.iconColor} opacity-20 w-3/4 animate-pulse`} />
+                <div className={`h-full ${stat.barColor} opacity-20 w-3/4 animate-pulse`} />
               </div>
             </div>
           </div>
@@ -164,8 +172,8 @@ export const Summary = ({
       <Card className="md:col-span-3 overflow-hidden" padding="p-0">
         <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500">
-              <ChartPieSlice size={28} weight="fill" />
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
+              <ChartPieSlice size={28} weight="light" className="text-indigo-500" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
