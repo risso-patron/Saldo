@@ -1,9 +1,9 @@
-const CACHE_NAME = 'budget-rp-cache-v1';
+const CACHE_NAME = 'budget-rp-cache-v2';
 
 // Recursos esenciales iniciales (App Shell)
+// NOTA: index.html se excluye deliberadamente — usa Network-First para siempre
+// servir la versión más reciente y evitar cargar bundles JS desactualizados.
 const INITIAL_CACHED_RESOURCES = [
-  '/',
-  '/index.html',
   '/manifest.json',
   '/favicon.svg',
   '/icons/icon-192x192.png',
@@ -40,26 +40,48 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Solo interceptar peticiones GET
   if (event.request.method !== 'GET') return;
-  
-  // Ignorar llamadas a API externas (ej. Supabase, Gemini, Groq)
+
+  // Ignorar llamadas a API externas (Supabase, Groq, etc.)
   const url = new URL(event.request.url);
   if (!url.origin.includes(self.location.origin)) return;
 
+  // ── Network-First para HTML ──────────────────────────────────────────────
+  // index.html y rutas SPA (/) siempre van a la red para garantizar que el
+  // navegador cargue los bundles JS del deploy actual. Si la red falla,
+  // se sirve la versión en caché como último recurso.
+  const isHTML = event.request.headers.get('accept')?.includes('text/html')
+    || url.pathname === '/'
+    || url.pathname === '/index.html';
+
+  if (isHTML) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // ── Cache-First para assets estáticos (JS, CSS, imágenes, fuentes) ───────
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // 1. Si está en caché, retornarlo inmediato (Caché First)
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      // 2. Si no está, buscarlo en red (Network fallback)
       return fetch(event.request).then((networkResponse) => {
-        // No cachar si hay error
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
 
-        // Cachar para el futuro
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
@@ -67,7 +89,6 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       }).catch(() => {
-        // Fallback genérico sin conexión a internet si no hay respuesta red ni caché
         return new Response("No hay conexión a internet.", {
           status: 503,
           statusText: "Service Unavailable",
