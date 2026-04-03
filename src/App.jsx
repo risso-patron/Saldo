@@ -78,19 +78,6 @@ function AppContent() {
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
 
-  // Banner de bienvenida — se muestra una vez por sesión al cargar datos desde la nube
-  const [welcomeBanner, setWelcomeBanner] = useState(null);
-  const lastShownUserId = useRef(null);
-  useEffect(() => {
-    if (user && !loading && lastShownUserId.current !== user.id) {
-      lastShownUserId.current = user.id;
-      const count = (incomes?.length ?? 0) + (expenses?.length ?? 0);
-      setWelcomeBanner(count);
-      const timer = setTimeout(() => setWelcomeBanner(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [user?.id, loading]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const closeConfirm = useCallback(() => {
     setConfirmDialog(prev => ({ ...prev, isOpen: false, onConfirm: null }));
   }, []);
@@ -120,6 +107,20 @@ function AppContent() {
     loading,
     syncStatus,
   } = useTransactions();
+
+  // Banner de bienvenida — se muestra una vez por sesión al cargar datos desde la nube
+  // NOTA: debe estar DESPUÉS de useTransactions() para que `loading` no esté en TDZ
+  const [welcomeBanner, setWelcomeBanner] = useState(null);
+  const lastShownUserId = useRef(null);
+  useEffect(() => {
+    if (user && !loading && lastShownUserId.current !== user.id) {
+      lastShownUserId.current = user.id;
+      const count = (incomes?.length ?? 0) + (expenses?.length ?? 0);
+      setWelcomeBanner(count);
+      const timer = setTimeout(() => setWelcomeBanner(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [user?.id, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hook de gamificación
   const achievements = useAchievements();
