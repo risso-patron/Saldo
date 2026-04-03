@@ -321,13 +321,18 @@ export const useTransactions = () => {
     return all;
   }, [incomes, expenses, filter]);
 
+  // Combinar todas las transacciones para IA (memoizado — evita objetos nuevos en cada render)
+  const allTransactions = useMemo(() => [
+    ...incomes.map(income => ({ ...income, type: 'income' })),
+    ...expenses.map(expense => ({ ...expense, type: 'expense' }))
+  ], [incomes, expenses]);
+
   return {
     incomes,
     expenses,
     filter,
     alert,
     loading,
-    syncStatus,
     syncStatus,
     addIncome,
     addExpense,
@@ -345,5 +350,6 @@ export const useTransactions = () => {
     balance,
     categoryAnalysis,
     filteredTransactions,
+    allTransactions,
   };
 };

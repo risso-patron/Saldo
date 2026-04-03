@@ -82,10 +82,55 @@ export const filterByMonth = (items = [], year, month) => {
  */
 export const getAvailableYears = (incomes = [], expenses = []) => {
   const years = new Set();
-  [...incomes, ...expenses].forEach(t => {
+  const process = t => {
     if (t.date) {
       years.add(new Date(t.date + 'T12:00:00').getFullYear());
     }
-  });
+  };
+  incomes.forEach(process);
+  expenses.forEach(process);
   return [...years].sort((a, b) => b - a);
+};
+
+/**
+ * Obtiene los meses disponibles para un año específico.
+ * @param {Array} incomes - Lista de ingresos.
+ * @param {Array} expenses - Lista de gastos.
+ * @param {number} year - Año a consultar.
+ * @returns {Array} Meses únicos (0-11) ordenados.
+ */
+export const getAvailableMonths = (incomes = [], expenses = [], year) => {
+  if (!year) return [];
+  const months = new Set();
+  const process = t => {
+    if (!t.date) return;
+    const d = new Date(t.date + 'T12:00:00');
+    if (d.getFullYear() === year) months.add(d.getMonth());
+  };
+  incomes.forEach(process);
+  expenses.forEach(process);
+  return [...months].sort((a, b) => a - b);
+};
+
+/**
+ * Calcula la comparación mensual (totales del mes anterior).
+ * @param {Array} incomes - Lista de ingresos.
+ * @param {Array} expenses - Lista de gastos.
+ * @returns {Object} { prevTotalIncome, prevTotalExpenses, prevBalance }
+ */
+export const calculateMonthlyComparison = (incomes = [], expenses = []) => {
+  const now = new Date();
+  const curYear  = now.getFullYear();
+  const curMonth = now.getMonth();
+  const prevYear  = curMonth === 0 ? curYear - 1 : curYear;
+  const prevMonth = curMonth === 0 ? 11 : curMonth - 1;
+
+  const prevIncomes  = filterByMonth(incomes, prevYear, prevMonth);
+  const prevExpenses = filterByMonth(expenses, prevYear, prevMonth);
+
+  const prevTotalIncome   = calculateTotal(prevIncomes);
+  const prevTotalExpenses = calculateTotal(prevExpenses);
+  const prevBalance = calculateBalance(prevTotalIncome, prevTotalExpenses);
+
+  return { prevTotalIncome, prevTotalExpenses, prevBalance };
 };

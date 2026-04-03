@@ -8,7 +8,15 @@ import { STORAGE_KEYS, STRATEGIC_MESSAGES } from './constants/categories';
 import { BudgetForm } from './components/BudgetForm';
 import { ExpenseList } from './components/ExpenseList';
 import { Summary } from './components/Summary';
-import { calculateTotal, calculateBalance, filterByYear, filterByMonth, getAvailableYears } from './utils/calculations';
+import { 
+  calculateTotal, 
+  calculateBalance, 
+  filterByYear, 
+  filterByMonth, 
+  getAvailableYears,
+  getAvailableMonths,
+  calculateMonthlyComparison
+} from './utils/calculations';
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
 import { ThemeToggle } from './components/Shared/ThemeToggle';
@@ -106,6 +114,7 @@ function AppContent() {
     refreshTransactions,
     loading,
     syncStatus,
+    allTransactions,
   } = useTransactions();
 
   // Banner de bienvenida — se muestra una vez por sesión al cargar datos desde la nube
@@ -127,12 +136,6 @@ function AppContent() {
 
   // FEATURE 1: Transacciones Recurrentes — procesa vencidos al montar
   const { recurring, addRecurring, toggleRecurring, removeRecurring } = useRecurring(addIncome, addExpense);
-
-  // Combinar todas las transacciones para IA (memoizado — evita objetos nuevos en cada render)
-  const allTransactions = useMemo(() => [
-    ...incomes.map(income => ({ ...income, type: 'income' })),
-    ...expenses.map(expense => ({ ...expense, type: 'expense' }))
-  ], [incomes, expenses]);
 
   // Hook de IA con Groq (Llama 3.3 70B) vía proxy seguro
   const aiInsights = useAIInsights(allTransactions);
@@ -168,29 +171,26 @@ function AppContent() {
     const byYear = filterByYear(expenses, selectedYear);
     if (selectedYear && selectedMonth !== null) return filterByMonth(byYear, selectedYear, selectedMonth);
     return byYear;
-  }, [expenses, selectedYear, selectedMonth]);
+  }, [expenses, selectedYear, selectedMonth, loading]);
 
   const filteredTotalIncome   = useMemo(() => calculateTotal(filteredIncomes), [filteredIncomes]);
   const filteredTotalExpenses = useMemo(() => calculateTotal(filteredExpenses), [filteredExpenses]);
   const filteredBalance = useMemo(() => calculateBalance(filteredTotalIncome, filteredTotalExpenses), [filteredTotalIncome, filteredTotalExpenses]);
 
-  // ── Totales del mes actual y anterior para deltas en Summary ────────────
-  const monthlyComparison = useMemo(() => {
-    const now = new Date();
-    const curYear  = now.getFullYear();
-    const curMonth = now.getMonth();
-    const prevYear  = curMonth === 0 ? curYear - 1 : curYear;
-    const prevMonth = curMonth === 0 ? 11 : curMonth - 1;
+  // 1. Años con datos
+  const availableYears = useMemo(() => 
+    getAvailableYears(incomes, expenses), 
+  [incomes, expenses]);
 
-    const prevIncomes  = filterByMonth(incomes, prevYear, prevMonth);
-    const prevExpenses = filterByMonth(expenses, prevYear, prevMonth);
+  // 2. Meses con datos (solo del año seleccionado)
+  const availableMonths = useMemo(() => 
+    getAvailableMonths(incomes, expenses, selectedYear), 
+  [incomes, expenses, selectedYear]);
 
-    const prevTotalIncome   = calculateTotal(prevIncomes);
-    const prevTotalExpenses = calculateTotal(prevExpenses);
-    const prevBalance = calculateBalance(prevTotalIncome, prevTotalExpenses);
-
-    return { prevTotalIncome, prevTotalExpenses, prevBalance };
-  }, [incomes, expenses]);
+  // 3. Comparativa mes anterior
+  const monthlyComparison = useMemo(() => 
+    calculateMonthlyComparison(incomes, expenses), 
+  [incomes, expenses]);
 
   // Funciones para tarjetas de crédito
   const handleAddCard = (card) => {
@@ -303,41 +303,12 @@ function AppContent() {
     });
   };
 
-  // HOOK DE IA - Combinar todas las transacciones
-  // TEMPORALMENTE DESHABILITADO - Necesita VITE_ANTHROPIC_API_KEY
-  /*+
-  const allTransactions = useMemo(() => {
-    return [
-      ...incomes.map(t => ({ ...t, type: 'income' })),
-      ...expenses.map(t => ({ ...t, type: 'expense' }))
-    ];
-  }, [incomes, expenses]);
-  */
-
-  // TEMPORALMENTE DESHABILITADO - Necesita VITE_ANTHROPIC_API_KEY
-  // const aiInsights = useAIInsights(allTransactions, user?.id);
-
   // ✅ PREPARAR DATOS MENSUALES PARA PREDICCIONES
-  /* TEMPORALMENTE DESHABILITADO - Necesita VITE_ANTHROPIC_API_KEY
+  // TEMPORALMENTE DESHABILITADO - Necesita VITE_ANTHROPIC_API_KEY
+  /*
   const monthlyData = useMemo(() => {
-    const months = {};
-    
-    [...incomes, ...expenses].forEach(transaction => {
-      const date = new Date(transaction.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
-      if (!months[monthKey]) {
-        months[monthKey] = { month: monthKey, income: 0, expense: 0 };
-      }
-      
-      if (transaction.type === 'income' || incomes.includes(transaction)) {
-        months[monthKey].income += transaction.amount;
-      } else {
-        months[monthKey].expense += transaction.amount;
-      }
-    });
-    
-    return Object.values(months).sort((a, b) => a.month.localeCompare(b.month));
+    // ...
+    return [];
   }, [incomes, expenses]);
   */
 
