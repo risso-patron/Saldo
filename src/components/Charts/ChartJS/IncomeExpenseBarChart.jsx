@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +24,8 @@ ChartJS.register(
  * Gráfico de Barras que compara de forma directa el Total de Ingresos vs Total de Gastos
  */
 export const IncomeExpenseBarChart = ({ totalIncome, totalExpenses }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const data = {
     labels: ['Balance General'],
     datasets: [
@@ -73,6 +75,14 @@ export const IncomeExpenseBarChart = ({ totalIncome, totalExpenses }) => {
       }
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center h-[300px]">
+        <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-[300px]">

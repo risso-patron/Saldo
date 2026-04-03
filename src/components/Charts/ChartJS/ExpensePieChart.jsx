@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
@@ -11,6 +11,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
  * Ligero, usando Chart.js nativo.
  */
 export const ExpensePieChart = ({ categoryAnalysis }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   // Configuración de datos adaptada para Chart.js
   const data = {
     labels: categoryAnalysis.map(cat => cat.name),
@@ -64,10 +66,13 @@ export const ExpensePieChart = ({ categoryAnalysis }) => {
     }
   };
 
-  if (!categoryAnalysis || categoryAnalysis.length === 0) {
+  if (!mounted || !categoryAnalysis || categoryAnalysis.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-gray-500">
-        <p>No hay gastos para mostrar en el gráfico de pastel.</p>
+      <div className="flex flex-col items-center justify-center h-[300px] text-gray-500">
+        {!mounted
+          ? <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+          : <p>No hay gastos para mostrar en el gráfico de pastel.</p>
+        }
       </div>
     );
   }

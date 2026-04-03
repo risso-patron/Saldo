@@ -12,9 +12,7 @@ export default defineConfig(({ mode }) => ({
   // que el scanner de secretos falle el build.
   ...(mode === 'production' && {
     define: {
-      'import.meta.env.VITE_GOOGLE_GEMINI_API_KEY': JSON.stringify(''),
-      'import.meta.env.VITE_GROQ_API_KEY':          JSON.stringify(''),
-      'import.meta.env.VITE_ANTHROPIC_API_KEY':     JSON.stringify(''),
+      'import.meta.env.VITE_GROQ_API_KEY': JSON.stringify(''),
     },
   }),
 

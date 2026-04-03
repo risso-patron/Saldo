@@ -12,13 +12,8 @@ import {
 } from '../lib/ai-providers'
 
 /**
- * Hook para IA con múltiples proveedores gratuitos
- * Soporta: Gemini, Groq, Claude, Ollama
- * 
- * TODAS LAS OPCIONES GRATUITAS:
- * - Google Gemini: 1500 req/día gratis
- * - Groq: 30 req/min gratis
- * - Ollama: Ilimitado local
+ * Hook de IA — proveedor único: Groq (Llama 3.3 70B) vía proxy seguro Netlify
+ * Rate limit: 30 req/min (Groq free tier)
  */
 export const useAIInsights = (transactions = []) => {
   const { user } = useAuth()
@@ -77,7 +72,7 @@ export const useAIInsights = (transactions = []) => {
     // Verificar proveedores disponibles
     const available = checkProviders()
     if (available.length === 0) {
-      setAnalysisError('No hay proveedores de IA configurados. Configura Gemini o Groq (100% gratis)')
+      setAnalysisError('El servicio de IA no está disponible en este momento')
       return
     }
 
