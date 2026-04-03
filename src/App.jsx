@@ -28,12 +28,7 @@ import { hasPendingMigration } from './utils/dataMigration';
 import { CreditCardManager } from './components/CreditCard/CreditCardManager';
 // Nuevos gráficos avanzados
 import { BalanceDonutChart } from './components/Charts/BalanceDonutChart';
-import { TrendLineChart } from './components/Charts/TrendLineChart';
-import { CategoryBarChart } from './components/Charts/CategoryBarChart';
-import { ComparativeChart } from './components/Charts/ComparativeChart';
-import { MonthlyCashFlowChart } from './components/Charts/MonthlyCashFlowChart';
-import { SpendingByDayChart } from './components/Charts/SpendingByDayChart';
-import { TopMerchantsChart } from './components/Charts/TopMerchantsChart';
+import { ChartsTab } from './components/Charts/ChartsTab';
 import { AIInsightsPanel, AIAlerts, PredictiveChart, AIProviderStatus } from './components/AI';
 import { useAIInsights } from './hooks/useAIInsightsMulti';
 // GRÁFICOS NUEVOS (Fase UX 3: Chart.js)
@@ -600,34 +595,16 @@ function AppContent() {
           </>}
 
           {/* ── TAB: GRÁFICOS ─────────────────────────────────────────────── */}
-          {activeTab === 'graficos' && <>
-            <TrendLineChart
-              incomes={filteredIncomes}
-              expenses={filteredExpenses}
+          {activeTab === 'graficos' && (
+            <ChartsTab
+              filteredIncomes={filteredIncomes}
+              filteredExpenses={filteredExpenses}
+              filteredTotalIncome={filteredTotalIncome}
+              filteredTotalExpenses={filteredTotalExpenses}
+              filteredBalance={filteredBalance}
+              categoryAnalysis={categoryAnalysis}
             />
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <CategoryBarChart
-                categoryAnalysis={categoryAnalysis}
-                topN={5}
-              />
-              <ComparativeChart
-                incomes={filteredIncomes}
-                expenses={filteredExpenses}
-              />
-            </div>
-
-            <MonthlyCashFlowChart
-              incomes={filteredIncomes}
-              expenses={filteredExpenses}
-              months={6}
-            />
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <SpendingByDayChart expenses={filteredExpenses} />
-              <TopMerchantsChart expenses={filteredExpenses} topN={8} />
-            </div>
-          </>}
+          )}
 
           {/* ── TAB: MOVIMIENTOS ─────────────────────────────────────────── */}
           {activeTab === 'movimientos' && <>
