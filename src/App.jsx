@@ -392,26 +392,37 @@ function AppContent() {
         {/* Header Pastel minimalista */}
         <header className="relative z-50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl rounded-3xl sm:rounded-4xl px-4 sm:px-8 pt-5 sm:pt-8 pb-4 sm:pb-6 mb-4 sm:mb-10 shadow-glass border border-white/40 dark:border-white/5">
 
-          {/* Fila 1: Título + controles */}
-          <div className="flex justify-between items-start gap-2 sm:gap-4 mb-5 sm:mb-8">
+          {/* Mobile: controles en fila propia arriba */}
+          <div className="flex sm:hidden justify-end items-center gap-2 mb-3">
+            <CurrencySelector />
+            <ThemeToggle />
+            <ProfileMenu
+              onClearAll={handleClearAllTransactions}
+              transactionCount={incomes.length + expenses.length}
+            />
+          </div>
+
+          {/* Fila título + controles (desktop: side-by-side / mobile: título solo) */}
+          <div className="flex justify-between items-center gap-4 mb-5 sm:mb-8">
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
+              <h1 className="text-3xl sm:text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
                 <span className="hidden sm:inline">Calculadora Presupuestaria</span>
-                <span className="sm:hidden leading-none">Mi Presupuesto</span>
+                <span className="sm:hidden">Mi Presupuesto</span>
               </h1>
-              <div className="h-5 flex items-center gap-2 mt-1.5 ml-0.5">
-                <p className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider animate-fade-in-slide truncate">
+              <div className="flex items-center gap-2 mt-2 ml-0.5">
+                <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider animate-fade-in-slide truncate">
                   {quote}
                 </p>
                 {syncStatus === 'saved' && (
-                  <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full animate-fade-in-slide">
+                  <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full animate-fade-in-slide shrink-0">
                     <CheckCircle size={11} weight="fill" className="text-emerald-500" />
                     <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Guardado</span>
                   </span>
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            {/* Desktop: controles inline con el título */}
+            <div className="hidden sm:flex items-center gap-3 shrink-0">
               <CurrencySelector />
               <ThemeToggle />
               <ProfileMenu
