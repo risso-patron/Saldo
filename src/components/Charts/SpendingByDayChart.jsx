@@ -51,7 +51,7 @@ export const SpendingByDayChart = ({ expenses }) => {
       icon="📅"
       isEmpty={isEmpty}
       emptyMessage="Agrega gastos para ver en qué días gastas más"
-      height="h-72"
+      height="h-[200px] sm:h-72"
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>

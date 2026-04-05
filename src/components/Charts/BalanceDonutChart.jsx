@@ -32,7 +32,6 @@ export const BalanceDonutChart = ({ totalIncome, totalExpenses }) => {
               dataKey="value"
               animationBegin={0}
               animationDuration={800}
-              label={renderCustomLabel}
             >
               {data.map((entry, index) => (
                 <Cell 

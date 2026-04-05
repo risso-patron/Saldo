@@ -24,9 +24,8 @@ export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
   return (
     <ChartContainer
       title={`Top ${topN} Categorías de Gasto`}
-      isEmpty={isEmpty}
       emptyMessage="Añade gastos para ver el análisis por categorías"
-      height="h-96"
+      height="h-[250px] md:h-96"
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart

@@ -43,7 +43,7 @@ export const MonthlyCashFlowChart = ({ incomes, expenses, months = 6 }) => {
       icon="💰"
       isEmpty={isEmpty || !hasAnyData}
       emptyMessage="Agrega transacciones para ver el flujo mensual"
-      height="h-80"
+      height="h-[250px] sm:h-80"
     >
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
