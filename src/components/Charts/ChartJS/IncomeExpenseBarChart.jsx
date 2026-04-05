@@ -78,14 +78,14 @@ export const IncomeExpenseBarChart = ({ totalIncome, totalExpenses }) => {
 
   if (!mounted) {
     return (
-      <div className="flex items-center justify-center h-[300px]">
+      <div className="flex items-center justify-center h-[200px] md:h-[300px]">
         <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-[300px]">
+    <div className="relative w-full h-[200px] md:h-[300px]">
       <Bar data={data} options={options} />
     </div>
   );

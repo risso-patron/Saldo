@@ -68,7 +68,7 @@ export const ExpensePieChart = ({ categoryAnalysis }) => {
 
   if (!mounted || !categoryAnalysis || categoryAnalysis.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[300px] text-gray-500">
+      <div className="flex flex-col items-center justify-center h-[200px] md:h-[300px] text-gray-500">
         {!mounted
           ? <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
           : <p>No hay gastos para mostrar en el gráfico de pastel.</p>
@@ -78,7 +78,7 @@ export const ExpensePieChart = ({ categoryAnalysis }) => {
   }
 
   return (
-    <div className="relative w-full h-[300px]">
+    <div className="relative w-full h-[200px] md:h-[300px]">
       <Pie data={data} options={options} />
     </div>
   );

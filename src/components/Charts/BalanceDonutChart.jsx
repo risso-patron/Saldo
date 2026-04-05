@@ -17,7 +17,7 @@ export const BalanceDonutChart = ({ totalIncome, totalExpenses }) => {
       title="Balance General"
       isEmpty={isEmpty}
       emptyMessage="Añade ingresos o gastos para ver tu balance"
-      height="h-96"
+      height="h-[200px] md:h-96"
     >
       <div className="relative h-full">
         <ResponsiveContainer width="100%" height="100%">
