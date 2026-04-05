@@ -20,6 +20,7 @@ import {
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
 import { ThemeToggle } from './components/Shared/ThemeToggle';
+import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { ProfileMenu } from './components/Auth/ProfileMenu';
 import MigrationDialog from './components/MigrationDialog';
 import AuthPage from './pages/AuthPage';
@@ -716,13 +717,15 @@ function AppContent() {
  */
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <CurrencyProvider>
-          <AppContent />
-        </CurrencyProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <CurrencyProvider>
+            <AppContent />
+          </CurrencyProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

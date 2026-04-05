@@ -6,12 +6,19 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
  * Módulo de Engagement - Notificaciones asíncronas no invasivas.
  */
 export const DailyReminder = () => {
-  // Estado local para no fatigar la UI con banners repetidos
-  const [permission, setPermission] = useState(Notification.permission);
+  // Estado local, con "lazy initialization" protegiendo contra ReferenceError en iOS Safari
+  const [permission, setPermission] = useState(() => {
+    return ('Notification' in window) ? Notification.permission : 'denied';
+  });
   const [showBanner, setShowBanner] = useLocalStorage('budgetrp_show_notification_banner', true);
   const [lastNotifiedDate, setLastNotifiedDate] = useLocalStorage('budgetrp_last_notified', null);
   
   const timerRef = useRef(null);
+
+  // Si el navegador de frentón no soporta Notifications (ej: iOS web browser regular), silenciamos el componente.
+  if (typeof window !== 'undefined' && !('Notification' in window)) {
+    return null;
+  }
 
   // Solicitar permiso amigablemente tras click humano (Regla: no ser invasivo)
   const requestPermission = async () => {
