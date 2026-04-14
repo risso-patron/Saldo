@@ -6,9 +6,9 @@ import { CurrencySelector } from '../features/currency/CurrencySelector'
 const TABS = [
   { id: 'resumen',       label: 'Inicio' },
   { id: 'movimientos',   label: 'Movimientos' },
-  { id: 'graficos',      label: 'Análisis' },
+  { id: 'graficos',      label: 'Tendencias' },
   { id: 'planificacion', label: 'Planificación' },
-  { id: 'herramientas',  label: 'Herramientas' },
+  { id: 'herramientas',  label: 'Más' },
 ]
 
 /**

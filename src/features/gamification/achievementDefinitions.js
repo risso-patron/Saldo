@@ -50,7 +50,7 @@ export const ACHIEVEMENTS = {
     description: 'Activa el modo oscuro',
     icon: '🌙',
     category: ACHIEVEMENT_CATEGORIES.BEGINNER,
-    points: 5,
+    points: 1,
     condition: (stats) => stats.usedDarkMode === true,
   },
 
@@ -164,7 +164,7 @@ export const ACHIEVEMENTS = {
     description: 'Registra transacciones 3 días seguidos',
     icon: '🔥',
     category: ACHIEVEMENT_CATEGORIES.STREAK,
-    points: 20,
+    points: 40,
     condition: (stats) => stats.currentStreak >= 3,
   },
 
@@ -174,7 +174,7 @@ export const ACHIEVEMENTS = {
     description: 'Registra transacciones 7 días seguidos',
     icon: '⭐',
     category: ACHIEVEMENT_CATEGORIES.STREAK,
-    points: 50,
+    points: 100,
     condition: (stats) => stats.currentStreak >= 7,
   },
 
@@ -184,7 +184,7 @@ export const ACHIEVEMENTS = {
     description: 'Registra transacciones 30 días seguidos',
     icon: '💫',
     category: ACHIEVEMENT_CATEGORIES.STREAK,
-    points: 150,
+    points: 300,
     condition: (stats) => stats.currentStreak >= 30,
   },
 
@@ -195,7 +195,7 @@ export const ACHIEVEMENTS = {
     description: 'Exporta tus datos por primera vez',
     icon: '📥',
     category: ACHIEVEMENT_CATEGORIES.ADVANCED,
-    points: 15,
+    points: 3,
     condition: (stats) => stats.dataExported === true,
   },
 

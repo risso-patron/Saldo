@@ -16,7 +16,7 @@ export const BottomNav = ({ activeTab, onTabSelect, onQuickAction }) => {
     { id: 'resumen', label: 'Inicio', icon: SquaresFour },
     { id: 'movimientos', label: 'Gastos', icon: Receipt },
     { id: 'quick', label: 'Añadir', icon: Plus, isPrimary: true },
-    { id: 'graficos', label: 'Análisis', icon: ChartPieSlice },
+    { id: 'graficos', label: 'Tendencias', icon: ChartPieSlice },
     { id: 'herramientas', label: 'Más', icon: Wrench }
   ]
 
