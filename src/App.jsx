@@ -1,22 +1,16 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ChartBar, ChartLine, Receipt, Target, Wrench, CheckCircle, X, MagnifyingGlass } from '@phosphor-icons/react';
+import { useState, useEffect, useRef } from 'react';
+import { CheckCircle, X } from '@phosphor-icons/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { STORAGE_KEYS, STRATEGIC_MESSAGES } from './constants/categories';
 import { BudgetForm } from './components/BudgetForm';
 import { ExpenseList } from './components/ExpenseList';
 import { Summary } from './components/Summary';
-import { 
-  calculateTotal, 
-  calculateBalance, 
-  filterByYear, 
-  filterByMonth, 
-  getAvailableYears,
-  getAvailableMonths,
-  calculateMonthlyComparison
-} from './utils/calculations';
+import { useFilters } from './hooks/useFilters';
+import { useConfirmDialog } from './hooks/useConfirmDialog';
+import { AppHeader } from './components/AppHeader';
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
 import { ThemeToggle } from './components/Shared/ThemeToggle';
@@ -65,7 +59,6 @@ import { BottomNav } from './components/Shared/BottomNav';
 
 function AppContent() {
   const { user, loading: authLoading } = useAuth();
-  const { theme } = useTheme();
   const [showAuth, setShowAuth] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
   const [isChatWidgetOpen, setIsChatWidgetOpen] = useState(false);
@@ -84,9 +77,7 @@ function AppContent() {
 
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false, title: '', message: '', confirmLabel: 'Eliminar', variant: 'danger', onConfirm: null,
-  });
+  const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
   const [quote, setQuote] = useState('');
   useEffect(() => {
@@ -94,13 +85,10 @@ function AppContent() {
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
 
-  const closeConfirm = useCallback(() => setConfirmDialog(prev => ({ ...prev, isOpen: false, onConfirm: null })), []);
-  const openConfirm = useCallback((config) => setConfirmDialog({ isOpen: true, confirmLabel: 'Eliminar', variant: 'danger', ...config }), []);
-
   const {
     incomes, expenses, alert, addIncome, addExpense, addBulkTransactions, updateIncome, updateExpense,
     removeIncome, removeExpense, removeMultiple, categorizeMultiple, showAlert, totalIncome, totalExpenses,
-    balance, categoryAnalysis, clearAll, refreshTransactions, loading, syncStatus, allTransactions,
+    balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
   } = useTransactions();
 
   const [welcomeBanner, setWelcomeBanner] = useState(null);
@@ -116,11 +104,9 @@ function AppContent() {
 
   const achievements = useAchievements();
   const { recurring, addRecurring, toggleRecurring, removeRecurring } = useRecurring(addIncome, addExpense);
-  const aiInsights = useAIInsights(allTransactions);
+  useAIInsights(allTransactions);
 
   const [activeTab, setActiveTab] = useLocalStorage('budgetrp_ui_activeTab', 'resumen');
-  const [selectedYear, setSelectedYear] = useLocalStorage('budgetrp_ui_selectedYear', null);
-  const [selectedMonth, setSelectedMonth] = useLocalStorage('budgetrp_ui_selectedMonth', null);
 
   // Key para forzar el reinicio de BudgetForm al pulsar el "+" de la Bottom Nav
   const [budgetFormKey, setBudgetFormKey] = useState(0);
@@ -131,25 +117,14 @@ function AppContent() {
     scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
 
-  const filteredIncomes = useMemo(() => {
-    const byYear = filterByYear(incomes, selectedYear);
-    if (selectedYear && selectedMonth !== null) return filterByMonth(byYear, selectedYear, selectedMonth);
-    return byYear;
-  }, [incomes, selectedYear, selectedMonth]);
-
-  const filteredExpenses = useMemo(() => {
-    const byYear = filterByYear(expenses, selectedYear);
-    if (selectedYear && selectedMonth !== null) return filterByMonth(byYear, selectedYear, selectedMonth);
-    return byYear;
-  }, [expenses, selectedYear, selectedMonth, loading]);
-
-  const filteredTotalIncome   = useMemo(() => calculateTotal(filteredIncomes), [filteredIncomes]);
-  const filteredTotalExpenses = useMemo(() => calculateTotal(filteredExpenses), [filteredExpenses]);
-  const filteredBalance = useMemo(() => calculateBalance(filteredTotalIncome, filteredTotalExpenses), [filteredTotalIncome, filteredTotalExpenses]);
-
-  const availableYears = useMemo(() => getAvailableYears(incomes, expenses), [incomes, expenses]);
-  const availableMonths = useMemo(() => getAvailableMonths(incomes, expenses, selectedYear), [incomes, expenses, selectedYear]);
-  const monthlyComparison = useMemo(() => calculateMonthlyComparison(incomes, expenses), [incomes, expenses]);
+  const {
+    selectedYear, setSelectedYear,
+    selectedMonth, setSelectedMonth,
+    filteredIncomes, filteredExpenses,
+    filteredTotalIncome, filteredTotalExpenses, filteredBalance,
+    availableYears, availableMonths,
+    monthlyComparison,
+  } = useFilters(incomes, expenses);
 
   const handleAddCard = (card) => { setCreditCards([...creditCards, card]); showAlert('success', `Tarjeta "${card.name}" agregada`); return true; };
   const handleUpdateDebt = (cardId, newDebt) => setCreditCards(creditCards.map(card => card.id === cardId ? { ...card, debt: newDebt } : card));
@@ -214,82 +189,20 @@ function AppContent() {
         <div ref={scrollContainerRef} className="flex-1 h-screen overflow-y-auto custom-scrollbar relative px-3 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto py-2 sm:py-10">
             
-            <header className="relative z-[100] bg-white/60 dark:bg-slate-900/60 backdrop-blur-3xl rounded-3xl sm:rounded-4xl px-4 sm:px-8 pt-5 sm:pt-8 pb-4 sm:pb-6 mb-6 sm:mb-10 shadow-glass border border-white/40 dark:border-white/5">
-              
-              <div className="flex sm:hidden items-center gap-3 mb-6">
-                <button onClick={() => setIsOmnibarOpen(true)} className="flex-1 flex items-center gap-3 px-4 py-3 bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 rounded-2xl font-bold text-sm border border-slate-200/50 dark:border-white/5 shadow-inner">
-                  <MagnifyingGlass size={20} weight="black" />
-                  <span className="opacity-70">Buscar...</span>
-                </button>
-                <div className="flex items-center gap-2 text-white">
-                  <div className="scale-90 origin-right"><CurrencySelector /></div>
-                  <ThemeToggle />
-                  <ProfileMenu onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} onNavigate={setActiveTab} condensed={true} />
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center gap-4 mb-4 sm:mb-8">
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-2xl sm:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-tight">Calculadora <span className="text-primary-600">RP</span></h1>
-                  <p className="hidden sm:block text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2">{quote}</p>
-                </div>
-                <div className="hidden sm:flex lg:hidden items-center gap-4 text-white">
-                  <button onClick={() => setIsOmnibarOpen(true)} className="p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl text-slate-500"><MagnifyingGlass size={22} weight="bold" /></button>
-                  <CurrencySelector />
-                  <ThemeToggle />
-                </div>
-              </div>
-
-              <div className="hidden lg:flex w-full overflow-x-auto custom-scrollbar-sidebar pb-2">
-                <div className="flex gap-1.5 bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-2xl whitespace-nowrap min-w-max">
-                  {[
-                    { id: 'resumen',       label: 'Inicio' },
-                    { id: 'movimientos',   label: 'Movimientos' },
-                    { id: 'graficos',      label: 'Análisis' },
-                    { id: 'planificacion', label: 'Planificación' },
-                    { id: 'herramientas', label: 'Herramientas' },
-                  ].map(({ id, label }) => (
-                    <button key={id} onClick={() => setActiveTab(id)} className={`px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.1em] transition-all ${activeTab === id ? 'bg-white dark:bg-slate-700 text-primary-600 shadow-premium scale-105' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'}`}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* FILTROS AÑO Y MES */}
-              {availableYears.length > 0 && (
-                <div className="flex flex-col gap-2 mt-4 sm:mt-6">
-                  {/* Filtro de Año */}
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar-sidebar">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">Año</span>
-                    <div className="flex gap-1 whitespace-nowrap">
-                      <button onClick={() => {setSelectedYear(null); setSelectedMonth(null)}} className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all ${!selectedYear ? 'bg-white dark:bg-slate-700 text-primary-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Todo</button>
-                      {availableYears.map(y => (
-                        <button key={y} onClick={() => {setSelectedYear(y); setSelectedMonth(null)}} className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all ${selectedYear === y ? 'bg-white dark:bg-slate-700 text-primary-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{y}</button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Filtro de Mes — aparece solo si hay un año seleccionado */}
-                  {selectedYear && availableMonths.length > 0 && (
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar-sidebar">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">Mes</span>
-                      <div className="flex gap-1 whitespace-nowrap">
-                        <button onClick={() => setSelectedMonth(null)} className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all ${selectedMonth === null ? 'bg-white dark:bg-slate-700 text-primary-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Todo</button>
-                        {availableMonths.map(m => {
-                          const label = new Intl.DateTimeFormat('es', { month: 'short' }).format(new Date(selectedYear, m));
-                          return (
-                            <button key={m} onClick={() => setSelectedMonth(m)} className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all ${selectedMonth === m ? 'bg-white dark:bg-slate-700 text-primary-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
-                              {label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </header>
+            <AppHeader
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onOpenOmnibar={() => setIsOmnibarOpen(true)}
+              quote={quote}
+              availableYears={availableYears}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              availableMonths={availableMonths}
+              selectedMonth={selectedMonth}
+              setSelectedMonth={setSelectedMonth}
+              onClearAll={handleClearAllTransactions}
+              transactionCount={incomes.length + expenses.length}
+            />
 
             {welcomeBanner !== null && (
               <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-2.5 mb-6 animate-fade-in-slide">
