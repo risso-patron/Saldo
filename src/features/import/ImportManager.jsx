@@ -160,23 +160,38 @@ export default function ImportManager({ onImport, onBulkImport }) {
     // 3. Mapping Engine (Fase 2)
     const rawHeaders = parseCSVLineFlexible(rows[headerIdx], separator);
     const mapping = findColumnIndices(rawHeaders);
-    
+
+    // Detectar columnas separadas de débito y crédito (ej: Banco General "Cargos (Db)" / "Pagos (Cr)")
+    const normHeaders = rawHeaders.map(h =>
+      h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s]/g, '').trim()
+    );
+    const DEBIT_ALIASES  = ['cargos db', 'cargo db', 'debito', 'debit', 'cargos', 'egreso', 'retiros'];
+    const CREDIT_ALIASES = ['pagos cr', 'pago cr', 'credito', 'credit', 'abonos', 'deposito', 'pagos'];
+    const debitColIdx  = normHeaders.findIndex(h => DEBIT_ALIASES.some(a => h === a || h.includes(a)));
+    const creditColIdx = normHeaders.findIndex(h => CREDIT_ALIASES.some(a => h === a || h.includes(a)));
+    const hasSplitCols = debitColIdx !== -1 && creditColIdx !== -1 && debitColIdx !== creditColIdx;
+
     // 4. Normalization Engine (Fase 3)
     const normalized = [];
-    const mappingIndices = {
-      date: mapping.date,
-      amount: mapping.amount,
-      description: mapping.description
-    };
     
     // Procesar filas de datos (después del header)
     for (let i = headerIdx + 1; i < rows.length; i++) {
       const values = parseCSVLineFlexible(rows[i], separator);
       if (values.length < 2) continue;
 
-      const date = normalizeDate(values[mappingIndices.date]);
-      const amount = normalizeAmount(values[mappingIndices.amount]);
-      const description = cleanText(values[mappingIndices.description]);
+      const date = normalizeDate(values[mapping.date]);
+      const description = cleanText(values[mapping.description]);
+
+      let amount;
+      if (hasSplitCols) {
+        // Columnas separadas: crédito = ingreso (+), débito = gasto (-)
+        const creditVal = normalizeAmount(values[creditColIdx]);
+        const debitVal  = normalizeAmount(values[debitColIdx]);
+        if (Math.abs(creditVal) > 0) amount = Math.abs(creditVal);
+        else                         amount = -Math.abs(debitVal);
+      } else {
+        amount = normalizeAmount(values[mapping.amount]);
+      }
 
       if (date && description) {
         normalized.push({ date, amount, description });
