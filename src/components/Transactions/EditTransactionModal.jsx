@@ -22,7 +22,7 @@ export const EditTransactionModal = ({
   const [date, setDate] = useState(transaction.date);
   const [category, setCategory] = useState(transaction.category || 'Vivienda');
   const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
+  const [, setTouched] = useState({});
   
   const { currencies } = useCurrency();
 

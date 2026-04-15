@@ -29,7 +29,6 @@ export const PredictiveChart = ({ historicalData, predictions, loading }) => {
 
     if (predictions && predictions.totalEstimado) {
       // Agregar mes de predicción
-      const lastMonth = historicalData[historicalData.length - 1]
       const nextMonth = {
         month: 'Próximo Mes',
         total: predictions.totalEstimado,

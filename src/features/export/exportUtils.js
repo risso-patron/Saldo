@@ -48,7 +48,7 @@ export const exportToCSV = (incomes, expenses, dateRange) => {
 /**
  * Exportar reporte a PDF
  */
-export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, dateRange, includeCharts) => {
+export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, dateRange, _includeCharts) => {
   const doc = new jsPDF();
   
   // Configuración de colores

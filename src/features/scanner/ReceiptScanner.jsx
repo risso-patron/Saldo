@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { Camera, Image, X, MagicWand, Check, ArrowsCounterClockwise } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVisionScanner } from '../../hooks/useVisionScanner';
@@ -61,7 +61,7 @@ export const ReceiptScanner = ({ onResult, onCancel }) => {
     try {
       const result = await scanImage(capturedImage);
       onResult(result);
-    } catch (err) {
+    } catch {
       alert('Error al procesar la imagen con IA. Inténtalo de nuevo.');
     }
   };

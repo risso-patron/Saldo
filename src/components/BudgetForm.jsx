@@ -26,7 +26,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   const [formMode, setFormMode] = useState('choice');
   const [activeType, setActiveType] = useState('expense');
   
-  const { currencies, getSmartDefaultCurrency, recordCurrencyUsage, currencyInfo } = useCurrency();
+  const { currencies, getSmartDefaultCurrency, recordCurrencyUsage } = useCurrency();
   
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -34,9 +34,9 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [category, setCategory] = useState(EXPENSE_CATEGORIES[0].value);
   const [errors, setErrors] = useState({});
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [, setShowSuccess] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [motivationalMessage, setMotivationalMessage] = useState('');
+  const [, setMotivationalMessage] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const successTimerRef = useRef(null);
 

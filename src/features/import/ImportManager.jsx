@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import Lottie from 'lottie-react';
 import loadingAnimation from '../../assets/loading-csv.json';
 import { useAIInsights } from '../../hooks/useAIInsightsMulti';
-import { parseRawText, parseCSVLineFlexible } from '../../core/parserEngine';
+import { parseRawText } from '../../core/parserEngine';
 import { findHeaderIndex, normalizeHeader } from '../../core/headerDetector';
 import { findColumnIndices } from '../../core/mappingEngine';
 import { normalizeAmount, normalizeDate, cleanText } from '../../core/normalizationEngine';
@@ -123,8 +123,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState(null);
   const [importStats, setImportStats] = useState(null);
-  const [autoCategorize, setAutoCategorize] = useState(true);
-  const [categorizingProgress, setCategorizingProgress] = useState(null);
+  const [, setCategorizingProgress] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
   // Estados para detección flexible de formato bancario

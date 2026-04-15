@@ -182,7 +182,7 @@ const getCategoryColor = (index) => {
 /**
  * Tooltip personalizado para gráficos
  */
-export const CustomTooltip = ({ active, payload, label, type = 'default' }) => {
+export const CustomTooltip = ({ active, payload, label, _type = 'default' }) => {
   if (!active || !payload || !payload.length) return null;
 
   return (

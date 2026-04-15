@@ -14,7 +14,6 @@ export const TransactionItem = ({ transaction, type, onRemove, onEdit, index, is
   const { convertCurrency, selectedCurrency } = useCurrency();
 
   const isIncome = type === 'income';
-  const category = EXPENSE_CATEGORIES.find(cat => cat.value === transaction.category);
   
   const txCurrency = transaction.currency || 'USD';
   const hasDifferentCurrency = txCurrency !== selectedCurrency;

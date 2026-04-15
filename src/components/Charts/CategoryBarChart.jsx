@@ -19,7 +19,6 @@ import { formatCurrency } from '../../utils/formatters';
  */
 export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
   const data = transformToBarData(categoryAnalysis, topN);
-  const isEmpty = data.length === 0;
 
   return (
     <ChartContainer

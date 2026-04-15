@@ -10,7 +10,7 @@ import { RocketWebP, TrophyWebP } from '../../components/Shared/WebPAnimation';
 /**
  * Componente para gestionar metas financieras
  */
-export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal, currentBalance }) => {
+export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal }) => {
   const [showForm, setShowForm] = useState(false);
   const [goalName, setGoalName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
@@ -239,5 +239,4 @@ GoalManager.propTypes = {
   onAddGoal: PropTypes.func.isRequired,
   onUpdateProgress: PropTypes.func.isRequired,
   onDeleteGoal: PropTypes.func.isRequired,
-  currentBalance: PropTypes.number,
 };

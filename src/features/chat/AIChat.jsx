@@ -90,7 +90,7 @@ PREGUNTA DEL USUARIO: ${question}`
 
       const result = await callAI(prompt, 500, false)
       setMessages(prev => [...prev, { role: 'ai', content: result.content }])
-    } catch (err) {
+    } catch {
       setMessages(prev => [
         ...prev,
         { role: 'ai', content: '⚠️ No pude conectarme con la IA en este momento. Verifica tu conexión e inténtalo de nuevo.' },

@@ -68,29 +68,6 @@ export const BalanceDonutChart = ({ totalIncome, totalExpenses }) => {
 };
 
 /**
- * Label personalizado para cada segmento
- */
-const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percentage }) => {
-  const RADIAN = Math.PI / 180;
-  const radius = outerRadius + 25;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="#374151"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      className="text-sm font-semibold"
-    >
-      {percentage}%
-    </text>
-  );
-};
-
-/**
  * Formato de leyenda personalizada
  */
 const renderLegend = (value, entry) => {

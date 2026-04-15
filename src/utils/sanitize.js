@@ -30,7 +30,7 @@ export function sanitizeCategory(value) {
   if (typeof value !== 'string') return '';
   return value
     .replace(/<[^>]*>/g, '')
-    .replace(/[^a-zA-ZáéíóúñüÁÉÍÓÚÑÜ0-9\s\-]/g, '')
+    .replace(/[^a-zA-ZáéíóúñüÁÉÍÓÚÑÜ0-9\s-]/g, '')
     .slice(0, 50)
     .trim();
 }

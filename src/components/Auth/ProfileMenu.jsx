@@ -42,7 +42,6 @@ export const ProfileMenu = ({ onClearAll, transactionCount = 0, onNavigate, alig
   if (!user) return null
 
   const isSidebar = align === 'sidebar';
-  const isMobile = align === 'mobile';
 
   // Jerarquía de Avatar
   const customAvatar = user.user_metadata?.custom_avatar
