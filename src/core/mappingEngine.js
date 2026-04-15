@@ -13,11 +13,11 @@ export const COLUMN_ALIASES = {
     'posting date', 'transaction date', 'valor', 'fecha valor', 'dia', 'day'
   ],
   amount: [
-    'monto', 'amount', 'importe', 'valor', 'value', 'total', 'egreso', 'ingreso',
+    'monto', 'amount', 'importe', 'valor', 'value', 'egreso', 'ingreso',
     'debito', 'credito', 'debe', 'haber', 'cargo', 'abono', 'suma'
   ],
   description: [
-    'descripcion', 'description', 'detalle', 'concepto', 'comercio', 'referencia',
+    'descripcion', 'description', 'detalle', 'concepto', 'comercio',
     'memo', 'narracion', 'detalle movimiento', 'glosa', 'comentarios'
   ]
 };
@@ -40,8 +40,11 @@ export const findColumnIndices = (headers) => {
 
   // Analizar cada header vs nuestro diccionario
   normalized.forEach((header, index) => {
-    // 1. Detección de Fecha
-    if (mapping.date === null && COLUMN_ALIASES.date.includes(header)) {
+    // 1. Detección de Fecha (exact o inclusión parcial, ej: "fecha tran")
+    if (mapping.date === null && (
+      COLUMN_ALIASES.date.includes(header) ||
+      COLUMN_ALIASES.date.some(alias => header.includes(alias) || alias.includes(header))
+    )) {
       mapping.date = index;
       detectedCount++;
     }

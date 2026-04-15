@@ -10,6 +10,7 @@ export const ACHIEVEMENT_CATEGORIES = {
   GOALS: 'goals',
   STREAK: 'streak',
   ADVANCED: 'advanced',
+  HABIT: 'habit',
 };
 
 export const ACHIEVEMENTS = {
@@ -186,6 +187,27 @@ export const ACHIEVEMENTS = {
     category: ACHIEVEMENT_CATEGORIES.STREAK,
     points: 300,
     condition: (stats) => stats.currentStreak >= 30,
+  },
+
+  // LOGROS DE HÁBITO
+  MORNING_HABIT: {
+    id: 'morning_habit',
+    name: 'Mañana Financiera',
+    description: 'Registra transacciones antes del mediodía 5 días',
+    icon: '🌅',
+    category: ACHIEVEMENT_CATEGORIES.HABIT,
+    points: 40,
+    condition: (stats) => (stats.morningRegistrations || 0) >= 5,
+  },
+
+  TAMED_THE_BEAST: {
+    id: 'tamed_the_beast',
+    name: 'Domé la Bestia',
+    description: 'Reduce tu categoría de mayor gasto un 10% vs el mes anterior',
+    icon: '📉',
+    category: ACHIEVEMENT_CATEGORIES.HABIT,
+    points: 75,
+    condition: (stats) => stats.topCategoryReduced === true,
   },
 
   // LOGROS AVANZADOS

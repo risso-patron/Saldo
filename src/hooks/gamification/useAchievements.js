@@ -4,6 +4,7 @@ import { ACHIEVEMENTS, getAllAchievements, calculateLevel, getPointsForNextLevel
 const STORAGE_KEY = 'budget_app_achievements';
 const STATS_KEY = 'budget_app_stats';
 const STREAK_KEY = 'budget_app_streak';
+const MORNING_KEY = 'budget_app_morning';
 
 /**
  * Hook para gestionar el sistema de logros y gamificación
@@ -24,6 +25,8 @@ export const useAchievements = () => {
     usedAI: false,
     creditCardsAdded: 0,
     achievementsUnlocked: 0,
+    morningRegistrations: 0,
+    topCategoryReduced: false,
   });
   const [newAchievements, setNewAchievements] = useState([]);
 
@@ -190,6 +193,8 @@ export const useAchievements = () => {
     stats.usedAI,
     stats.goalsOnTrackDays,
     stats.achievementsUnlocked,
+    stats.morningRegistrations,
+    stats.topCategoryReduced,
     checkAchievements,
   ]);
 
@@ -198,7 +203,17 @@ export const useAchievements = () => {
    */
   const recordTransaction = useCallback((type) => {
     const key = type === 'income' ? 'totalIncomes' : 'totalExpenses';
-    setStats(prev => ({ ...prev, [key]: prev[key] + 1 }));
+    const now = new Date();
+    const isMorning = now.getHours() < 12;
+    const today = now.toDateString();
+    const lastMorningDate = localStorage.getItem(MORNING_KEY);
+    const isNewMorningDay = isMorning && lastMorningDate !== today;
+    if (isNewMorningDay) localStorage.setItem(MORNING_KEY, today);
+    setStats(prev => ({
+      ...prev,
+      [key]: prev[key] + 1,
+      ...(isNewMorningDay && { morningRegistrations: (prev.morningRegistrations || 0) + 1 }),
+    }));
     updateStreak();
   }, [updateStreak]);
 

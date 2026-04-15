@@ -58,6 +58,7 @@ import { CurrencySelector } from './features/currency/CurrencySelector'
 import { InstallPWA } from './components/InstallPWA';
 import { AppFooter } from './components/Shared/AppFooter';
 import { BottomNav } from './components/Shared/BottomNav';
+import { filterByMonth } from './utils/calculations';
 
 function AppContent() {
   const { user, loading: authLoading } = useAuth();
@@ -112,6 +113,9 @@ function AppContent() {
 
   // Key para forzar el reinicio de BudgetForm al pulsar el "+" de la Bottom Nav
   const [budgetFormKey, setBudgetFormKey] = useState(0);
+
+  // Sección de logros colapsable en el tab Resumen
+  const [showGamification, setShowGamification] = useState(false);
 
   // Ref del contenedor de scroll para hacer scroll-to-top al cambiar de pestaña
   const scrollContainerRef = useRef(null);
@@ -171,6 +175,24 @@ function AppContent() {
     });
   }, [incomes.length, expenses.length, goals.length, balance, creditCards.length]);
 
+  // Logro "Domé la Bestia": la categoría top actual bajó ≥10% vs el mes anterior
+  useEffect(() => {
+    if (!categoryAnalysis.length || achievements.stats.topCategoryReduced) return;
+    const topCategory = categoryAnalysis[0];
+    if (!topCategory) return;
+    const now = new Date();
+    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const prevExpenses = filterByMonth(expenses, prevYear, prevMonth);
+    const prevCategoryTotal = prevExpenses
+      .filter(e => e.category === topCategory.category)
+      .reduce((sum, e) => sum + Number(e.amount), 0);
+    if (prevCategoryTotal > 0 && topCategory.amount <= prevCategoryTotal * 0.9) {
+      achievements.updateStats({ topCategoryReduced: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryAnalysis, expenses]);
+
   if (!user && !authLoading) {
     if (!showAuth) return <LandingPage onGetStarted={() => setShowAuth(true)} onLogin={() => setShowAuth(true)} />;
     return <AuthPage />;
@@ -222,6 +244,7 @@ function AppContent() {
 
               {activeTab === 'resumen' && (
                 <>
+                  {/* 1. Protagonista: hábito del día */}
                   <HabitDailyCard
                     currentStreak={achievements.stats.currentStreak}
                     longestStreak={achievements.stats.longestStreak}
@@ -231,11 +254,37 @@ function AppContent() {
                     onAddExpense={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
                     onAddIncome={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
                   />
-                  <GlobalBudgetTracker totalExpenses={filteredTotalExpenses} />
+
+                  {/* 2. Números clave */}
                   <Summary totalIncome={filteredTotalIncome} totalExpenses={filteredTotalExpenses} balance={filteredBalance} creditCardDebt={creditCards.reduce((s, c) => s + c.debt, 0)} prevTotalIncome={monthlyComparison.prevTotalIncome} prevTotalExpenses={monthlyComparison.prevTotalExpenses} prevBalance={monthlyComparison.prevBalance} />
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"><BalanceDonutChart totalIncome={filteredTotalIncome} totalExpenses={filteredTotalExpenses} /><div className="bg-slate-800/10 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl"><h3 className="text-slate-900 dark:text-white font-bold mb-4">Análisis de Gastos</h3><ExpensePieChart categoryAnalysis={categoryAnalysis} /></div></div>
-                  <div className="bg-slate-800/10 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl"><h3 className="text-slate-900 dark:text-white font-bold mb-4">Balance General</h3><IncomeExpenseBarChart totalIncome={filteredTotalIncome} totalExpenses={filteredTotalExpenses} /></div>
-                  <GamificationDashboard currentLevel={achievements.currentLevel} totalPoints={achievements.totalPoints} pointsForNext={achievements.pointsForNext} levelProgress={achievements.levelProgress} currentStreak={achievements.stats.currentStreak} longestStreak={achievements.stats.longestStreak} unlockedAchievements={achievements.unlockedAchievements} isAchievementUnlocked={achievements.isAchievementUnlocked} />
+
+                  {/* 3. Presupuesto global */}
+                  <GlobalBudgetTracker totalExpenses={filteredTotalExpenses} />
+
+                  {/* 4. Acceso a tendencias — sin gráficos inline */}
+                  <button
+                    onClick={() => setActiveTab('graficos')}
+                    className="w-full flex items-center justify-between px-5 py-4 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:border-primary-500/40 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group"
+                  >
+                    <span>Ver mis tendencias detalladas</span>
+                    <span className="text-slate-400 group-hover:text-primary-500 transition-colors">→</span>
+                  </button>
+
+                  {/* 5. Logros — colapsable, secundario */}
+                  <div>
+                    <button
+                      onClick={() => setShowGamification(v => !v)}
+                      className="w-full flex items-center justify-between px-5 py-3 bg-slate-100/60 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                    >
+                      <span>Mis logros y progreso</span>
+                      <span className="transition-transform duration-200" style={{ display: 'inline-block', transform: showGamification ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+                    </button>
+                    {showGamification && (
+                      <div className="mt-3">
+                        <GamificationDashboard currentLevel={achievements.currentLevel} totalPoints={achievements.totalPoints} pointsForNext={achievements.pointsForNext} levelProgress={achievements.levelProgress} currentStreak={achievements.stats.currentStreak} longestStreak={achievements.stats.longestStreak} unlockedAchievements={achievements.unlockedAchievements} isAchievementUnlocked={achievements.isAchievementUnlocked} />
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
 
