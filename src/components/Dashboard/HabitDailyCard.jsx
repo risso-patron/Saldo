@@ -16,6 +16,8 @@ export function HabitDailyCard({
   allTransactions = [],
   categoryAnalysis = [],
   monthlyComparison = {},
+  monthIncome = 0,
+  monthExpenses = 0,
   onAddExpense,
   onAddIncome,
 }) {
@@ -24,6 +26,10 @@ export function HabitDailyCard({
   const registeredToday = allTransactions.some(
     (tx) => tx.date === today || (tx.createdAt && tx.createdAt.startsWith(today))
   );
+
+  // ── Saldo del mes ────────────────────────────────────────────────────────
+  const monthBalance = monthIncome - monthExpenses;
+  const hasMonthData = monthIncome > 0 || monthExpenses > 0;
 
   // ── Categoría crítica del mes ─────────────────────────────────────────────
   const topCategory = categoryAnalysis[0] ?? null;
@@ -112,25 +118,36 @@ export function HabitDailyCard({
         <div className="border-t border-slate-100 dark:border-slate-700/60" />
       )}
 
-      {/* ── Sección 2: Categoría crítica ─────────────────────────────────── */}
-      {topCategory && (
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">
-              Mayor gasto este mes
+      {/* ── Sección 2: Saldo del mes ──────────────────────────────────────── */}
+      {hasMonthData && (
+        <div className="space-y-2">
+          {/* Balance principal */}
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+              Saldo del mes
             </p>
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
-              {topCategory.category}
-            </p>
-          </div>
-          <div className="text-right shrink-0">
-            <p className="text-base font-black text-rose-500">
-              {formatCurrency(topCategory.amount)}
-            </p>
-            <p className="text-[10px] text-slate-400">
-              {Math.round(topCategory.percentage)}% del total
+            <p className={`text-lg font-black ${
+              monthBalance >= 0 ? 'text-emerald-500' : 'text-rose-500'
+            }`}>
+              {monthBalance >= 0 ? '+' : ''}{formatCurrency(monthBalance)}
             </p>
           </div>
+          {/* Desglose pequeño */}
+          <div className="flex justify-between text-[11px] text-slate-400 dark:text-slate-500">
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+              ↑ {formatCurrency(monthIncome)}
+            </span>
+            <span className="text-rose-500 font-semibold">
+              ↓ {formatCurrency(monthExpenses)}
+            </span>
+          </div>
+          {/* Categoría top — ahora tiene contexto */}
+          {topCategory && (
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">
+              Mayor gasto: <span className="font-semibold text-slate-500 dark:text-slate-400">{topCategory.category}</span>
+              {' '}— {formatCurrency(topCategory.amount)} ({Math.round(topCategory.percentage)}%)
+            </p>
+          )}
         </div>
       )}
 
@@ -179,6 +196,8 @@ HabitDailyCard.propTypes = {
   allTransactions: PropTypes.array,
   categoryAnalysis: PropTypes.array,
   monthlyComparison: PropTypes.object,
+  monthIncome: PropTypes.number,
+  monthExpenses: PropTypes.number,
   onAddExpense: PropTypes.func,
   onAddIncome: PropTypes.func,
 };

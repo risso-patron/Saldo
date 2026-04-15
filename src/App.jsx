@@ -251,6 +251,8 @@ function AppContent() {
                     allTransactions={allTransactions}
                     categoryAnalysis={categoryAnalysis}
                     monthlyComparison={{ prevTotalExpenses: monthlyComparison.prevTotalExpenses, filteredTotalExpenses }}
+                    monthIncome={filteredTotalIncome}
+                    monthExpenses={filteredTotalExpenses}
                     onAddExpense={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
                     onAddIncome={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
                   />
