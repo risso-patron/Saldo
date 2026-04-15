@@ -12,12 +12,15 @@ import {
 import { Card } from './UI/Card';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { EXPENSE_CATEGORIES, MESSAGES } from '../constants/categories';
+import { EditTransactionModal } from './Transactions/EditTransactionModal';
 
 export const ExpenseList = ({ 
   incomes = [], 
   expenses = [], 
   onRemoveIncome, 
   onRemoveExpense,
+  onUpdateIncome,
+  onUpdateExpense,
   onRemoveMultiple,
   onCategorizeMultiple,
 }) => {
@@ -26,6 +29,7 @@ export const ExpenseList = ({
   const [activeView, setActiveView] = useState('all');
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkCategory, setBulkCategory] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
 
   const filteredIncomes = incomes.filter(inc => 
     inc.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -192,8 +196,12 @@ export const ExpenseList = ({
                   : <ArrowDown size={14} weight="bold" className="text-rose-500" />}
               </div>
 
-              {/* Datos */}
-              <div className="flex-1 min-w-0">
+              {/* Datos — tap abre edición */}
+              <button
+                className="flex-1 min-w-0 text-left"
+                onClick={() => setEditingItem(item)}
+                aria-label={`Editar: ${item.description}`}
+              >
                 <p className="text-xs font-black text-slate-800 dark:text-white truncate leading-tight">
                   {item.description}
                 </p>
@@ -205,7 +213,7 @@ export const ExpenseList = ({
                     </span>
                   )}
                 </div>
-              </div>
+              </button>
 
               {/* Monto + Botón borrar */}
               <div className="flex items-center gap-2 shrink-0">
@@ -225,6 +233,20 @@ export const ExpenseList = ({
           ))
         )}
       </div>
+
+      {/* Modal de edición */}
+      {editingItem && (
+        <EditTransactionModal
+          transaction={editingItem}
+          type={editingItem.type}
+          onClose={() => setEditingItem(null)}
+          onSave={(id, updates) => {
+            if (editingItem.type === 'income') onUpdateIncome?.(id, updates);
+            else onUpdateExpense?.(id, updates);
+            setEditingItem(null);
+          }}
+        />
+      )}
     </Card>
   );
 };
@@ -234,6 +256,8 @@ ExpenseList.propTypes = {
   expenses: PropTypes.array,
   onRemoveIncome: PropTypes.func.isRequired,
   onRemoveExpense: PropTypes.func.isRequired,
+  onUpdateIncome: PropTypes.func,
+  onUpdateExpense: PropTypes.func,
   onRemoveMultiple: PropTypes.func,
   onCategorizeMultiple: PropTypes.func,
 };
