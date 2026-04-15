@@ -13,6 +13,7 @@ import { Card } from './UI/Card';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { EXPENSE_CATEGORIES, MESSAGES } from '../constants/categories';
 import { EditTransactionModal } from './Transactions/EditTransactionModal';
+import { OnboardingBubble } from './UI/OnboardingBubble';
 
 export const ExpenseList = ({ 
   incomes = [], 
@@ -156,6 +157,16 @@ export const ExpenseList = ({
           <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Seleccionar todo</span>
           <span className="ml-auto text-[9px] text-slate-400 font-bold">{displayList.length} movimientos</span>
         </div>
+      )}
+
+      {/* Tip de edición — solo si ya hay movimientos */}
+      {displayList.length > 0 && (
+        <OnboardingBubble
+          tipId="onboard-edit"
+          emoji="✏️"
+          tail="down"
+          message="¿Necesitas corregir algo? Toca el texto de cualquier movimiento para editarlo."
+        />
       )}
 
       {/* Lista de Transacciones — diseño compacto tipo "feed" */}

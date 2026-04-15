@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Fire, Plus, TrendUp, TrendDown, CheckCircle, Circle } from '@phosphor-icons/react';
 import { formatCurrency } from '../../utils/formatters';
+import { OnboardingBubble } from '../UI/OnboardingBubble';
 
 /**
  * HabitDailyCard
@@ -112,6 +113,14 @@ export function HabitDailyCard({
           Anotar ingreso
         </button>
       </div>
+
+      {/* ── Tip de bienvenida ───────────────────────────────────────────── */}
+      <OnboardingBubble
+        tipId="onboard-start"
+        emoji="👆"
+        tail="up"
+        message="Toca Anotar gasto o Anotar ingreso para registrar tu primer movimiento del día. ¡Solo toma unos segundos!"
+      />
 
       {/* ── Línea separadora ─────────────────────────────────────────────── */}
       {(topCategory || expenseDelta !== null) && (

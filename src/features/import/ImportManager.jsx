@@ -9,6 +9,7 @@ import { findColumnIndices } from '../../core/mappingEngine';
 import { normalizeAmount, normalizeDate, cleanText } from '../../core/normalizationEngine';
 import { categorizeTransactionsFull } from '../../core/categorizationEngine';
 import TransactionPreviewTable from './TransactionPreviewTable';
+import { OnboardingBubble } from '../../components/UI/OnboardingBubble';
 
 // ─── Clave de localStorage para perfiles de bancos ───────────────────────────
 const PROFILES_KEY = 'budget_import_bank_profiles';
@@ -905,7 +906,14 @@ gasto,Amazon,75.99,2025-11-30,Compras`;
         </button>
       </div>
 
-      {/* Instrucciones colapsables */}
+      {/* Tip de bienvenida al importador */}
+      <OnboardingBubble
+        tipId="onboard-import"
+        emoji="🏦"
+        tail="up"
+        message="¿Tienes extracto del banco? Súbe el archivo CSV o TXT y te importamos todos los movimientos — sin escribir nada."
+      />
+
       <details className="mb-3 group">
         <summary className="flex items-center justify-between cursor-pointer px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 text-[10px] font-black text-blue-700 dark:text-blue-300 uppercase tracking-widest list-none select-none">
           <span>ℹ️ Formatos aceptados y ayuda</span>
