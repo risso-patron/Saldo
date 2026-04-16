@@ -1,34 +1,9 @@
-import { motion } from 'framer-motion'
-
 /**
- * BudgetLogo — Logo animado para Budget Calculator
- * Estilo: red de nodos conectados (inspirado en Neural Cube)
- * Los nodos representan categorías de presupuesto interconectadas.
+ * BudgetLogo — Logo de Saldo
+ * Estilo: cuadrado redondeado con gradiente violeta, letra "S" blanca bold
+ * y flecha ↗ en verde esmeralda emergiendo del extremo superior de la S.
  */
 const BudgetLogo = ({ size = 48, className = '' }) => {
-  // Nodos: [cx, cy] relativos a viewBox 100x100
-  const nodes = [
-    { id: 'center', cx: 50, cy: 50, r: 6 },   // nodo central (balance)
-    { id: 'n1',     cx: 50, cy: 18, r: 3.5 },  // arriba
-    { id: 'n2',     cx: 76, cy: 30, r: 3.5 },  // arriba-derecha
-    { id: 'n3',     cx: 82, cy: 62, r: 3.5 },  // derecha
-    { id: 'n4',     cx: 62, cy: 82, r: 3.5 },  // abajo-derecha
-    { id: 'n5',     cx: 32, cy: 82, r: 3.5 },  // abajo-izquierda
-    { id: 'n6',     cx: 18, cy: 62, r: 3.5 },  // izquierda
-    { id: 'n7',     cx: 24, cy: 30, r: 3.5 },  // arriba-izquierda
-  ]
-
-  // Conexiones desde el centro hacia cada nodo externo + algunas entre nodos
-  const edges = [
-    ['center', 'n1'], ['center', 'n2'], ['center', 'n3'], ['center', 'n4'],
-    ['center', 'n5'], ['center', 'n6'], ['center', 'n7'],
-    ['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4'], ['n4', 'n5'],
-    ['n5', 'n6'], ['n6', 'n7'], ['n7', 'n1'],
-    ['n1', 'n3'], ['n2', 'n5'], ['n6', 'n2'],
-  ]
-
-  const getNode = (id) => nodes.find((n) => n.id === id)
-
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <svg
@@ -37,85 +12,62 @@ const BudgetLogo = ({ size = 48, className = '' }) => {
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        aria-label="Saldo"
+        role="img"
       >
-        {/* Círculo exterior con borde punteado */}
-        <motion.circle
-          cx="50" cy="50" r="46"
-          stroke="#22c55e"
-          strokeWidth="1.2"
-          strokeDasharray="4 3"
-          fill="none"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: '50px 50px' }}
-        />
+        <defs>
+          {/* Gradiente violeta del fondo */}
+          <linearGradient id="saldo-bg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#4C1D95" />
+            <stop offset="55%" stopColor="#7C3AED" />
+            <stop offset="100%" stopColor="#8B5CF6" />
+          </linearGradient>
+          {/* Glow interno sutil */}
+          <radialGradient id="saldo-inner" cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          {/* Glow de la flecha */}
+          <filter id="saldo-arrow-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-        {/* Líneas de conexión */}
-        {edges.map(([a, b], i) => {
-          const na = getNode(a)
-          const nb = getNode(b)
-          return (
-            <motion.line
-              key={i}
-              x1={na.cx} y1={na.cy}
-              x2={nb.cx} y2={nb.cy}
-              stroke="#6366f1"
-              strokeWidth="0.8"
-              strokeOpacity="0.55"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 2.5 + (i % 4) * 0.4, repeat: Infinity, delay: i * 0.1 }}
-            />
-          )
-        })}
+        {/* Fondo — cuadrado redondeado con gradiente violeta */}
+        <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#saldo-bg)" />
+        {/* Inner glow */}
+        <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#saldo-inner)" />
 
-        {/* Símbolo $ en el centro (muy sutil) */}
+        {/* Letra S — blanca, bold, centrada */}
         <text
-          x="50" y="54"
+          x="50"
+          y="67"
           textAnchor="middle"
-          fontSize="7"
-          fill="#4ade80"
-          opacity="0.35"
-          fontWeight="bold"
-          fontFamily="monospace"
-        >$</text>
+          fontSize="62"
+          fontWeight="900"
+          fontFamily="system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+          fill="white"
+          letterSpacing="-1"
+        >S</text>
 
-        {/* Nodos externos */}
-        {nodes.filter((n) => n.id !== 'center').map((node) => (
-          <motion.circle
-            key={node.id}
-            cx={node.cx}
-            cy={node.cy}
-            r={node.r}
-            fill="#6366f1"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.8, 1, 0.8] }}
-            transition={{
-              duration: 2 + Math.random() * 1.5,
-              repeat: Infinity,
-              delay: Math.random() * 1.5,
-            }}
-            style={{ transformOrigin: `${node.cx}px ${node.cy}px` }}
+        {/* Flecha ↗ en esmeralda — emerge del extremo superior de la S */}
+        <g filter="url(#saldo-arrow-glow)">
+          {/* Línea diagonal */}
+          <line x1="60" y1="37" x2="75" y2="21" stroke="#10B981" strokeWidth="5.5" strokeLinecap="round" />
+          {/* Cabeza de flecha */}
+          <polyline
+            points="62,20 75,21 74,34"
+            stroke="#10B981"
+            strokeWidth="5.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
           />
-        ))}
-
-        {/* Nodo central (verde, más grande) */}
-        <motion.circle
-          cx="50" cy="50" r="6"
-          fill="#22c55e"
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ transformOrigin: '50px 50px' }}
-        />
-
-        {/* Halo del nodo central */}
-        <motion.circle
-          cx="50" cy="50" r="6"
-          fill="none"
-          stroke="#22c55e"
-          strokeWidth="2"
-          animate={{ r: [6, 13, 6], opacity: [0.6, 0, 0.6] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut' }}
-        />
+        </g>
       </svg>
     </div>
   )

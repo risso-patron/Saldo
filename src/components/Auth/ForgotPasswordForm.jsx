@@ -71,7 +71,7 @@ export const ForgotPasswordForm = ({ onToggleForm }) => {
         <div className="hidden md:flex flex-col justify-between w-5/12 bg-gradient-to-br from-violet-500 to-purple-600 p-8 text-white">
           <div className="flex flex-col items-center gap-3">
             <BudgetLogo size={100} />
-            <span className="font-extrabold text-xl bg-gradient-to-r from-blue-300 via-purple-200 to-pink-300 bg-clip-text text-transparent tracking-tight">Budget Calculator</span>
+            <span className="font-extrabold text-xl bg-gradient-to-r from-blue-300 via-purple-200 to-pink-300 bg-clip-text text-transparent tracking-tight">Saldo</span>
           </div>
 
           <div>
@@ -104,7 +104,7 @@ export const ForgotPasswordForm = ({ onToggleForm }) => {
             <div className="flex items-center gap-2 mb-4 md:hidden">
               <BudgetLogo size={28} />
               <span className="text-base font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                Budget Calculator
+                Saldo
               </span>
             </div>
             <h1 className="text-xl font-bold text-gray-900">Recuperar contraseña</h1>
