@@ -28,6 +28,8 @@
     "decimal.js": "^10.6.0",
     "es-toolkit": "1.43.0",
     "framer-motion": "^12.23.24",
+    "i18next": "^26.0.5",
+    "i18next-browser-languagedetector": "^8.2.1",
     "jspdf": "^3.0.3",
     "jspdf-autotable": "^5.0.2",
     "lottie-react": "^2.4.1",
@@ -37,6 +39,7 @@
     "react-chartjs-2": "^5.3.1",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.1.1",
+    "react-i18next": "^17.0.3",
     "react-is": "^19.2.0",
     "react-number-format": "^5.4.4",
     "recharts": "^3.3.0"

@@ -12,6 +12,7 @@ import {
   Camera,
   ArrowArcLeft
 } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 import { Card } from './UI/Card';
 import { Input } from './UI/Input';
 import { Select } from './UI/Select';
@@ -25,6 +26,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   // MODOS: 'choice', 'manual', 'scan'
   const [formMode, setFormMode] = useState('choice');
   const [activeType, setActiveType] = useState('expense');
+  const { t } = useTranslation()
   
   const { currencies, getSmartDefaultCurrency, recordCurrencyUsage } = useCurrency();
   
@@ -121,8 +123,8 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
             className="p-8 pb-12 flex flex-col items-center gap-10"
           >
             <div className="text-center space-y-2">
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Nuevo Movimiento</h3>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">¿Cómo deseas registrar tu gasto hoy?</p>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">{t('form.new_movement')}</h3>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('form.how_to_register')}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 w-full max-w-2xl px-2 sm:px-4">
@@ -134,8 +136,8 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
                   <Keyboard size={32} weight="duotone" />
                 </div>
                 <div className="text-center">
-                  <span className="block text-sm sm:text-lg font-black text-slate-800 dark:text-white uppercase tracking-tighter">Escribir Manual</span>
-                  <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Ingreso tradicional</span>
+                  <span className="block text-sm sm:text-lg font-black text-slate-800 dark:text-white uppercase tracking-tighter">{t('form.write_manual')}</span>
+                  <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t('form.manual_subtitle')}</span>
                 </div>
               </button>
 
@@ -151,17 +153,17 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
                 </div>
                 <div className="text-center">
                   <span className="block text-sm sm:text-lg font-black text-slate-800 dark:text-white uppercase tracking-tighter">
-                    {isMobile ? 'Escanear' : 'Importar IA'}
+                    {isMobile ? t('form.scan') : t('form.import_ai')}
                   </span>
                   <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                    {isMobile ? 'Usar cámara' : 'Subir archivo'}
+                    {isMobile ? t('form.scan_subtitle') : t('form.import_ai_subtitle')}
                   </span>
                 </div>
               </button>
             </div>
             
             <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 italic">
-              {isMobile ? 'Optimizado para cámara móvil' : 'Soporta JPG, PNG y PDF'}
+              {isMobile ? t('form.mobile_note') : t('form.desktop_note')}
             </p>
           </motion.div>
         )}
@@ -197,7 +199,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
                 className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 uppercase tracking-widest transition-colors"
               >
                 <ArrowArcLeft size={16} weight="bold" />
-                Volver
+                {t('form.back')}
               </button>
 
               <div className="flex bg-slate-100/50 dark:bg-slate-800/80 p-1 rounded-2xl">
@@ -207,7 +209,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
                     activeType === 'expense' ? 'bg-white dark:bg-slate-700 text-rose-500 shadow-sm' : 'text-slate-400'
                   }`}
                 >
-                  Gasto
+                  {t('form.expense')}
                 </button>
                 <button
                   onClick={() => setActiveType('income')}
@@ -215,7 +217,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
                     activeType === 'income' ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm' : 'text-slate-400'
                   }`}
                 >
-                  Ingreso
+                  {t('form.income')}
                 </button>
               </div>
             </div>

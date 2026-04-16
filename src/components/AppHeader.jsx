@@ -4,14 +4,15 @@ import { ProfileMenu } from './Auth/ProfileMenu'
 import { CurrencySelector } from '../features/currency/CurrencySelector'
 import BudgetLogo from './Shared/BudgetLogo'
 import { useAuth } from '../contexts/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 const TABS = [
-  { id: 'resumen',       label: 'Inicio' },
-  { id: 'movimientos',   label: 'Movimientos' },
-  { id: 'graficos',      label: 'Tendencias' },
-  { id: 'planificacion', label: 'Planificación' },
-  { id: 'herramientas',  label: 'Más' },
-  { id: 'cuenta',        label: 'Mi Cuenta' },
+  { id: 'resumen',       labelKey: 'nav.home' },
+  { id: 'movimientos',   labelKey: 'nav.transactions' },
+  { id: 'graficos',      labelKey: 'nav.trends' },
+  { id: 'planificacion', labelKey: 'nav.planning' },
+  { id: 'herramientas',  labelKey: 'nav.more' },
+  { id: 'cuenta',        labelKey: 'nav.account' },
 ]
 
 /**
@@ -33,6 +34,7 @@ export function AppHeader({
   transactionCount,
 }) {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const firstName = (user?.user_metadata?.full_name || user?.email || '').split(/[\s@]/)[0]
 
   return (
@@ -45,7 +47,7 @@ export function AppHeader({
           className="flex-1 flex items-center gap-3 px-4 py-3 bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 rounded-2xl font-bold text-sm border border-slate-200/50 dark:border-white/5 shadow-inner"
         >
           <MagnifyingGlass size={20} weight="black" />
-          <span className="opacity-70">Buscar...</span>
+          <span className="opacity-70">{t('header.search_placeholder')}</span>
         </button>
         <div className="flex items-center gap-2 text-white">
           <div className="scale-90 origin-right"><CurrencySelector /></div>
@@ -61,7 +63,7 @@ export function AppHeader({
             <BudgetLogo size={36} />
             <div>
               <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em]">
-                Hola, {firstName} 👋
+                {t('header.greeting', { name: firstName })}
               </p>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 dark:text-white leading-tight">
                 Saldo
@@ -84,7 +86,7 @@ export function AppHeader({
       {/* Tabs desktop */}
       <div className="hidden lg:flex w-full overflow-x-auto custom-scrollbar-sidebar pb-2">
         <div className="flex gap-1.5 bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-2xl whitespace-nowrap min-w-max">
-          {TABS.map(({ id, label }) => (
+          {TABS.map(({ id, labelKey }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
@@ -94,7 +96,7 @@ export function AppHeader({
                   : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
               }`}
             >
-              {label}
+              {t(labelKey)}
             </button>
           ))}
         </div>

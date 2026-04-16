@@ -10,7 +10,8 @@ import {
   AppWindow,
   CloudCheck
 } from '@phosphor-icons/react';
-
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from './LanguageSelector';
 import BudgetLogo from './BudgetLogo';
 
 export const Sidebar = ({ 
@@ -21,12 +22,13 @@ export const Sidebar = ({
   ThemeToggleComponent, 
   CurrencySelectorComponent 
 }) => {
+  const { t } = useTranslation()
   const menuItems = [
-    { id: 'resumen', label: 'Dashboard', Icon: ChartBar },
-    { id: 'movimientos', label: 'Transacciones', Icon: Receipt },
-    { id: 'graficos', label: 'Analytics', Icon: ChartLine },
-    { id: 'planificacion', label: 'Metas / Cards', Icon: Target },
-    { id: 'herramientas', label: 'Power Tools', Icon: Wrench },
+    { id: 'resumen', label: t('sidebar.dashboard'), Icon: ChartBar },
+    { id: 'movimientos', label: t('sidebar.transactions'), Icon: Receipt },
+    { id: 'graficos', label: t('sidebar.analytics'), Icon: ChartLine },
+    { id: 'planificacion', label: t('sidebar.goals'), Icon: Target },
+    { id: 'herramientas', label: t('sidebar.tools'), Icon: Wrench },
   ];
 
   return (
@@ -60,7 +62,7 @@ export const Sidebar = ({
           className="w-full flex items-center gap-3 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-slate-400 transition-all group"
         >
           <MagnifyingGlass size={18} weight="bold" className="group-hover:text-white transition-colors" />
-          <span className="text-sm font-bold tracking-tight">Buscar...</span>
+          <span className="text-sm font-bold tracking-tight">{t('sidebar.search')}</span>
           <div className="ml-auto flex items-center gap-1">
             <kbd className="px-1.5 py-0.5 text-[10px] font-black bg-white/10 rounded border border-white/10">⌘</kbd>
             <kbd className="px-1.5 py-0.5 text-[10px] font-black bg-white/10 rounded border border-white/10">K</kbd>
@@ -70,7 +72,7 @@ export const Sidebar = ({
 
       {/* 3. CORE NAVIGATION */}
       <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar-sidebar">
-        <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Panel Control</p>
+        <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">{t('sidebar.panel')}</p>
         {menuItems.map((item) => (
           <button
             key={item.id}
@@ -106,7 +108,6 @@ export const Sidebar = ({
         {/* Quick Tools Row */}
         <div className="flex items-center gap-3 mb-5">
           <div className="flex-1">
-            {/* Moneda ya soporta align="sidebar" */}
             {CurrencySelectorComponent && (
               <div className="w-full">
                 {React.cloneElement(CurrencySelectorComponent, { align: 'sidebar' })}
@@ -116,6 +117,11 @@ export const Sidebar = ({
           <div className="p-1 px-2.5 bg-slate-800/80 rounded-xl border border-white/5 shadow-inner">
             {ThemeToggleComponent}
           </div>
+        </div>
+
+        {/* Language selector */}
+        <div className="mb-4 pb-4 border-b border-white/5">
+          <LanguageSelector compact />
         </div>
 
         {/* User Profile Card */}

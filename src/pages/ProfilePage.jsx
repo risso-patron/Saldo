@@ -3,9 +3,11 @@ import {
   Bell, Robot, Moon, Sun, Question, SignOut,
   Diamond, CaretRight, Gear, Export, UserCircle
 } from '@phosphor-icons/react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { AccountSettingsModal } from '../components/Auth/AccountSettingsModal'
+import { LanguageSelector } from '../components/Shared/LanguageSelector'
 
 const formatAmount = (n) => {
   if (n >= 1000000) return `$${(n / 1000000).toFixed(1)}M`
@@ -23,6 +25,7 @@ export const ProfilePage = ({
 }) => {
   const { user, signOut } = useAuth()
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslation()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuario'
@@ -60,47 +63,47 @@ export const ProfilePage = ({
   }
 
   const stats = [
-    { label: 'Gastado', value: formatAmount(filteredTotalExpenses) },
-    { label: 'Movimientos', value: String(totalTransactions) },
-    { label: 'Racha', value: `${currentStreak}🔥` },
-    { label: 'Categorías', value: String(categoryCount) },
+    { label: t('profile.spent'), value: formatAmount(filteredTotalExpenses) },
+    { label: t('profile.movements'), value: String(totalTransactions) },
+    { label: t('profile.streak'), value: `${currentStreak}🔥` },
+    { label: t('profile.categories'), value: String(categoryCount) },
   ]
 
   const menuItems = [
     {
       icon: Bell,
-      label: 'Notificaciones',
-      sub: 'Recordatorios diarios',
+      label: t('profile.notifications'),
+      sub: t('profile.notifications_sub'),
       action: null,
     },
     {
       icon: Export,
-      label: 'Exportar datos',
-      sub: 'CSV, JSON, PDF',
+      label: t('profile.export'),
+      sub: t('profile.export_sub'),
       action: () => onNavigate?.('herramientas'),
     },
     {
       icon: Robot,
-      label: 'Configurar IA',
-      sub: 'Gemini · Groq · OpenRouter',
+      label: t('profile.ai_config'),
+      sub: t('profile.ai_config_sub'),
       action: () => onNavigate?.('herramientas'),
     },
     {
       icon: theme === 'dark' ? Sun : Moon,
-      label: theme === 'dark' ? 'Modo claro' : 'Modo oscuro',
-      sub: theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro',
+      label: theme === 'dark' ? t('profile.light_mode') : t('profile.dark_mode'),
+      sub: theme === 'dark' ? t('profile.light_mode_sub') : t('profile.dark_mode_sub'),
       action: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
     },
     {
       icon: Gear,
-      label: 'Configuración de cuenta',
-      sub: 'Nombre, contraseña, avatar',
+      label: t('profile.account_settings'),
+      sub: t('profile.account_settings_sub'),
       action: () => setIsSettingsOpen(true),
     },
     {
       icon: Question,
-      label: 'Ayuda y soporte',
-      sub: 'Documentación y contacto',
+      label: t('profile.help'),
+      sub: t('profile.help_sub'),
       action: null,
     },
   ]
@@ -115,7 +118,7 @@ export const ProfilePage = ({
       {/* ── Header ── */}
       <div className="flex items-center justify-between py-4 mb-3">
         <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-          Mi Cuenta
+          {t('profile.title')}
         </h1>
         <button
           onClick={() => setIsSettingsOpen(true)}
@@ -140,7 +143,7 @@ export const ProfilePage = ({
             {email}
           </p>
           <p className="text-violet-500 text-xs font-bold mt-2">
-            Ver perfil →
+            {t('profile.view_profile')}
           </p>
         </div>
         <UserCircle size={22} className="text-slate-300 dark:text-slate-600 shrink-0" />
@@ -160,11 +163,11 @@ export const ProfilePage = ({
               <span className="text-white font-black text-xl">Pro</span>
             </div>
             <p className="text-violet-200 text-xs font-medium">
-              por solo $1.99/mes · sin anuncios
+              {t('profile.pro_subtitle')}
             </p>
           </div>
           <button className="bg-white text-violet-700 text-sm font-black px-4 py-2 rounded-2xl shadow-sm hover:bg-violet-50 active:scale-95 transition-all">
-            Ir Pro
+            {t('profile.go_pro')}
           </button>
         </div>
 
@@ -222,9 +225,14 @@ export const ProfilePage = ({
         <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
           <SignOut size={18} weight="bold" className="text-red-500" />
         </div>
-        <span className="flex-1 font-bold text-red-500 text-sm">Cerrar sesión</span>
+        <span className="flex-1 font-bold text-red-500 text-sm">{t('profile.sign_out')}</span>
         <CaretRight size={15} className="text-red-300 dark:text-red-700 shrink-0" />
       </button>
+
+      {/* ── Language selector (mobile) ── */}
+      <div className="mt-4 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 rounded-3xl px-5 py-4 shadow-sm">
+        <LanguageSelector />
+      </div>
 
       {/* ── Account Settings Modal ── */}
       <AccountSettingsModal

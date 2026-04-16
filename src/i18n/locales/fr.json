@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "transactions": "Transactions",
+    "trends": "Tendances",
+    "planning": "Planification",
+    "more": "Plus",
+    "account": "Mon Compte"
+  },
+  "header": {
+    "greeting": "Bonjour, {{name}} 👋",
+    "search_placeholder": "Rechercher..."
+  },
+  "sidebar": {
+    "panel": "Tableau de bord",
+    "dashboard": "Tableau de bord",
+    "transactions": "Transactions",
+    "analytics": "Analytique",
+    "goals": "Objectifs / Cartes",
+    "tools": "Outils avancés",
+    "search": "Rechercher..."
+  },
+  "summary": {
+    "income": "Revenus",
+    "expenses": "Dépenses",
+    "balance": "Solde",
+    "debt": "Dettes CB",
+    "savings_rate": "Indice liberté",
+    "vs_prev": "vs préc.",
+    "equal": "identique",
+    "no_data": "sans données"
+  },
+  "form": {
+    "new_movement": "Nouvelle Transaction",
+    "how_to_register": "Comment voulez-vous enregistrer votre dépense ?",
+    "write_manual": "Saisie manuelle",
+    "manual_subtitle": "Entrée traditionnelle",
+    "scan": "Scanner",
+    "scan_subtitle": "Utiliser la caméra",
+    "import_ai": "Importer IA",
+    "import_ai_subtitle": "Télécharger un fichier",
+    "mobile_note": "Optimisé pour la caméra mobile",
+    "desktop_note": "Supporte JPG, PNG et PDF",
+    "back": "Retour",
+    "expense": "Dépense",
+    "income": "Revenu",
+    "description": "Description",
+    "amount": "Montant",
+    "date": "Date",
+    "category": "Catégorie",
+    "add_expense": "Enregistrer la dépense",
+    "add_income": "Enregistrer le revenu",
+    "description_placeholder": "Sur quoi avez-vous dépensé ?",
+    "income_placeholder": "Source du revenu",
+    "amount_placeholder": "0.00"
+  },
+  "profile": {
+    "title": "Mon Compte",
+    "view_profile": "Voir le profil →",
+    "spent": "Dépensé",
+    "movements": "Transactions",
+    "streak": "Série",
+    "categories": "Catégories",
+    "notifications": "Notifications",
+    "notifications_sub": "Rappels quotidiens",
+    "export": "Exporter les données",
+    "export_sub": "CSV, JSON, PDF",
+    "ai_config": "Configurer l'IA",
+    "ai_config_sub": "Gemini · Groq · OpenRouter",
+    "dark_mode": "Mode sombre",
+    "dark_mode_sub": "Passer au thème sombre",
+    "light_mode": "Mode clair",
+    "light_mode_sub": "Passer au thème clair",
+    "account_settings": "Paramètres du compte",
+    "account_settings_sub": "Nom, mot de passe, avatar",
+    "help": "Aide et support",
+    "help_sub": "Documentation et contact",
+    "sign_out": "Déconnexion",
+    "pro_subtitle": "pour seulement 1,99 $/mois · sans publicités",
+    "go_pro": "Passer Pro",
+    "language": "Langue",
+    "language_sub": "Español · English · Français"
+  },
+  "categories": {
+    "Vivienda": "Logement",
+    "Alimentación": "Alimentation",
+    "Transporte": "Transport",
+    "Entretenimiento": "Loisirs",
+    "Salud": "Santé",
+    "Educación": "Éducation",
+    "Servicios": "Services",
+    "Otros": "Autres"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "loading": "Chargement...",
+    "install": "Installer Saldo",
+    "install_sub": "Utilisez l'app hors ligne ou comme app native."
+  },
+  "errors": {
+    "invalid_amount": "Veuillez entrer un montant valide supérieur à 0",
+    "invalid_description": "Veuillez entrer une description",
+    "generic": "Une erreur s'est produite. Veuillez réessayer"
+  }
+}

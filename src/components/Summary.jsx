@@ -7,6 +7,7 @@ import {
   ChartPieSlice,
   Minus,
 } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 import { Card } from './UI/Card';
 import { formatCurrency } from '../utils/formatters';
 import { calculatePercentage } from '../utils/currencyHelpers';
@@ -18,11 +19,12 @@ function calcDelta(current, previous) {
 }
 
 function DeltaBadge({ current, previous, inverseColor = false }) {
+  const { t } = useTranslation()
   const delta = calcDelta(current, previous);
   if (delta === null) {
     return (
       <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
-        <Minus size={9} weight="bold" />sin datos
+        <Minus size={9} weight="bold" />{t('summary.no_data')}
       </span>
     );
   }
@@ -38,8 +40,8 @@ function DeltaBadge({ current, previous, inverseColor = false }) {
   return (
     <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold ${colorClass}`}>
       <Icon size={10} weight="bold" />
-      {isNeutral ? 'igual' : `${isUp ? '+' : ''}${delta}%`}
-      <span className="text-slate-400 dark:text-slate-500 font-normal"> vs ant.</span>
+      {isNeutral ? t('summary.equal') : `${isUp ? '+' : ''}${delta}%`}
+      <span className="text-slate-400 dark:text-slate-500 font-normal"> {t('summary.vs_prev')}</span>
     </span>
   );
 }
@@ -62,6 +64,7 @@ export const Summary = ({
   const totalOut = totalExpenses + creditCardDebt;
   const savingsRate = totalIncome > 0 ? calculatePercentage(Math.max(0, balance - creditCardDebt), totalIncome) : 0;
   const isPositive = (balance - creditCardDebt) >= 0;
+  const { t } = useTranslation()
 
   const getHealthBadge = (rate) => {
     if (rate >= 30) return STRATEGIC_MESSAGES.BADGES.PRO;
@@ -73,7 +76,7 @@ export const Summary = ({
 
   const stats = [
     {
-      label: 'Ingresos',
+      label: t('summary.income'),
       value: totalIncome,
       prevValue: prevTotalIncome,
       inverseColor: false,
@@ -85,7 +88,7 @@ export const Summary = ({
       barColor: 'bg-emerald-500',
     },
     {
-      label: 'Egresos',
+      label: t('summary.expenses'),
       value: totalOut,
       prevValue: prevTotalExpenses,
       inverseColor: true,
@@ -97,7 +100,7 @@ export const Summary = ({
       barColor: 'bg-rose-500',
     },
     {
-      label: 'Balance',
+      label: t('summary.balance'),
       value: balance - creditCardDebt,
       prevValue: prevBalance,
       inverseColor: false,

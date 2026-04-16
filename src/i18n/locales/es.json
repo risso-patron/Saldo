@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "transactions": "Movimientos",
+    "trends": "Tendencias",
+    "planning": "Planificación",
+    "more": "Más",
+    "account": "Mi Cuenta"
+  },
+  "header": {
+    "greeting": "Hola, {{name}} 👋",
+    "search_placeholder": "Buscar..."
+  },
+  "sidebar": {
+    "panel": "Panel Control",
+    "dashboard": "Dashboard",
+    "transactions": "Transacciones",
+    "analytics": "Analytics",
+    "goals": "Metas / Cards",
+    "tools": "Power Tools",
+    "search": "Buscar..."
+  },
+  "summary": {
+    "income": "Ingresos",
+    "expenses": "Egresos",
+    "balance": "Balance",
+    "debt": "Deuda TC",
+    "savings_rate": "Índice Libertad",
+    "vs_prev": "vs ant.",
+    "equal": "igual",
+    "no_data": "sin datos"
+  },
+  "form": {
+    "new_movement": "Nuevo Movimiento",
+    "how_to_register": "¿Cómo deseas registrar tu gasto hoy?",
+    "write_manual": "Escribir Manual",
+    "manual_subtitle": "Ingreso tradicional",
+    "scan": "Escanear",
+    "scan_subtitle": "Usar cámara",
+    "import_ai": "Importar IA",
+    "import_ai_subtitle": "Subir archivo",
+    "mobile_note": "Optimizado para cámara móvil",
+    "desktop_note": "Soporta JPG, PNG y PDF",
+    "back": "Volver",
+    "expense": "Gasto",
+    "income": "Ingreso",
+    "description": "Descripción",
+    "amount": "Monto",
+    "date": "Fecha",
+    "category": "Categoría",
+    "add_expense": "Registrar Gasto",
+    "add_income": "Registrar Ingreso",
+    "description_placeholder": "¿En qué gastaste?",
+    "income_placeholder": "Fuente del ingreso",
+    "amount_placeholder": "0.00"
+  },
+  "profile": {
+    "title": "Mi Cuenta",
+    "view_profile": "Ver perfil →",
+    "spent": "Gastado",
+    "movements": "Movimientos",
+    "streak": "Racha",
+    "categories": "Categorías",
+    "notifications": "Notificaciones",
+    "notifications_sub": "Recordatorios diarios",
+    "export": "Exportar datos",
+    "export_sub": "CSV, JSON, PDF",
+    "ai_config": "Configurar IA",
+    "ai_config_sub": "Gemini · Groq · OpenRouter",
+    "dark_mode": "Modo oscuro",
+    "dark_mode_sub": "Cambiar a tema oscuro",
+    "light_mode": "Modo claro",
+    "light_mode_sub": "Cambiar a tema claro",
+    "account_settings": "Configuración de cuenta",
+    "account_settings_sub": "Nombre, contraseña, avatar",
+    "help": "Ayuda y soporte",
+    "help_sub": "Documentación y contacto",
+    "sign_out": "Cerrar sesión",
+    "pro_subtitle": "por solo $1.99/mes · sin anuncios",
+    "go_pro": "Ir Pro",
+    "language": "Idioma",
+    "language_sub": "Español · English · Français"
+  },
+  "categories": {
+    "Vivienda": "Vivienda",
+    "Alimentación": "Alimentación",
+    "Transporte": "Transporte",
+    "Entretenimiento": "Entretenimiento",
+    "Salud": "Salud",
+    "Educación": "Educación",
+    "Servicios": "Servicios",
+    "Otros": "Otros"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "loading": "Cargando...",
+    "install": "Instalar Saldo",
+    "install_sub": "Usa la app offline o como app nativa."
+  },
+  "errors": {
+    "invalid_amount": "Por favor ingresa una cantidad válida mayor a 0",
+    "invalid_description": "Por favor ingresa una descripción",
+    "generic": "Ocurrió un error. Por favor intenta nuevamente"
+  }
+}

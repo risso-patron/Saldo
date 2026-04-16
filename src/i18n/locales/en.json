@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "home": "Home",
+    "transactions": "Transactions",
+    "trends": "Trends",
+    "planning": "Planning",
+    "more": "More",
+    "account": "My Account"
+  },
+  "header": {
+    "greeting": "Hello, {{name}} 👋",
+    "search_placeholder": "Search..."
+  },
+  "sidebar": {
+    "panel": "Control Panel",
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "analytics": "Analytics",
+    "goals": "Goals / Cards",
+    "tools": "Power Tools",
+    "search": "Search..."
+  },
+  "summary": {
+    "income": "Income",
+    "expenses": "Expenses",
+    "balance": "Balance",
+    "debt": "Card Debt",
+    "savings_rate": "Freedom Index",
+    "vs_prev": "vs prev.",
+    "equal": "same",
+    "no_data": "no data"
+  },
+  "form": {
+    "new_movement": "New Transaction",
+    "how_to_register": "How would you like to record your expense?",
+    "write_manual": "Type Manually",
+    "manual_subtitle": "Traditional input",
+    "scan": "Scan",
+    "scan_subtitle": "Use camera",
+    "import_ai": "Import AI",
+    "import_ai_subtitle": "Upload file",
+    "mobile_note": "Optimized for mobile camera",
+    "desktop_note": "Supports JPG, PNG and PDF",
+    "back": "Back",
+    "expense": "Expense",
+    "income": "Income",
+    "description": "Description",
+    "amount": "Amount",
+    "date": "Date",
+    "category": "Category",
+    "add_expense": "Record Expense",
+    "add_income": "Record Income",
+    "description_placeholder": "What did you spend on?",
+    "income_placeholder": "Income source",
+    "amount_placeholder": "0.00"
+  },
+  "profile": {
+    "title": "My Account",
+    "view_profile": "View profile →",
+    "spent": "Spent",
+    "movements": "Transactions",
+    "streak": "Streak",
+    "categories": "Categories",
+    "notifications": "Notifications",
+    "notifications_sub": "Daily reminders",
+    "export": "Export data",
+    "export_sub": "CSV, JSON, PDF",
+    "ai_config": "Configure AI",
+    "ai_config_sub": "Gemini · Groq · OpenRouter",
+    "dark_mode": "Dark mode",
+    "dark_mode_sub": "Switch to dark theme",
+    "light_mode": "Light mode",
+    "light_mode_sub": "Switch to light theme",
+    "account_settings": "Account settings",
+    "account_settings_sub": "Name, password, avatar",
+    "help": "Help & support",
+    "help_sub": "Docs and contact",
+    "sign_out": "Sign out",
+    "pro_subtitle": "for only $1.99/month · no ads",
+    "go_pro": "Go Pro",
+    "language": "Language",
+    "language_sub": "Español · English · Français"
+  },
+  "categories": {
+    "Vivienda": "Housing",
+    "Alimentación": "Food",
+    "Transporte": "Transport",
+    "Entretenimiento": "Entertainment",
+    "Salud": "Health",
+    "Educación": "Education",
+    "Servicios": "Services",
+    "Otros": "Other"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "install": "Install Saldo",
+    "install_sub": "Use the app offline or as a native app."
+  },
+  "errors": {
+    "invalid_amount": "Please enter a valid amount greater than 0",
+    "invalid_description": "Please enter a description",
+    "generic": "An error occurred. Please try again"
+  }
+}

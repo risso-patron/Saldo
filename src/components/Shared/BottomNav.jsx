@@ -6,18 +6,20 @@ import {
   ChartPieSlice, 
   UserCircle 
 } from '@phosphor-icons/react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * BottomNav - Barra de navegación móvil (estilo Pipedrive Native)
  * Proporciona acceso ergonómico a las funciones principales.
  */
 export const BottomNav = ({ activeTab, onTabSelect, onQuickAction }) => {
+  const { t } = useTranslation()
   const tabs = [
-    { id: 'resumen', label: 'Inicio', icon: SquaresFour },
-    { id: 'movimientos', label: 'Gastos', icon: Receipt },
-    { id: 'quick', label: 'Añadir', icon: Plus, isPrimary: true },
-    { id: 'graficos', label: 'Tendencias', icon: ChartPieSlice },
-    { id: 'cuenta', label: 'Cuenta', icon: UserCircle }
+    { id: 'resumen', labelKey: 'nav.home', icon: SquaresFour },
+    { id: 'movimientos', labelKey: 'nav.transactions', icon: Receipt },
+    { id: 'quick', label: t('form.income'), icon: Plus, isPrimary: true },
+    { id: 'graficos', labelKey: 'nav.trends', icon: ChartPieSlice },
+    { id: 'cuenta', labelKey: 'nav.account', icon: UserCircle }
   ]
 
   return (
@@ -60,7 +62,7 @@ export const BottomNav = ({ activeTab, onTabSelect, onQuickAction }) => {
                 text-[9px] font-black uppercase tracking-widest leading-none
                 ${isActive ? 'text-primary-600' : 'text-slate-400 dark:text-slate-600'}
               `}>
-                {tab.label}
+                {tab.labelKey ? t(tab.labelKey) : tab.label}
               </span>
 
               {/* Indicador de pestaña activa */}
