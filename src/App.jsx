@@ -18,7 +18,7 @@ import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { ProfileMenu } from './components/Auth/ProfileMenu';
 import MigrationDialog from './components/MigrationDialog';
 import AuthPage from './pages/AuthPage';
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/LandingPageNew';
 import { hasPendingMigration } from './utils/dataMigration';
 import { CreditCardManager } from './components/CreditCard/CreditCardManager';
 // Nuevos gráficos avanzados
@@ -57,6 +57,7 @@ import { CurrencyProvider } from './contexts/CurrencyContext'
 import { CurrencySelector } from './features/currency/CurrencySelector'
 import { InstallPWA } from './components/InstallPWA';
 import { BottomNav } from './components/Shared/BottomNav';
+import { ProfilePage } from './pages/ProfilePage';
 import { filterByMonth } from './utils/calculations';
 
 function AppContent() {
@@ -293,6 +294,7 @@ function AppContent() {
               {activeTab === 'movimientos' && <><BudgetForm key={budgetFormKey} onAddIncome={handleAddIncome} onAddExpense={handleAddExpense} /><ExpenseList incomes={incomes} expenses={expenses} onRemoveIncome={id => openConfirm({title: 'Eliminar ingreso', message: '¿Seguro?', onConfirm: () => {removeIncome(id); closeConfirm()}})} onRemoveExpense={id => openConfirm({title: 'Eliminar gasto', message: '¿Seguro?', onConfirm: () => {removeExpense(id); closeConfirm()}})} onUpdateIncome={updateIncome} onUpdateExpense={updateExpense} onRemoveMultiple={removeMultiple} onCategorizeMultiple={categorizeMultiple} /></>}
               {activeTab === 'planificacion' && <><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></>}
               {activeTab === 'herramientas' && <><ExportManager incomes={incomes} expenses={expenses} categoryAnalysis={categoryAnalysis} totalIncome={totalIncome} totalExpenses={totalExpenses} balance={balance} onExport={() => achievements.updateStats({ dataExported: true })} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></>}
+              {activeTab === 'cuenta' && <ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} currentStreak={achievements.stats.currentStreak} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} />}
             </main>
             <InstallPWA />
           </div>

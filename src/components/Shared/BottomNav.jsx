@@ -4,7 +4,7 @@ import {
   Receipt, 
   Plus, 
   ChartPieSlice, 
-  Wrench 
+  UserCircle 
 } from '@phosphor-icons/react'
 
 /**
@@ -17,7 +17,7 @@ export const BottomNav = ({ activeTab, onTabSelect, onQuickAction }) => {
     { id: 'movimientos', label: 'Gastos', icon: Receipt },
     { id: 'quick', label: 'Añadir', icon: Plus, isPrimary: true },
     { id: 'graficos', label: 'Tendencias', icon: ChartPieSlice },
-    { id: 'herramientas', label: 'Más', icon: Wrench }
+    { id: 'cuenta', label: 'Cuenta', icon: UserCircle }
   ]
 
   return (
