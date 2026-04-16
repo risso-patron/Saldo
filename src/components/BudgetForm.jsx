@@ -30,7 +30,7 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState(() => getSmartDefaultCurrency());
+  const [ currency, setCurrency] = useState(() => getSmartDefaultCurrency());
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [category, setCategory] = useState(EXPENSE_CATEGORIES[0].value);
   const [errors, setErrors] = useState({});
