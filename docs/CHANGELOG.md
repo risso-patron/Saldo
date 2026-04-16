@@ -94,7 +94,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ## Links de Comparación
 
-[Unreleased]: https://github.com/risso-patron/budget-calculator-react/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/risso-patron/budget-calculator-react/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/risso-patron/budget-calculator-react/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/risso-patron/budget-calculator-react/releases/tag/v1.0.0
+[Unreleased]: https://github.com/risso-patron/Saldo/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/risso-patron/Saldo/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/risso-patron/Saldo/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/risso-patron/Saldo/releases/tag/v1.0.0

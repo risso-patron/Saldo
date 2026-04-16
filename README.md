@@ -11,7 +11,7 @@
 [![Netlify](https://img.shields.io/badge/Deployed-Netlify-00C7B7?logo=netlify&logoColor=white&style=flat-square)](https://budget-calculator-rp.netlify.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-[🌐 Demo en Vivo](https://budget-calculator-rp.netlify.app) · [🐛 Reportar Bug](https://github.com/risso-patron/budget-calculator-react/issues) · [✨ Solicitar Feature](https://github.com/risso-patron/budget-calculator-react/issues)
+[🌐 Demo en Vivo](https://budget-calculator-rp.netlify.app) · [🐛 Reportar Bug](https://github.com/risso-patron/Saldo/issues) · [✨ Solicitar Feature](https://github.com/risso-patron/Saldo/issues)
 
 </div>
 
@@ -88,8 +88,8 @@ Registra ingresos y gastos manualmente o importa directo desde tu extracto banca
 
 ```bash
 # 1. Clonar
-git clone https://github.com/risso-patron/budget-calculator-react.git
-cd budget-calculator-react
+git clone https://github.com/risso-patron/Saldo.git
+cd Saldo
 
 # 2. Instalar dependencias
 npm install
@@ -140,9 +140,9 @@ Auditado en **abril 2026**:
 
 ## Contribución
 
-1. Revisa los [Issues abiertos](https://github.com/risso-patron/budget-calculator-react/issues)
+1. Revisa los [Issues abiertos](https://github.com/risso-patron/Saldo/issues)
 2. Haz fork del repositorio y crea una rama descriptiva
-3. Abre un [Pull Request](https://github.com/risso-patron/budget-calculator-react/pulls) con descripción clara del cambio
+3. Abre un [Pull Request](https://github.com/risso-patron/Saldo/pulls) con descripción clara del cambio
 
 ---
 

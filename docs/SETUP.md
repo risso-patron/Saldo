@@ -20,8 +20,8 @@ Antes de comenzar, asegúrate de tener instalado:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/risso-patron/budget-calculator-react.git
-cd budget-calculator-react
+git clone https://github.com/risso-patron/Saldo.git
+cd Saldo
 ```
 
 ### 2. Instalar dependencias
