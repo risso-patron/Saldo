@@ -1,7 +1,7 @@
 {
-  "name": "Budget Calculator - Gestión de Finanzas",
-  "short_name": "Budget Calc",
-  "description": "Aplicación web para gestión inteligente de finanzas personales con análisis, metas y gamificación",
+  "name": "Saldo - Finanzas Personales con IA",
+  "short_name": "Saldo",
+  "description": "Controla tus finanzas con IA. Registra ingresos y gastos, visualiza análisis con gráficos interactivos y recibe recomendaciones personalizadas.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
