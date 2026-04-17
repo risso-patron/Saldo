@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getAvailableProviders, getProviderStatus } from '../../lib/ai-providers';
 
 /**
@@ -9,6 +10,7 @@ export default function AIProviderStatus() {
   const [providers, setProviders] = useState([]);
   const [status, setStatus] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const available = getAvailableProviders();
@@ -28,7 +30,7 @@ export default function AIProviderStatus() {
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            🤖 Inteligencia Artificial
+            🤖 {t('ai.provider_title')}
             {hasAnyProvider && (
               <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs rounded-full">
                 {configuredCount} activo{configuredCount > 1 ? 's' : ''}
@@ -37,8 +39,8 @@ export default function AIProviderStatus() {
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {hasAnyProvider 
-              ? 'Proveedores configurados y listos para usar'
-              : 'Configura al menos un proveedor para activar features de IA'}
+              ? t('ai.provider_configured')
+              : t('ai.provider_none')}
           </p>
         </div>
         
@@ -46,7 +48,7 @@ export default function AIProviderStatus() {
           onClick={() => setShowDetails(!showDetails)}
           className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium"
         >
-          {showDetails ? 'Ocultar' : 'Ver detalles'}
+          {showDetails ? t('ai.provider_hide') : t('ai.provider_show')}
         </button>
       </div>
 
@@ -80,10 +82,10 @@ export default function AIProviderStatus() {
         <div className="mt-6 pt-6 border-t border-purple-200/50 dark:border-purple-800/50">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { emoji: '📈', text: 'Análisis Inteligente' },
-              { emoji: '🏷️', text: 'Auto-Categorización' },
-              { emoji: '🔮', text: 'Predicción Gastos' },
-              { emoji: '🛡️', text: 'Detección Anomalías' }
+              { emoji: '📈', text: t('ai.feature_analysis') },
+              { emoji: '🏷️', text: t('ai.feature_categorize') },
+              { emoji: '🔮', text: t('ai.feature_predict') },
+              { emoji: '🛡️', text: t('ai.feature_anomalies') }
             ].map((f, i) => (
               <div key={i} className="flex flex-col items-center text-center p-3 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-white/20 dark:border-white/5 shadow-glass-sm animate-fade-in" style={{ animationDelay: `${i * 100}ms` }}>
                 <span className="text-xl mb-1">{f.emoji}</span>

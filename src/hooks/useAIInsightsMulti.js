@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { logger } from '../utils/logger'
 import { 
@@ -18,6 +19,7 @@ import {
  */
 export const useAIInsights = (transactions = []) => {
   const { user } = useAuth()
+  const { i18n } = useTranslation()
   
   // Estados para análisis financiero
   const [analysis, setAnalysis] = useState(null)
@@ -83,7 +85,7 @@ export const useAIInsights = (transactions = []) => {
       
       logger.log('🔄 Analizando', transactions.length, 'transacciones...')
       
-      const result = await analyzeFinances(transactions, user.id, monthlyTotals)
+      const result = await analyzeFinances(transactions, user.id, monthlyTotals, i18n.language)
       
       logger.log('✅ Análisis completado con', result.provider)
       
@@ -148,7 +150,7 @@ export const useAIInsights = (transactions = []) => {
       setPredicting(true)
       setPredictionError(null)
       
-      const result = await predictNextMonthExpenses(transactions, user.id)
+      const result = await predictNextMonthExpenses(transactions, user.id, i18n.language)
       setPredictions(result)
       
       return result
@@ -185,7 +187,7 @@ export const useAIInsights = (transactions = []) => {
       setAlertsLoading(true)
       setAlertsError(null)
       
-      const result = await detectAnomalies(transactions, user.id)
+      const result = await detectAnomalies(transactions, user.id, i18n.language)
       setAlerts(result.alertas || [])
       
       return result

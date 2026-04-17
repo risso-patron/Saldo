@@ -130,8 +130,11 @@ export const callAI = async (prompt, maxTokens = 2000, useCache = true) => {
 /**
  * Construye prompt para análisis financiero
  */
-const buildAnalysisPrompt = (transactions, monthlyTotals) => {
+const AI_LANG_NAMES = { es: 'español', en: 'English', fr: 'français' };
+
+const buildAnalysisPrompt = (transactions, monthlyTotals, locale = 'es') => {
   const recentTransactions = transactions.slice(0, 50);
+  const lang = AI_LANG_NAMES[locale] || 'español';
   
   return `Eres un asesor financiero experto. Analiza estas transacciones y proporciona:
 
@@ -144,6 +147,8 @@ const buildAnalysisPrompt = (transactions, monthlyTotals) => {
 ${JSON.stringify(recentTransactions, null, 2)}
 
 ${monthlyTotals ? `**Totales:** ${JSON.stringify(monthlyTotals, null, 2)}` : ''}
+
+**IMPORTANT: Respond entirely in ${lang}.**
 
 **RESPONDE EN JSON:**
 {
@@ -158,12 +163,12 @@ ${monthlyTotals ? `**Totales:** ${JSON.stringify(monthlyTotals, null, 2)}` : ''}
 /**
  * ANÁLISIS FINANCIERO INTELIGENTE
  */
-export const analyzeFinances = async (transactions, userId, monthlyTotals = null) => {
+export const analyzeFinances = async (transactions, userId, monthlyTotals = null, locale = 'es') => {
   if (!checkRateLimit(userId)) {
     throw new Error('Límite de requests alcanzado. Espera 1 minuto.');
   }
 
-  const prompt = buildAnalysisPrompt(transactions, monthlyTotals);
+  const prompt = buildAnalysisPrompt(transactions, monthlyTotals, locale);
   const result = await callAI(prompt, 2000, true);
   
   try {
@@ -277,14 +282,17 @@ ${batch.map((desc, idx) => `${idx}: "${desc}"`).join('\n')}`;
 /**
  * PREDICCIÓN DE GASTOS
  */
-export const predictNextMonthExpenses = async (transactions, userId) => {
+export const predictNextMonthExpenses = async (transactions, userId, locale = 'es') => {
   if (!checkRateLimit(userId)) {
     throw new Error('Límite de requests alcanzado');
   }
+  const lang = AI_LANG_NAMES[locale] || 'español';
 
   const prompt = `Analiza estas transacciones y predice los gastos del próximo mes por categoría:
 
 ${JSON.stringify(transactions.slice(0, 100), null, 2)}
+
+IMPORTANT: Respond entirely in ${lang}.
 
 Responde en JSON:
 {
@@ -310,14 +318,17 @@ Responde en JSON:
 /**
  * DETECCIÓN DE ANOMALÍAS
  */
-export const detectAnomalies = async (transactions, userId) => {
+export const detectAnomalies = async (transactions, userId, locale = 'es') => {
   if (!checkRateLimit(userId)) {
     throw new Error('Límite de requests alcanzado');
   }
+  const lang = AI_LANG_NAMES[locale] || 'español';
 
   const prompt = `Detecta gastos anómalos o inusuales en estas transacciones:
 
 ${JSON.stringify(transactions.slice(0, 50), null, 2)}
+
+IMPORTANT: Respond entirely in ${lang}.
 
 Responde en JSON:
 {

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 
 /**
@@ -18,6 +19,7 @@ export const AIInsightsPanel = ({
   monthlyTotals = null
 }) => {
   const [expanded, setExpanded] = useState(false)
+  const { t } = useTranslation()
 
   // Si no hay análisis y no está cargando, mostrar botón inicial
   if (!analysis && !analyzing && !error) {
@@ -32,17 +34,16 @@ export const AIInsightsPanel = ({
           
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              🤖 Análisis Financiero con IA
+              🤖 {t('ai.intro_title')}
             </h3>
             <p className="text-sm text-gray-600 mb-4">
-              Obtén insights inteligentes sobre tus finanzas: patrones de gasto, 
-              recomendaciones personalizadas y un score de salud financiera.
+              {t('ai.intro_desc')}
             </p>
             <button
               onClick={() => onAnalyze(monthlyTotals)}
               className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg"
             >
-              Analizar mis finanzas
+              {t('ai.analyze_button')}
             </button>
           </div>
         </div>
@@ -57,9 +58,9 @@ export const AIInsightsPanel = ({
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
-            <p className="text-gray-600 font-medium">Analizando tus finanzas...</p>
+            <p className="text-gray-600 font-medium">{t('ai.analyzing')}</p>
             <p className="text-sm text-gray-500 mt-2">
-              Claude está procesando tus transacciones
+              {t('ai.processing')}
             </p>
           </div>
         </div>
@@ -76,13 +77,13 @@ export const AIInsightsPanel = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div className="flex-1">
-            <h4 className="font-semibold text-red-900 mb-1">Error en el análisis</h4>
+            <h4 className="font-semibold text-red-900 mb-1">{t('ai.error_title')}</h4>
             <p className="text-sm text-red-700">{error}</p>
             <button
               onClick={() => onAnalyze(monthlyTotals)}
               className="mt-3 text-sm text-red-600 hover:text-red-800 font-medium underline"
             >
-              Intentar nuevamente
+              {t('ai.retry')}
             </button>
           </div>
         </div>
@@ -101,10 +102,10 @@ export const AIInsightsPanel = ({
   }
 
   const getScoreLabel = (score) => {
-    if (score >= 80) return 'Excelente'
-    if (score >= 60) return 'Buena'
-    if (score >= 40) return 'Regular'
-    return 'Necesita atención'
+    if (score >= 80) return t('ai.score_excellent')
+    if (score >= 60) return t('ai.score_good')
+    if (score >= 40) return t('ai.score_regular')
+    return t('ai.score_attention')
   }
 
   return (
@@ -116,7 +117,7 @@ export const AIInsightsPanel = ({
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            Análisis Financiero IA
+            {t('ai.panel_title')}
           </h3>
           
           <button
@@ -141,7 +142,7 @@ export const AIInsightsPanel = ({
             </div>
           </div>
           <div className="flex-1">
-            <div className="text-sm opacity-90 mb-1">Salud Financiera</div>
+            <div className="text-sm opacity-90 mb-1">{t('ai.financial_health')}</div>
             <div className="text-2xl font-bold mb-1">{getScoreLabel(score)}</div>
             <div className="text-sm opacity-80">{scoreJustificacion}</div>
           </div>
@@ -154,7 +155,7 @@ export const AIInsightsPanel = ({
           <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          Resumen Ejecutivo
+          {t('ai.executive_summary')}
         </h4>
         <p className="text-gray-700 leading-relaxed">{resumen}</p>
       </div>
@@ -165,7 +166,7 @@ export const AIInsightsPanel = ({
           <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
           </svg>
-          Patrones Identificados
+          {t('ai.patterns_title')}
         </h4>
         <ul className="space-y-2">
           {patrones && patrones.map((patron, index) => (
@@ -189,7 +190,7 @@ export const AIInsightsPanel = ({
             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Recomendaciones
+            {t('ai.recommendations')}
           </h4>
           <svg 
             className={`w-5 h-5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
@@ -219,8 +220,8 @@ export const AIInsightsPanel = ({
       {analysis.tokensUsed && (
         <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Tokens usados: {analysis.tokensUsed.toLocaleString()}</span>
-            <span>Costo estimado: ${(analysis.estimatedCost || 0).toFixed(4)}</span>
+            <span>{t('ai.tokens_used')}: {analysis.tokensUsed.toLocaleString()}</span>
+            <span>{t('ai.estimated_cost')}: ${(analysis.estimatedCost || 0).toFixed(4)}</span>
           </div>
         </div>
       )}
