@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { AccountSettingsModal } from '../components/Auth/AccountSettingsModal'
-import { LanguageSelector } from '../components/Shared/LanguageSelector'import { PricingPlans } from '../components/Subscription/PricingPlans';
+import { LanguageSelector } from '../components/Shared/LanguageSelector';
+import { PricingPlans } from '../components/Subscription/PricingPlans';
 const formatAmount = (n) => {
   if (n >= 1000000) return `$${(n / 1000000).toFixed(1)}M`
   if (n >= 1000) return `$${(n / 1000).toFixed(1)}k`
