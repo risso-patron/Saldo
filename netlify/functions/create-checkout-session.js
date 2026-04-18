@@ -119,7 +119,7 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: session.id }),
+      body: JSON.stringify({ id: session.id, url: session.url }),
     };
   } catch (error) {
     console.error('[create-checkout-session] Stripe error:', error.message);

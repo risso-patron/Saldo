@@ -1,11 +1,7 @@
 import { useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
 import { useSubscription } from '../../hooks/useSubscription';
 import { useAuth } from '../../contexts/AuthContext';
 import { ConfirmDialog } from '../Shared/ConfirmDialog';
-
-const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || null;
-const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : null;
 
 /**
  * Componente de Pricing - Muestra los planes disponibles
@@ -92,14 +88,12 @@ export const PricingPlans = ({ onClose }) => {
       return;
     }
 
-    if (!stripePromise) {
-      alert('⚠️ El sistema de pagos no está configurado aún.');
-      return;
-    }
-
     setLoading(true);
     try {
-      const stripe = await stripePromise;
+      // El backend espera planId="pro" + billingCycle para planes PRO.
+      const normalizedPlanId = planId === 'pro_monthly' || planId === 'pro_yearly'
+        ? 'pro'
+        : planId;
 
       const response = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
@@ -107,7 +101,7 @@ export const PricingPlans = ({ onClose }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ planId, billingCycle }),
+        body: JSON.stringify({ planId: normalizedPlanId, billingCycle }),
       });
 
       if (!response.ok) {
@@ -116,11 +110,12 @@ export const PricingPlans = ({ onClose }) => {
       }
 
       const checkoutSession = await response.json();
-
-      const result = await stripe.redirectToCheckout({ sessionId: checkoutSession.id });
-      if (result.error) {
-        alert(result.error.message);
+      if (!checkoutSession?.url) {
+        throw new Error('No se recibio URL de checkout');
       }
+
+      window.location.assign(checkoutSession.url);
+      return;
     } catch (error) {
       console.error('[PricingPlans] Error al iniciar pago:', error);
       alert(`Error al procesar el pago: ${error.message}`);
@@ -185,21 +180,19 @@ export const PricingPlans = ({ onClose }) => {
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
           {plans.map((plan) => {
-            // Solo mostrar plan PRO para el ciclo seleccionado
-            if (plan.id === 'pro' && billingCycle === 'yearly') {
-              plan = { ...plan, id: 'pro_yearly' };
-            } else if (plan.id === 'pro' && billingCycle === 'monthly') {
-              plan = { ...plan, id: 'pro_monthly' };
-            }
+            const effectivePlanId =
+              plan.id === 'pro'
+                ? (billingCycle === 'yearly' ? 'pro_yearly' : 'pro_monthly')
+                : plan.id;
 
-            const isCurrentPlan = currentPlan === plan.id;
+            const isCurrentPlan = currentPlan === effectivePlanId;
             const borderColor = plan.color === 'purple' ? 'border-purple-500' : 
                                plan.color === 'gold' ? 'border-yellow-500' : 
                                'border-gray-300 dark:border-gray-700';
 
             return (
               <div
-                key={plan.id}
+                key={effectivePlanId}
                 className={`relative bg-white dark:bg-gray-800 rounded-2xl border-2 ${borderColor} 
                   ${plan.popular ? 'shadow-xl scale-105' : 'shadow-lg'}
                   transition-all hover:shadow-2xl`}
@@ -241,7 +234,7 @@ export const PricingPlans = ({ onClose }) => {
 
                   {/* CTA Button */}
                   <button
-                    onClick={() => handleSelectPlan(plan.id)}
+                    onClick={() => handleSelectPlan(effectivePlanId)}
                     disabled={loading || isCurrentPlan}
                     className={`w-full py-3 px-6 rounded-lg font-semibold transition-all
                       ${isCurrentPlan

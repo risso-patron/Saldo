@@ -13,7 +13,6 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NODE_ENV = "development"
   NPM_FLAGS = "--include=dev"
 
 # Redirects para SPA (Single Page Application)
@@ -92,11 +91,8 @@
 [context.production]
   environment = { NODE_ENV = "production" }
 
-[context.deploy-preview]
-  environment = { NODE_ENV = "staging" }
-
-[context.branch-deploy]
-  environment = { NODE_ENV = "development" }
+# Los previews/branch deploys se controlan desde Netlify UI
+# para limitar consumo de creditos.
 
 # Variables de entorno (NO incluir secrets aquí, usar Netlify UI)
 # Las variables secretas se configuran en:
