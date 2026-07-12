@@ -109,7 +109,14 @@
     cap 07 y cap 13
   - Evidencia: 4 reglas de comportamiento de la IA, cada una citando cap 01/03/04
   - Verificado sin contradicciones contra 01-14 antes de cerrar
-- [ ] 16 - Roadmap UX
+- [x] 16 - Roadmap UX (cerrado 2026-07-12)
+  - Evidencia: V1-V4 justificadas contra requisitos numéricos ya fijados en cap 15 (4 semanas, 3 meses), no un orden
+    de preferencia — V4 marcada explícitamente sin fecha por ser bloqueo de diseño, distinto de V2/V3 (bloqueo de
+    antigüedad de datos)
+  - Evidencia: accesibilidad/responsive/design system fijados como piso desde V1, con justificación explícita de por
+    qué diferirlos contradiría cap 10/11
+  - Evidencia: resuelve la pieza delegada por cap 15 (caja diaria) ubicándola en V4 sin inventar una fecha
+  - Verificado sin contradicciones contra 01-15 antes de cerrar
 - [ ] 17 - QA
 - [ ] 18 - Definition of Done
 - [ ] 19 - Anti-Patterns
@@ -150,6 +157,8 @@
 - Señales anticipatorias (cap 15): comparación contra el promedio histórico propio de cada persona, nunca contra otros usuarios; mínimo 4 semanas de historial antes de calcular cualquier señal; margen de 20% de desviación (propuesta ajustable con datos reales, no constante fija)
 - "Primer presupuesto sostenido" (cap 15, resuelve lo delegado por cap 14): 3 meses calendario consecutivos sin superar el límite, sin tolerancia parcial dentro del mes (se evalúa el total del mes cerrado, no día a día)
 - Pendiente explícito para cap 16: granularidad diaria de "caja diaria" para José (cap 03, regla 9) — la señal de cap 15 es semanal (recalculada en cada entrada); una señal diaria confiable necesita su propia definición de historial mínimo y umbral, no resuelta todavía
+- Roadmap (cap 16): V1 (recorrido completo, sin dependencia de historial de uso) — V2 (≥4 semanas, señal semanal Ana/José) — V3 (≥3 meses, gamificación completa incluido "sostenido") — V4 (caja diaria de José, sin fecha, bloqueada por diseño pendiente, no por antigüedad de datos)
+- Accesibilidad (cap 10), Responsive (cap 11) y Design System (cap 12) son piso desde V1, nunca una fase tardía del roadmap
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
