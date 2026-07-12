@@ -10,7 +10,13 @@
   - Evidencia: las 4 preguntas de orientacion ("¿Dónde estoy? ¿Qué puedo hacer? ¿Qué pasa si aprieto esto? ¿Qué gano haciendo esto?",
     lineas 6-9) quedan fijadas como criterio de cierre para toda pantalla de los capitulos siguientes
   - Verificado sin contradicciones contra 01-03 antes de cerrar
-- [ ] 05 - Arquitectura de Experiencia
+- [x] 05 - Arquitectura de Experiencia (cerrado 2026-07-12)
+  - Evidencia: recorrido completo de 12 etapas (Landing → Cliente recurrente), cada una con las 4 dimensiones
+    (emocional/funcional/visual/psicológica), en 05-arquitectura-de-experiencia.md
+  - Evidencia: decisiones fundacionales de Luis, Ana y José aplicadas con cita textual inline en etapas 2, 4, 6, 7, 11 y 12
+    (ver sección "Aplicación por persona" del capítulo)
+  - Evidencia: contradicción "hallazgo IA" vs "insight IA" detectada y resuelta 2026-07-12 (ver Contradicciones resueltas)
+  - Verificado sin contradicciones contra 01-04 antes de cerrar
 - [ ] 06 - Onboarding
 - [ ] 07 - UX Writing
 - [ ] 08 - Microinteracciones
@@ -40,9 +46,17 @@
 - José necesita separación clara entre caja personal y caja del negocio; no es una categoría más, es una distinción estructural de datos que debe resolverse explícitamente en arquitectura/categorías/design system más adelante
 - A partir de cap 05, releer completos los capítulos 01-04 antes de redactar cualquier capítulo nuevo: 04 pasa a ser fundacional junto con 01-03, porque fija el vocabulario oficial (prohibido/permitido) que rige el resto del documento
 - A partir de cap 05, todo cierre de capítulo requiere checklist con evidencia y citas textuales (línea/sección concreta), no alcanza con el tilde
+- A partir de cap 06, releer completos los capítulos 01-05 antes de redactar cualquier capítulo nuevo: 05 también pasa a ser fundacional, porque fija el recorrido completo (las 12 etapas) que los capítulos siguientes deben respetar paso a paso, no redefinir distinto
+- Vocabulario: la etapa de IA del recorrido de experiencia se llama "hallazgo IA", nunca "insight IA" — "Insights" es vocabulario prohibido (cap 04, línea 17). Aplica a cap 05 y a cualquier capítulo futuro (06+) que nombre esta etapa
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
+
+## Contradicciones resueltas (historial)
+- Cap 05 detectó que el mapa original nombraba la etapa 8 como "Primer insight IA", pero "Insights" es vocabulario
+  prohibido (cap 04, línea 17). El capítulo se redactó usando "Primer hallazgo IA" y quedó pendiente de confirmación.
+  Resuelta 2026-07-12: se usa "hallazgo IA" en vez de "insight IA" en todo el documento, por vocabulario prohibido de
+  cap 04. Aplica también al mapa citado en cap 05 y a cualquier capítulo futuro que nombre esta etapa.
 
 ## Notas de continuidad
 - Tono: frases cortas, sin jerga, orientado a bajar ansiedad
