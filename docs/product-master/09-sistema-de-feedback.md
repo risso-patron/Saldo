@@ -76,6 +76,17 @@ de la misma historia, nunca aparecen sueltas.
 Mecánica ya resuelta en cap 08 (si había algo a mitad de cargar, se guarda antes de pedir reingreso — misma decisión
 fundacional de cap 06, extendida). Texto final:
 
+**Aviso previo, antes de que expire** (extensión agregada en la revisión de cap 10 — Accesibilidad, no en el cierre
+original de este capítulo. WCAG 2.2 AA pide avisar antes de un límite de tiempo, no solo después; ver cap 10 para la
+justificación completa):
+
+**"¿Seguís ahí? En unos minutos te vamos a pedir que vuelvas a entrar."**
+
+Transitorio, mismo tratamiento que el resto de los avisos de esta sección (sin ✓, sin bloquear, con anuncio de lector
+de pantalla que no interrumpe — cap 10, sección 1).
+
+**Mensaje posterior, ya cerrado en el cierre original de cap 09:**
+
 **"Pasó un rato. Volvé a entrar para seguir."**
 Botón: **"Entrar de nuevo"**
 
@@ -95,7 +106,8 @@ de error: tono humano, sin culpa, con salida clara"*, y expirar sesión no es un
 ## Aplicación concreta a Saldo
 - Cinco confirmaciones activas (Guardado acotado, Sincronizado acotado, Presupuesto actualizado, Movimiento eliminado,
   Recuperado); una descartada explícitamente ("IA terminó") con justificación registrada, no simplemente omitida
-- Dos avisos con texto final cerrado (fallo de internet, expiración de sesión), ambos sin culpa y con salida clara
+- Dos avisos con texto final cerrado (fallo de internet, expiración de sesión), ambos sin culpa y con salida clara —
+  expiración de sesión suma un tercer texto previo (aviso antes del límite), agregado en la revisión de cap 10
 - Ningún estado de este sistema es un modal ni requiere que el usuario lo cierre a mano
 - Aviso y confirmación de sincronización están explícitamente atados como una sola historia, no dos eventos sueltos
 

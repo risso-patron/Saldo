@@ -52,7 +52,15 @@
   - Evidencia: reglas transversales nuevas (transitorio, sin modal, un solo símbolo, sin apilar, avisos ≠
     confirmaciones) logueadas arriba como decisión fundacional
   - Verificado sin contradicciones contra 01-08 antes de cerrar
-- [ ] 10 - Accesibilidad
+- [x] 10 - Accesibilidad (cerrado 2026-07-12)
+  - Evidencia: resuelve lo delegado por cap 09 (anuncios de lector de pantalla para confirmaciones vs. avisos,
+    sección 1 de 10-accesibilidad.md), sin agregar una categoría nueva a la ya establecida
+  - Evidencia: foco de teclado aplicado sobre lo ya definido en cap 06/07/08 (Paso A, deshacer, edición en el lugar,
+    selectores) sin rediseñar ninguno
+  - Evidencia: propuesta de aviso previo a expiración de sesión aprobada y agregada a 09-sistema-de-feedback.md como
+    extensión explícita, citando cap 10 y WCAG 2.2 (límite de tiempo)
+  - Evidencia: nota honesta de que ninguna persona de cap 02 tiene discapacidad documentada — no se inventó ninguna
+  - Verificado sin contradicciones contra 01-09 antes de cerrar
 - [ ] 11 - Responsive Philosophy
 - [ ] 12 - Design System
 - [ ] 13 - Psicologia
@@ -84,6 +92,9 @@
 - Reglas transversales del sistema de feedback (cap 09): todo estado es transitorio, ninguno es modal, un solo símbolo (✓) para toda confirmación positiva, nunca se apilan dos estados a la vez, avisos y confirmaciones son familias distintas
 - "IA terminó" descartado explícitamente de la taxonomía original (cap 09) por contradecir cap 03 regla 7 (la IA nunca es protagonista) — no reintroducir esta confirmación en capítulos futuros sin volver a discutirlo acá primero
 - Excepción documentada a cap 03 regla 2: el Paso A del onboarding (cap 06) usa dos botones de igual peso visual (continuar/saltear) porque llevan al mismo resultado funcional — no es precedente general para otras pantallas sin la misma condición (dos caminos, un mismo resultado)
+- Nivel de accesibilidad: WCAG 2.2 AA (no A, no AAA) — justificación completa en cap 10
+- Ningún estado se comunica solo con color (cap 10, sección 3) — aplica a todo lo que se diseñe visualmente de acá en adelante, especialmente relevante para cap 12 (Design System)
+- El texto de "¿Dónde estoy?" definido en cap 07 (tabla de las 4 preguntas) es también el título accesible real de cada pantalla, no solo texto visual grande
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
