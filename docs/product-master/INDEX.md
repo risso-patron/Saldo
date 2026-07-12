@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 12 de 20
+- Capitulos cerrados: 13 de 20
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -18,7 +18,7 @@
 - [x] [10-accesibilidad.md](10-accesibilidad.md) - Accesibilidad (cerrado 2026-07-12 — WCAG 2.2 AA, extiende cap 09, ver 00-STATE.md)
 - [x] [11-responsive-philosophy.md](11-responsive-philosophy.md) - Responsive Philosophy (cerrado 2026-07-12 — 44×44px táctil, zonas de pulgar, ver 00-STATE.md)
 - [x] [12-design-system.md](12-design-system.md) - Design System (cerrado 2026-07-12 — roles Positivo/Atención/Interactivo, ver 00-STATE.md)
-- [ ] [13-psicologia.md](13-psicologia.md) - Psicologia
+- [x] [13-psicologia.md](13-psicologia.md) - Psicologia (cerrado 2026-07-12 — límite obligatorio para streaks, ver 00-STATE.md)
 - [ ] [14-gamificacion.md](14-gamificacion.md) - Gamificacion
 - [ ] [15-ia.md](15-ia.md) - IA
 - [ ] [16-roadmap-ux.md](16-roadmap-ux.md) - Roadmap UX

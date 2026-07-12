@@ -79,7 +79,16 @@
   - Evidencia: alcance acotado a roles y reglas numéricas, sin paleta de marca hexadecimal — justificado en la
     sección "Alcance" del capítulo
   - Verificado sin contradicciones contra 01-11 antes de cerrar
-- [ ] 13 - Psicologia
+- [x] 13 - Psicologia (cerrado 2026-07-12)
+  - Evidencia: principios de color (puntos 1-2) citan los roles Positivo/Atención de cap 12 sin asignar hex, marcados
+    explícitamente como guía para una decisión futura
+  - Evidencia: 4 mecanismos de enganche nombrados y rechazados con cita a cap 01 (urgencia artificial, culpa por
+    inactividad, streaks con vergüenza, felicitación rutinaria)
+  - Evidencia: "Aplicación por persona" corregida en vivo para separar cita textual de inferencia en los 4 casos
+    (Rosa, José, Ana, Luis) — ninguna afirmación se presenta como ya resuelta en un capítulo anterior sin serlo
+  - Evidencia: regla obligatoria para cap 14 (sin streaks con vergüenza al romperse) logueada arriba como decisión
+    fundacional, no como sugerencia
+  - Verificado sin contradicciones contra 01-12 antes de cerrar
 - [ ] 14 - Gamificacion
 - [ ] 15 - IA
 - [ ] 16 - Roadmap UX
@@ -116,6 +125,8 @@
 - Roles de color del sistema (cap 12): Positivo (las 5 confirmaciones de cap 09, un solo rol), Atención (los 3 avisos de cap 09, deliberadamente no rojo de alerta agresiva), Interactivo (énfasis de botones principales y anillo de foco — nunca el foco reusa Atención, para no diluir la señal de alerta en cada Tab). Contraste mínimo: 4.5:1 texto normal, 3:1 texto grande/componentes de interfaz. Ningún valor hexadecimal fijado todavía — son roles, no paleta de marca
 - Espaciado táctil mínimo entre objetivos adyacentes: 8px (cap 12, resuelve el número que cap 11 dejó sin cerrar)
 - Duraciones de animación con nombre: Rápida (~150ms, confirmaciones de cap 09) y Estándar (200-250ms, transiciones de pantalla completa, ya fijado en cap 08) — sin duración "lenta", sin rebote en ningún caso
+- Regla obligatoria para cap 14 (Gamificación): ningún streak puede tener mecanismo de vergüenza al romperse (sin reinicio a cero presentado como fracaso, sin mensaje que lo trate como pérdida) — un streak roto tiene que sentirse, como máximo, neutro
+- Mecanismos rechazados explícitamente, no reintroducir sin discutirlos de nuevo: urgencia artificial, culpa para reenganchar por inactividad, streaks con vergüenza, felicitación por acciones rutinarias (mismo principio que "IA terminó" en cap 09 — no premiar/narrar lo rutinario)
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
