@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 8 de 20
+- Capitulos cerrados: 9 de 20
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -14,7 +14,7 @@
 - [x] [06-onboarding.md](06-onboarding.md) - Onboarding (cerrado 2026-07-12 — esqueleto de 3 pasos, ver 00-STATE.md)
 - [x] [07-ux-writing.md](07-ux-writing.md) - UX Writing (cerrado 2026-07-12 — copy final onboarding + hallazgo IA, ver 00-STATE.md)
 - [x] [08-microinteracciones.md](08-microinteracciones.md) - Microinteracciones (cerrado 2026-07-12 — principio rector nuevo, ver 00-STATE.md)
-- [ ] [09-sistema-de-feedback.md](09-sistema-de-feedback.md) - Sistema de Feedback
+- [x] [09-sistema-de-feedback.md](09-sistema-de-feedback.md) - Sistema de Feedback (cerrado 2026-07-12 — taxonomía evaluada, ver 00-STATE.md)
 - [ ] [10-accesibilidad.md](10-accesibilidad.md) - Accesibilidad
 - [ ] [11-responsive-philosophy.md](11-responsive-philosophy.md) - Responsive Philosophy
 - [ ] [12-design-system.md](12-design-system.md) - Design System

@@ -45,7 +45,13 @@
   - Evidencia: principio rector nuevo ("toda microinteracción responde una función, nunca decorativa") aprobado y
     logueado arriba como decisión fundacional
   - Verificado sin contradicciones contra 01-07 antes de cerrar
-- [ ] 09 - Sistema de Feedback
+- [x] 09 - Sistema de Feedback (cerrado 2026-07-12)
+  - Evidencia: texto final de fallo de internet y expiración de sesión, delegado por cap 08, resuelto en sección 2
+  - Evidencia: taxonomía completa de la propuesta original evaluada estado por estado contra el principio rector de
+    cap 08 — 5 de 6 mantenidos con alcance acotado, 1 ("IA terminó") descartado y justificado con cita a cap 03 regla 7
+  - Evidencia: reglas transversales nuevas (transitorio, sin modal, un solo símbolo, sin apilar, avisos ≠
+    confirmaciones) logueadas arriba como decisión fundacional
+  - Verificado sin contradicciones contra 01-08 antes de cerrar
 - [ ] 10 - Accesibilidad
 - [ ] 11 - Responsive Philosophy
 - [ ] 12 - Design System
@@ -75,6 +81,8 @@
 - Vocabulario: la etapa de IA del recorrido de experiencia se llama "hallazgo IA", nunca "insight IA" — "Insights" es vocabulario prohibido (cap 04, línea 17). Aplica a cap 05 y a cualquier capítulo futuro (06+) que nombre esta etapa
 - El onboarding debe soportar interrupción y retomado a mitad del Paso B (carga de movimiento) sin reiniciar desde el principio — esto es una decisión de arquitectura con costo técnico real (persistir estado a mitad de formulario), no solo un detalle de UX. Debe tenerse en cuenta quien implemente el onboarding en código, más allá de este documento
 - Principio rector de microinteracciones (cap 08): "Toda microinteracción responde una función — confirmar, orientar o tranquilizar — nunca es decorativa." Aplica a todo el documento desde acá en adelante, especialmente relevante para cap 12 (Design System) y cap 14 (Gamificación), donde el riesgo de agregar animación decorativa es mayor
+- Reglas transversales del sistema de feedback (cap 09): todo estado es transitorio, ninguno es modal, un solo símbolo (✓) para toda confirmación positiva, nunca se apilan dos estados a la vez, avisos y confirmaciones son familias distintas
+- "IA terminó" descartado explícitamente de la taxonomía original (cap 09) por contradecir cap 03 regla 7 (la IA nunca es protagonista) — no reintroducir esta confirmación en capítulos futuros sin volver a discutirlo acá primero
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
