@@ -35,7 +35,16 @@
     Primer presupuesto trazando "Te avisamos antes de que lo pases, no después" a la señal anticipatoria de Ana/José
     (cap 05, etapa 7) — agregada a pedido del usuario para no dejar excepciones sin trazar
   - Verificado sin contradicciones contra 01-06 antes de cerrar
-- [ ] 08 - Microinteracciones
+- [x] 08 - Microinteracciones (cerrado 2026-07-12)
+  - Evidencia: resuelve lo delegado por cap 06 (transiciones Paso A→B, B→C, reingreso tras interrupción) citando
+    cap 05 etapa 4 y la decisión fundacional de cap 06 (08-microinteracciones.md, sección 1)
+  - Evidencia: cubre los 7 casos del recorrido de cap 05 — guardar, borrar, editar, sincronizar, cargar, fallo de
+    internet (mecánica), expirar sesión (mecánica) — delegando texto exacto y taxonomía de estados a cap 09
+  - Evidencia: decisiones de persona aplicadas con cita — Rosa en "Borrar" (cap 02, miedo a perder información),
+    José en "Sincronizar" (cap 02, ventana de 10 minutos)
+  - Evidencia: principio rector nuevo ("toda microinteracción responde una función, nunca decorativa") aprobado y
+    logueado arriba como decisión fundacional
+  - Verificado sin contradicciones contra 01-07 antes de cerrar
 - [ ] 09 - Sistema de Feedback
 - [ ] 10 - Accesibilidad
 - [ ] 11 - Responsive Philosophy
@@ -65,6 +74,7 @@
 - A partir de cap 06, releer completos los capítulos 01-05 antes de redactar cualquier capítulo nuevo: 05 también pasa a ser fundacional, porque fija el recorrido completo (las 12 etapas) que los capítulos siguientes deben respetar paso a paso, no redefinir distinto
 - Vocabulario: la etapa de IA del recorrido de experiencia se llama "hallazgo IA", nunca "insight IA" — "Insights" es vocabulario prohibido (cap 04, línea 17). Aplica a cap 05 y a cualquier capítulo futuro (06+) que nombre esta etapa
 - El onboarding debe soportar interrupción y retomado a mitad del Paso B (carga de movimiento) sin reiniciar desde el principio — esto es una decisión de arquitectura con costo técnico real (persistir estado a mitad de formulario), no solo un detalle de UX. Debe tenerse en cuenta quien implemente el onboarding en código, más allá de este documento
+- Principio rector de microinteracciones (cap 08): "Toda microinteracción responde una función — confirmar, orientar o tranquilizar — nunca es decorativa." Aplica a todo el documento desde acá en adelante, especialmente relevante para cap 12 (Design System) y cap 14 (Gamificación), donde el riesgo de agregar animación decorativa es mayor
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
