@@ -11,6 +11,12 @@ Cada decisión importante debe ser evidente al primer vistazo.
 Cada vista debe dejar claro cuál es el próximo paso.
 Se puede ofrecer contexto, pero no competir con múltiples llamadas principales.
 
+Excepción documentada (revisión de consistencia global, 2026-07-12): el Paso A del onboarding (cap 06) usa dos
+botones de igual peso visual —continuar y saltear—. No son dos acciones principales compitiendo: son dos caminos al
+mismo resultado funcional (avanzar en el recorrido), y despriorizar visualmente "saltear" reintroduciría la ansiedad
+que cap 01 existe para evitar. Ver 00-STATE.md, Contradicciones resueltas. No usar este caso como precedente general
+para otras pantallas sin una justificación equivalente (dos caminos al mismo resultado, no dos resultados distintos).
+
 ## 3) Todo número responde una pregunta
 Un dato sin pregunta es ruido.
 Si mostramos un valor, debe responder algo concreto como:

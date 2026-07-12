@@ -70,7 +70,7 @@
 - Personas activas: Rosa (45), Luis (freelancer), Ana (madre), Jose (dueno de negocio)
 - Vocabulario prohibido global UX: Analytics, Insights, Planning, Import AI, OCR, CSV, JSON
 - Vocabulario permitido base: tus gastos, tus ingresos, tu dinero, tus metas, tus movimientos
-- Inicio/Dashboard debe mostrar de forma directa: cuánto entró, cuánto salió, cuánto queda hoy (definido en cap 01, no redefinir distinto en cap 05 o 06)
+- Inicio/Dashboard debe mostrar de forma directa: cuánto entró, cuánto salió y cuánto queda hoy (definido en cap 01, no redefinir distinto en cap 05 o 06)
 - La prohibición de "Analytics" es de naming/vocabulario, no de funcionalidad: Luis sí necesita ver patrones de ingresos y clientes, pero en lenguaje simple (ej: "cómo te está yendo con tus clientes")
 - Luis necesita agrupar movimientos por cliente/origen, no solo por categoría de gasto; es una dimensión de datos distinta que Arquitectura (05) y Design System (12) no deben ignorar
 - Ana necesita señales anticipatorias ("semanas difíciles"), no solo registro histórico; marcar para que IA (15) y/o Roadmap UX (16) lo retomen explícitamente
@@ -83,6 +83,7 @@
 - Principio rector de microinteracciones (cap 08): "Toda microinteracción responde una función — confirmar, orientar o tranquilizar — nunca es decorativa." Aplica a todo el documento desde acá en adelante, especialmente relevante para cap 12 (Design System) y cap 14 (Gamificación), donde el riesgo de agregar animación decorativa es mayor
 - Reglas transversales del sistema de feedback (cap 09): todo estado es transitorio, ninguno es modal, un solo símbolo (✓) para toda confirmación positiva, nunca se apilan dos estados a la vez, avisos y confirmaciones son familias distintas
 - "IA terminó" descartado explícitamente de la taxonomía original (cap 09) por contradecir cap 03 regla 7 (la IA nunca es protagonista) — no reintroducir esta confirmación en capítulos futuros sin volver a discutirlo acá primero
+- Excepción documentada a cap 03 regla 2: el Paso A del onboarding (cap 06) usa dos botones de igual peso visual (continuar/saltear) porque llevan al mismo resultado funcional — no es precedente general para otras pantallas sin la misma condición (dos caminos, un mismo resultado)
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
@@ -92,6 +93,14 @@
   prohibido (cap 04, línea 17). El capítulo se redactó usando "Primer hallazgo IA" y quedó pendiente de confirmación.
   Resuelta 2026-07-12: se usa "hallazgo IA" en vez de "insight IA" en todo el documento, por vocabulario prohibido de
   cap 04. Aplica también al mapa citado en cap 05 y a cualquier capítulo futuro que nombre esta etapa.
+- Revisión de consistencia global (2026-07-12, capítulos 01-09) detectó que el Paso A del onboarding (cap 06/07, dos
+  botones de igual peso visual: "Vamos" / "Ir directo") tensiona con cap 03 regla 2 ("no competir con múltiples
+  llamadas principales") — no detectado en el checklist de cierre original de cap 06. Resuelta: se mantiene el diseño
+  aprobado sin cambios, documentado como excepción explícita en cap 03 y cap 06 — ambos botones llevan al mismo
+  resultado funcional (avanzar), y despriorizar "saltear" reintroduciría la ansiedad que cap 01 busca evitar. No es
+  precedente general para otras pantallas.
+- Misma revisión detectó una imprecisión de cita: esta lista parafraseaba el trío de cifras de cap 01 sin la "y" que
+  el original sí tiene (cap 01, línea 42). Corregida arriba para citar exacto.
 
 ## Notas de continuidad
 - Tono: frases cortas, sin jerga, orientado a bajar ansiedad

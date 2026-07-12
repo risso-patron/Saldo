@@ -25,6 +25,12 @@ Ejemplo de intención, no de copy final (el texto exacto es cap 07): algo del or
 salió y cuánto te queda — empecemos con un movimiento real". Siempre visible un botón para saltear, del mismo tamaño
 visual que la acción de continuar — saltear no puede sentirse como una opción escondida o penalizada.
 
+**Nota de excepción (cap 03, regla 2):** dos botones de igual peso visual podrían leerse como "competir con múltiples
+llamadas principales". Se mantiene así a propósito: continuar y saltear llevan al mismo resultado funcional (avanzar
+al Paso B), no son dos acciones distintas compitiendo por atención. Confirmado como excepción documentada en la
+revisión de consistencia global de 2026-07-12 (ver cap 03 y 00-STATE.md) — no se detectó en el checklist de cierre
+original de este capítulo.
+
 ### Paso B — Primera acción guiada (obligatoria, es el corazón del onboarding)
 Cargar un movimiento real: un ingreso o un gasto, lo que el usuario tenga a mano. Esta es la acción que reemplaza al
 tutorial (cap 03, regla 5, citada arriba). No hay pantalla de "así se carga un movimiento" antes de esto: la primera
