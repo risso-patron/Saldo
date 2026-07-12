@@ -99,7 +99,16 @@
   - Evidencia: "Aplicación por persona" corregida en vivo para no calificar como "no es inferencia" conexiones que sí
     lo son, aunque directas — mismo estándar de rigor que cap 13
   - Verificado sin contradicciones contra 01-13 antes de cerrar
-- [ ] 15 - IA
+- [x] 15 - IA (cerrado 2026-07-12)
+  - Evidencia: señal semanal de Ana/José definida numéricamente (4 semanas de historial, margen 20%, dirección por
+    persona, separación de "la plata del negocio" para José) y su cadencia aclarada contra el patrón de dos entradas
+    diarias de José (cap 02)
+  - Evidencia: "caja diaria" (cap 03, regla 9) marcada explícitamente como NO resuelta, delegada a cap 16 en vez de
+    forzar un número sin base — corregido en vivo tras señalarlo el usuario
+  - Evidencia: "primer presupuesto sostenido" definido (3 meses, sin tolerancia parcial), justificado contra cap 05,
+    cap 07 y cap 13
+  - Evidencia: 4 reglas de comportamiento de la IA, cada una citando cap 01/03/04
+  - Verificado sin contradicciones contra 01-14 antes de cerrar
 - [ ] 16 - Roadmap UX
 - [ ] 17 - QA
 - [ ] 18 - Definition of Done
@@ -138,6 +147,9 @@
 - Mecanismos rechazados explícitamente, no reintroducir sin discutirlos de nuevo: urgencia artificial, culpa para reenganchar por inactividad, streaks con vergüenza, felicitación por acciones rutinarias (mismo principio que "IA terminó" en cap 09 — no premiar/narrar lo rutinario), comparación social/tabla de posiciones (cap 14, fuente de vergüenza que cap 01 existe para evitar), sistema de puntos o moneda virtual paralela (cap 14, contradice cap 03 regla 3 — un número que no responde una pregunta real es ruido)
 - Mecanismo de constancia (cap 14, resuelve la regla obligatoria de cap 13): ventana móvil (ej. "12 de los últimos 14 días"), nunca streak clásico con punto de ruptura que vuelve a cero
 - "Primer presupuesto sostenido" (logro de cap 14) introduce un criterio nuevo no presente en cap 05 etapa 7 (que solo define crear un presupuesto, no mantenerlo) — la definición numérica de "sostenido" (cuántos períodos, con qué tolerancia) queda delegada a cap 15 (IA) o cap 16 (Roadmap UX), mismo patrón que las señales anticipatorias de Ana/José
+- Señales anticipatorias (cap 15): comparación contra el promedio histórico propio de cada persona, nunca contra otros usuarios; mínimo 4 semanas de historial antes de calcular cualquier señal; margen de 20% de desviación (propuesta ajustable con datos reales, no constante fija)
+- "Primer presupuesto sostenido" (cap 15, resuelve lo delegado por cap 14): 3 meses calendario consecutivos sin superar el límite, sin tolerancia parcial dentro del mes (se evalúa el total del mes cerrado, no día a día)
+- Pendiente explícito para cap 16: granularidad diaria de "caja diaria" para José (cap 03, regla 9) — la señal de cap 15 es semanal (recalculada en cada entrada); una señal diaria confiable necesita su propia definición de historial mínimo y umbral, no resuelta todavía
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)

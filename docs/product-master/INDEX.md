@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 14 de 20
+- Capitulos cerrados: 15 de 20
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -20,7 +20,7 @@
 - [x] [12-design-system.md](12-design-system.md) - Design System (cerrado 2026-07-12 — roles Positivo/Atención/Interactivo, ver 00-STATE.md)
 - [x] [13-psicologia.md](13-psicologia.md) - Psicologia (cerrado 2026-07-12 — límite obligatorio para streaks, ver 00-STATE.md)
 - [x] [14-gamificacion.md](14-gamificacion.md) - Gamificacion (cerrado 2026-07-12 — ventana móvil de constancia, ver 00-STATE.md)
-- [ ] [15-ia.md](15-ia.md) - IA
+- [x] [15-ia.md](15-ia.md) - IA (cerrado 2026-07-12 — señal semanal definida, caja diaria delegada a cap 16, ver 00-STATE.md)
 - [ ] [16-roadmap-ux.md](16-roadmap-ux.md) - Roadmap UX
 - [ ] [17-qa.md](17-qa.md) - QA
 - [ ] [18-definition-of-done.md](18-definition-of-done.md) - Definition of Done
