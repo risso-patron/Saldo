@@ -61,7 +61,15 @@
     extensión explícita, citando cap 10 y WCAG 2.2 (límite de tiempo)
   - Evidencia: nota honesta de que ninguna persona de cap 02 tiene discapacidad documentada — no se inventó ninguna
   - Verificado sin contradicciones contra 01-09 antes de cerrar
-- [ ] 11 - Responsive Philosophy
+- [x] 11 - Responsive Philosophy (cerrado 2026-07-12)
+  - Evidencia: tamaño táctil delegado por cap 10 resuelto — 44×44px mínimo operativo, justificado contra el piso
+    legal WCAG (24×24px) citando el miedo de Rosa (cap 02)
+  - Evidencia: regla del pulgar (zonas fácil/media/difícil) aplicada sobre elementos ya definidos en cap 05, 07, 08 y
+    09, sin pantallas nuevas
+  - Evidencia: espaciado entre los dos botones del Paso A (excepción cap 03/06) resuelto explícitamente
+  - Evidencia: decisiones de persona con cita — José y Ana por sus ventanas de tiempo (cap 02), Rosa por su miedo a
+    equivocarse; Luis marcado explícitamente como el caso que menos presiona este capítulo, sin necesidad inventada
+  - Verificado sin contradicciones contra 01-10 antes de cerrar
 - [ ] 12 - Design System
 - [ ] 13 - Psicologia
 - [ ] 14 - Gamificacion
@@ -95,6 +103,8 @@
 - Nivel de accesibilidad: WCAG 2.2 AA (no A, no AAA) — justificación completa en cap 10
 - Ningún estado se comunica solo con color (cap 10, sección 3) — aplica a todo lo que se diseñe visualmente de acá en adelante, especialmente relevante para cap 12 (Design System)
 - El texto de "¿Dónde estoy?" definido en cap 07 (tabla de las 4 preguntas) es también el título accesible real de cada pantalla, no solo texto visual grande
+- Tamaño mínimo de objetivos táctiles: 44×44px (por encima del piso legal WCAG de 24×24px), justificado por el miedo de Rosa a equivocarse. Aplica a todo elemento táctil del producto de acá en adelante
+- Regla del pulgar / zonas (fácil, media, difícil): fija qué elementos van en cada zona según cap 05-10, relevante para cap 12 (Design System) y cualquier layout futuro
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
