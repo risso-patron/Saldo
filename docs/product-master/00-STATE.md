@@ -70,7 +70,15 @@
   - Evidencia: decisiones de persona con cita — José y Ana por sus ventanas de tiempo (cap 02), Rosa por su miedo a
     equivocarse; Luis marcado explícitamente como el caso que menos presiona este capítulo, sin necesidad inventada
   - Verificado sin contradicciones contra 01-10 antes de cerrar
-- [ ] 12 - Design System
+- [x] 12 - Design System (cerrado 2026-07-12)
+  - Evidencia: resuelve los 4 pendientes delegados citando origen — contraste (cap 10/11), duración/curvas (cap 08),
+    color/iconografía/duración de los 8 estados de feedback (cap 09), foco (cap 10)
+  - Evidencia: revisión en vivo del rol de foco — la primera versión reusaba "Atención" y generaba ruido en cada Tab,
+    diluyendo la señal de alerta real; corregido a un tercer rol nuevo, "Interactivo" (compartido con botones
+    principales), dejando explícito que no existía un rol previo para reusar en vez de forzar una reutilización
+  - Evidencia: alcance acotado a roles y reglas numéricas, sin paleta de marca hexadecimal — justificado en la
+    sección "Alcance" del capítulo
+  - Verificado sin contradicciones contra 01-11 antes de cerrar
 - [ ] 13 - Psicologia
 - [ ] 14 - Gamificacion
 - [ ] 15 - IA
@@ -105,6 +113,9 @@
 - El texto de "¿Dónde estoy?" definido en cap 07 (tabla de las 4 preguntas) es también el título accesible real de cada pantalla, no solo texto visual grande
 - Tamaño mínimo de objetivos táctiles: 44×44px (por encima del piso legal WCAG de 24×24px), justificado por el miedo de Rosa a equivocarse. Aplica a todo elemento táctil del producto de acá en adelante
 - Regla del pulgar / zonas (fácil, media, difícil): fija qué elementos van en cada zona según cap 05-10, relevante para cap 12 (Design System) y cualquier layout futuro
+- Roles de color del sistema (cap 12): Positivo (las 5 confirmaciones de cap 09, un solo rol), Atención (los 3 avisos de cap 09, deliberadamente no rojo de alerta agresiva), Interactivo (énfasis de botones principales y anillo de foco — nunca el foco reusa Atención, para no diluir la señal de alerta en cada Tab). Contraste mínimo: 4.5:1 texto normal, 3:1 texto grande/componentes de interfaz. Ningún valor hexadecimal fijado todavía — son roles, no paleta de marca
+- Espaciado táctil mínimo entre objetivos adyacentes: 8px (cap 12, resuelve el número que cap 11 dejó sin cerrar)
+- Duraciones de animación con nombre: Rápida (~150ms, confirmaciones de cap 09) y Estándar (200-250ms, transiciones de pantalla completa, ya fijado en cap 08) — sin duración "lenta", sin rebote en ningún caso
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
