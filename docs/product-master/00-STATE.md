@@ -195,6 +195,12 @@
   criterio 8, ejemplo aplicado; relacionado con el Hallazgo 2 de cap 17). No bloquea nada hoy: V1 cubre el mínimo
   para las 4 personas. Si en algún momento se define contenido V2 específico para Luis, actualizar cap 15 (nueva
   sección o evolución de la sección 1) y reflejarlo acá y en cap 18.
+- "Primer presupuesto sostenido" (logro de cap 14, definido en cap 15 como 3 meses consecutivos): no está resuelto
+  si es un logro único (se otorga una sola vez en la vida de la cuenta) o repetible (se vuelve a otorgar cada vez
+  que se cumplen 3 meses consecutivos nuevos, incluso después de una ruptura). Detectado en cap 17, checklist
+  "usuario experto" — marcado ahí como ambigüedad menor, elevado acá el 2026-07-12 para tratarlo con el mismo
+  criterio que la ambigüedad de Luis, en vez de dejarlo mejor rastreado por casualidad. No bloquea nada hoy. Si se
+  resuelve, actualizar cap 14 o cap 15 y reflejarlo acá.
 
 ## Contradicciones resueltas (historial)
 - Cap 05 detectó que el mapa original nombraba la etapa 8 como "Primer insight IA", pero "Insights" es vocabulario
