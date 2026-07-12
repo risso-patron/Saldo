@@ -89,7 +89,16 @@
   - Evidencia: regla obligatoria para cap 14 (sin streaks con vergüenza al romperse) logueada arriba como decisión
     fundacional, no como sugerencia
   - Verificado sin contradicciones contra 01-12 antes de cerrar
-- [ ] 14 - Gamificacion
+- [x] 14 - Gamificacion (cerrado 2026-07-12)
+  - Evidencia: regla obligatoria de cap 13 resuelta de raíz — ventana móvil de constancia en vez de streak clásico
+    con punto de ruptura (punto 2 de 14-gamificacion.md)
+  - Evidencia: 4 logros, 3 mapeados directo a cap 05, 1 ("sostenido") marcado explícitamente como criterio nuevo sin
+    definición numérica, delegado a cap 15/16 — corregido en vivo para no presentarlo como ya resuelto
+  - Evidencia: dos rechazos nuevos con justificación propia (comparación social, cap 01; sistema de puntos paralelo,
+    cap 03 regla 3), además de los 4 heredados de cap 13
+  - Evidencia: "Aplicación por persona" corregida en vivo para no calificar como "no es inferencia" conexiones que sí
+    lo son, aunque directas — mismo estándar de rigor que cap 13
+  - Verificado sin contradicciones contra 01-13 antes de cerrar
 - [ ] 15 - IA
 - [ ] 16 - Roadmap UX
 - [ ] 17 - QA
@@ -126,7 +135,9 @@
 - Espaciado táctil mínimo entre objetivos adyacentes: 8px (cap 12, resuelve el número que cap 11 dejó sin cerrar)
 - Duraciones de animación con nombre: Rápida (~150ms, confirmaciones de cap 09) y Estándar (200-250ms, transiciones de pantalla completa, ya fijado en cap 08) — sin duración "lenta", sin rebote en ningún caso
 - Regla obligatoria para cap 14 (Gamificación): ningún streak puede tener mecanismo de vergüenza al romperse (sin reinicio a cero presentado como fracaso, sin mensaje que lo trate como pérdida) — un streak roto tiene que sentirse, como máximo, neutro
-- Mecanismos rechazados explícitamente, no reintroducir sin discutirlos de nuevo: urgencia artificial, culpa para reenganchar por inactividad, streaks con vergüenza, felicitación por acciones rutinarias (mismo principio que "IA terminó" en cap 09 — no premiar/narrar lo rutinario)
+- Mecanismos rechazados explícitamente, no reintroducir sin discutirlos de nuevo: urgencia artificial, culpa para reenganchar por inactividad, streaks con vergüenza, felicitación por acciones rutinarias (mismo principio que "IA terminó" en cap 09 — no premiar/narrar lo rutinario), comparación social/tabla de posiciones (cap 14, fuente de vergüenza que cap 01 existe para evitar), sistema de puntos o moneda virtual paralela (cap 14, contradice cap 03 regla 3 — un número que no responde una pregunta real es ruido)
+- Mecanismo de constancia (cap 14, resuelve la regla obligatoria de cap 13): ventana móvil (ej. "12 de los últimos 14 días"), nunca streak clásico con punto de ruptura que vuelve a cero
+- "Primer presupuesto sostenido" (logro de cap 14) introduce un criterio nuevo no presente en cap 05 etapa 7 (que solo define crear un presupuesto, no mantenerlo) — la definición numérica de "sostenido" (cuántos períodos, con qué tolerancia) queda delegada a cap 15 (IA) o cap 16 (Roadmap UX), mismo patrón que las señales anticipatorias de Ana/José
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
