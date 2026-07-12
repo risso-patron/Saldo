@@ -17,7 +17,16 @@
     (ver sección "Aplicación por persona" del capítulo)
   - Evidencia: contradicción "hallazgo IA" vs "insight IA" detectada y resuelta 2026-07-12 (ver Contradicciones resueltas)
   - Verificado sin contradicciones contra 01-04 antes de cerrar
-- [ ] 06 - Onboarding
+- [x] 06 - Onboarding (cerrado 2026-07-12)
+  - Evidencia: esqueleto de 3 pasos (A confirmar el porqué salteable, B primera acción guiada obligatoria, C empalme
+    con el Inicio de cap 01) en 06-onboarding.md, aprobado explícitamente por el usuario
+  - Evidencia: no contradice la etapa 3 ya cerrada en cap 05 — las 4 dimensiones de esa etapa se citan textualmente
+    como punto de partida antes de desarrollar la estructura
+  - Evidencia: decisión fundacional de interrupción/retomado a mitad del Paso B logueada arriba, con costo técnico
+    explícito para quien implemente en código (no es solo un detalle de UX)
+  - Evidencia: decisiones de persona aplicadas con cita — José (no repreguntar personal/negocio, Paso B), Ana
+    (interrupción/retomado, cita cap 02 tiempo en bloques), Rosa y Luis (énfasis en "Onboarding por persona")
+  - Verificado sin contradicciones contra 01-05 antes de cerrar
 - [ ] 07 - UX Writing
 - [ ] 08 - Microinteracciones
 - [ ] 09 - Sistema de Feedback
@@ -48,6 +57,7 @@
 - A partir de cap 05, todo cierre de capítulo requiere checklist con evidencia y citas textuales (línea/sección concreta), no alcanza con el tilde
 - A partir de cap 06, releer completos los capítulos 01-05 antes de redactar cualquier capítulo nuevo: 05 también pasa a ser fundacional, porque fija el recorrido completo (las 12 etapas) que los capítulos siguientes deben respetar paso a paso, no redefinir distinto
 - Vocabulario: la etapa de IA del recorrido de experiencia se llama "hallazgo IA", nunca "insight IA" — "Insights" es vocabulario prohibido (cap 04, línea 17). Aplica a cap 05 y a cualquier capítulo futuro (06+) que nombre esta etapa
+- El onboarding debe soportar interrupción y retomado a mitad del Paso B (carga de movimiento) sin reiniciar desde el principio — esto es una decisión de arquitectura con costo técnico real (persistir estado a mitad de formulario), no solo un detalle de UX. Debe tenerse en cuenta quien implemente el onboarding en código, más allá de este documento
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
