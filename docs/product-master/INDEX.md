@@ -24,5 +24,5 @@
 - [x] [16-roadmap-ux.md](16-roadmap-ux.md) - Roadmap UX (cerrado 2026-07-12 — V1-V4 justificadas, ver 00-STATE.md)
 - [x] [17-qa.md](17-qa.md) - QA (cerrado 2026-07-12 — 3 hallazgos de simulación end-to-end, reabre cap 05/15, ver 00-STATE.md)
 - [x] [18-definition-of-done.md](18-definition-of-done.md) - Definition of Done (cerrado 2026-07-12 — 10 criterios citados, ver 00-STATE.md)
-- [ ] [19-anti-patterns.md](19-anti-patterns.md) - Anti-Patterns
+- [x] [19-anti-patterns.md](19-anti-patterns.md) - Anti-Patterns (cerrado 2026-07-12 — 14 anti-patrones activos, ver 00-STATE.md)
 - [ ] [20-la-regla-de-oro.md](20-la-regla-de-oro.md) - La Regla de Oro

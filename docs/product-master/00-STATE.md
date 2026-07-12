@@ -136,7 +136,14 @@
   - Evidencia: el hueco detectado en el criterio 8 (Luis sin contenido V2 propio de "hallazgo IA") se elevó a
     Contradicción abierta en 00-STATE.md a pedido del usuario, en vez de quedar enterrado dentro del ejemplo
   - Verificado sin contradicciones contra 01-17 antes de cerrar
-- [ ] 19 - Anti-Patterns
+- [x] 19 - Anti-Patterns (cerrado 2026-07-12)
+  - Evidencia: los 8 anti-patrones de la propuesta original conectados a su resolución específica (cita de capítulo
+    y frase textual), no repetidos como lista suelta
+  - Evidencia: 2 de los 8 (gráficos vacíos, tarjetas sin datos) tenían solo el principio sin patrón concreto —
+    detectado y completado con el patrón de estado vacío nuevo, en vez de darlos por resueltos sin más
+  - Evidencia: 6 anti-patrones nuevos, todos con cita a un capítulo y decisión concreta — 2 de ellos formalizan
+    directamente los hallazgos de cap 17 como patrón reutilizable
+  - Verificado sin contradicciones contra 01-18 antes de cerrar
 - [ ] 20 - La Regla de Oro
 
 ## Decisiones fundacionales (no tocar sin avisar)
@@ -179,6 +186,8 @@
 - "Primer hallazgo IA" (cap 05, etapa 8) tiene contenido de V1 aplicable a las 4 personas (observación simple sobre el primer movimiento cargado, sin pretensión predictiva) — la señal semanal de Ana/José (cap 15) es la evolución de esa misma etapa en V2, nunca un contenido o etapa separada. Corregido en cap 17 tras detectar que, sin esto, nadie tenía contenido real para esa etapa el día 1
 - El selector de agrupación por cliente/origen (cap 07, etapa 6) tiene condición de aparición basada en datos reales (más de un origen de ingreso distinguible), no en persona asignada — corregido en cap 17, Hallazgo 1
 - Jerarquía del Inicio con el tiempo (cap 17, Hallazgo 3): el trío de cifras de cap 01 siempre es el elemento más prominente, ninguna pieza de V2/V3 (hallazgo IA, logros, señales) puede competir con él ni apilarse con otra al mismo tiempo — combina reglas ya existentes de cap 09 y cap 12, no crea una regla nueva
+- Patrón de estado vacío (cap 19): mensaje breve explicando por qué + CTA cuando corresponde (reusa "+ Agregar movimiento" de cap 07), nunca espacio vacío sin explicación — resuelve gráficos vacíos y tarjetas sin datos
+- 14 anti-patrones activos, no reintroducir sin discutirlos de nuevo (lista completa en cap 19): gráficos vacíos, tarjetas sin datos, métricas incomprensibles, IA por marketing, nombres técnicos, ocultar acciones importantes, doble confirmación innecesaria, modales infinitos, streak con castigo al romperse, comparación social/tabla de posiciones, economía paralela de puntos, IA narrando su propio proceso, elemento de interfaz sin condición de datos reales, etapa temprana del recorrido sin contenido válido en V1
 
 ## Contradicciones abiertas (requieren tu decision)
 - "Primer hallazgo IA" en V2 (cap 15) solo tiene contenido definido para Ana (gasto) y José (ingreso del negocio) —
