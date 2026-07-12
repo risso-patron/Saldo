@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { sanitizeCSVCell } from './csvSecurity';
 
 /**
@@ -137,7 +137,7 @@ export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, d
       `${cat.percentage.toFixed(1)}%`,
     ]);
     
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPos,
       head: [['Categoría', 'Monto', 'Porcentaje']],
       body: categoryData,
@@ -184,7 +184,7 @@ export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, d
     ]),
   ].sort((a, b) => new Date(b[0]) - new Date(a[0]));
   
-  doc.autoTable({
+  autoTable(doc, {
     startY: yPos,
     head: [['Fecha', 'Tipo', 'Descripción', 'Categoría', 'Monto']],
     body: transactionData,

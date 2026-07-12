@@ -7,6 +7,304 @@
 			"command": "python -m http.server 8000",
 			"isBackground": true,
 			"group": "serve"
+		},
+		{
+			"label": "Diagnostico Build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Diagnostico Test",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test",
+				"--",
+				"--run"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Diagnostico Outdated",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"outdated"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Diagnostico Audit",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"audit",
+				"--json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Diagnostico GitLsFiles",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"ls-files"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Diagnostico Lint",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"lint"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 Inspect Versions",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"ls",
+				"jsdom",
+				"parse5"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 Node Version",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-v"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 Fix jsdom patch",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"-D",
+				"jsdom@27.4.0"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 Fix jsdom patch 2",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"-D",
+				"jsdom@27.4.0"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 Verify versions",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"ls",
+				"jsdom",
+				"parse5",
+				"vite",
+				"vitest"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 Run full tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test",
+				"--",
+				"--run"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 check jsdom engines",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"view",
+				"jsdom@26",
+				"engines",
+				"version"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 check jsdom26 deps",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"view",
+				"jsdom@26.1.0",
+				"dependencies.parse5",
+				"dependencies.html-encoding-sniffer"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 pin jsdom26",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"-D",
+				"jsdom@26.1.0"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 verify jsdom26 install",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"ls",
+				"jsdom",
+				"parse5"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 align package jsdom",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"pkg",
+				"set",
+				"devDependencies.jsdom=^26.1.0"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 npm install refresh",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso1 rerun full tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test",
+				"--",
+				"--run"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 audit json",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"audit",
+				"--json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 audit fix dryrun",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"audit",
+				"fix",
+				"--dry-run"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 compare jspdf metadata",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"view",
+				"jspdf@3.0.4",
+				"main",
+				"module",
+				"exports",
+				"types",
+				"engines"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 compare jspdf metadata 4",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"view",
+				"jspdf@4.2.1",
+				"main",
+				"module",
+				"exports",
+				"types",
+				"engines"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 check autotable compatibility",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"view",
+				"jspdf-autotable@5.0.7",
+				"peerDependencies"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 Bump jspdf 4.2.1",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"jspdf@4.2.1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 Bump jspdf",
+			"type": "shell",
+			"command": "npm install jspdf@4.2.1",
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 QA test export pdf",
+			"type": "shell",
+			"command": "npm test -- --run src/__tests__/pdfExport.qa.test.js",
+			"isBackground": false
+		},
+		{
+			"label": "Paso2 Re-run full tests post-jspdf",
+			"type": "shell",
+			"command": "npm test -- --run",
+			"isBackground": false
+		},
+		{
+			"label": "Paso3 full tests",
+			"type": "shell",
+			"command": "npm test -- --run",
+			"isBackground": false
 		}
 	]
 }
