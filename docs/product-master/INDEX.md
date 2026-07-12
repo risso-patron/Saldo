@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 16 de 20
+- Capitulos cerrados: 17 de 20
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -22,7 +22,7 @@
 - [x] [14-gamificacion.md](14-gamificacion.md) - Gamificacion (cerrado 2026-07-12 — ventana móvil de constancia, ver 00-STATE.md)
 - [x] [15-ia.md](15-ia.md) - IA (cerrado 2026-07-12 — señal semanal definida, caja diaria delegada a cap 16, ver 00-STATE.md)
 - [x] [16-roadmap-ux.md](16-roadmap-ux.md) - Roadmap UX (cerrado 2026-07-12 — V1-V4 justificadas, ver 00-STATE.md)
-- [ ] [17-qa.md](17-qa.md) - QA
+- [x] [17-qa.md](17-qa.md) - QA (cerrado 2026-07-12 — 3 hallazgos de simulación end-to-end, reabre cap 05/15, ver 00-STATE.md)
 - [ ] [18-definition-of-done.md](18-definition-of-done.md) - Definition of Done
 - [ ] [19-anti-patterns.md](19-anti-patterns.md) - Anti-Patterns
 - [ ] [20-la-regla-de-oro.md](20-la-regla-de-oro.md) - La Regla de Oro

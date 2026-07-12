@@ -117,7 +117,17 @@
     qué diferirlos contradiría cap 10/11
   - Evidencia: resuelve la pieza delegada por cap 15 (caja diaria) ubicándola en V4 sin inventar una fecha
   - Verificado sin contradicciones contra 01-15 antes de cerrar
-- [ ] 17 - QA
+- [x] 17 - QA (cerrado 2026-07-12)
+  - Evidencia: primera revisión de punta a punta del documento (no capítulo por capítulo) — 5 checklists (Rosa,
+    Luis, adulto mayor, usuario novato, usuario experto), cada ítem citado contra cap 05 u otro capítulo específico
+  - Evidencia: 3 hallazgos reales detectados por simulación, no por repaso abstracto — los 3 resueltos antes de
+    cerrar, ninguno diferido
+  - Evidencia: Hallazgo 2 (contenido de "hallazgo IA") resultó más amplio de lo detectado inicialmente — afectaba a
+    las 4 personas el día 1, no solo a dos — y motivó reabrir cap 05 (etapa 8) y cap 15 (sección 0 nueva) con cita
+    cruzada entre ambos
+  - Evidencia: nota honesta de que cap 02 no define una persona "adulto mayor" — ese checklist prueba principios
+    universales, no cita una necesidad inventada
+  - Verificado sin contradicciones contra 01-16 antes de cerrar
 - [ ] 18 - Definition of Done
 - [ ] 19 - Anti-Patterns
 - [ ] 20 - La Regla de Oro
@@ -159,6 +169,9 @@
 - Pendiente explícito para cap 16: granularidad diaria de "caja diaria" para José (cap 03, regla 9) — la señal de cap 15 es semanal (recalculada en cada entrada); una señal diaria confiable necesita su propia definición de historial mínimo y umbral, no resuelta todavía
 - Roadmap (cap 16): V1 (recorrido completo, sin dependencia de historial de uso) — V2 (≥4 semanas, señal semanal Ana/José) — V3 (≥3 meses, gamificación completa incluido "sostenido") — V4 (caja diaria de José, sin fecha, bloqueada por diseño pendiente, no por antigüedad de datos)
 - Accesibilidad (cap 10), Responsive (cap 11) y Design System (cap 12) son piso desde V1, nunca una fase tardía del roadmap
+- "Primer hallazgo IA" (cap 05, etapa 8) tiene contenido de V1 aplicable a las 4 personas (observación simple sobre el primer movimiento cargado, sin pretensión predictiva) — la señal semanal de Ana/José (cap 15) es la evolución de esa misma etapa en V2, nunca un contenido o etapa separada. Corregido en cap 17 tras detectar que, sin esto, nadie tenía contenido real para esa etapa el día 1
+- El selector de agrupación por cliente/origen (cap 07, etapa 6) tiene condición de aparición basada en datos reales (más de un origen de ingreso distinguible), no en persona asignada — corregido en cap 17, Hallazgo 1
+- Jerarquía del Inicio con el tiempo (cap 17, Hallazgo 3): el trío de cifras de cap 01 siempre es el elemento más prominente, ninguna pieza de V2/V3 (hallazgo IA, logros, señales) puede competir con él ni apilarse con otra al mismo tiempo — combina reglas ya existentes de cap 09 y cap 12, no crea una regla nueva
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)

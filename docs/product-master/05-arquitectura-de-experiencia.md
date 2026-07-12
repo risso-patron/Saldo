@@ -102,6 +102,14 @@ si no hay cita, no se asume.
 - **Nota de principio (cap 03, regla 7):** *"La IA nunca es protagonista. La IA acompaña, sugiere y traduce. No se
   impone, no complica, no habla en difícil."* Esta etapa no puede convertirse en una sección o pantalla dominante — es
   un mensaje que aparece, ayuda y se retira.
+- **Nota de contenido por versión (agregada en la revisión de cap 17 — QA, Hallazgo 2):** esta etapa está temprano en
+  el recorrido (junto a Primer ingreso, Primer gasto, Primer gráfico), pero el único contenido con definición
+  numérica hasta cap 15 era la señal semanal de Ana/José, que requiere 4 semanas de historial (V2, cap 16) — es
+  decir, nadie tenía nada real que ver acá el día 1. Se resuelve así: la etapa 8 tiene contenido **desde V1**, básico
+  y sin pretensión predictiva (una observación sobre el primer movimiento cargado, no un patrón), aplicable a las 4
+  personas por igual. La señal semanal de Ana/José (cap 15) **no es una etapa distinta ni un contenido nuevo — es la
+  misma etapa 8, evolucionada**, una vez que hay suficiente historial. Mismo lugar en pantalla, mismo nombre visible
+  ("Una idea sobre tu plata", cap 07), más profundidad cuando los datos lo permiten. Definición completa en cap 15.
 
 ### 9) Primer objetivo
 - Objetivo emocional: convertir la motivación en una meta concreta
@@ -181,3 +189,7 @@ si no hay cita, no se asume.
       capítulo la redactó como "Primer hallazgo IA" por el vocabulario prohibido de cap 04. Queda pendiente tu
       confirmación — si preferís mantener "insight" como nombre interno de etapa (no de UI), se ajusta sin tocar el resto
       del capítulo.
+
+**Addendum (cap 17, QA — Hallazgo 2, 2026-07-12):** la etapa 8 no tenía contenido real para ningún día 1 — el único
+contenido definido (cap 15) requería 4 semanas de historial. Corregido: ver "Nota de contenido por versión" al final
+de la etapa 8, arriba. No se reabre el resto del capítulo, solo esa etapa.
