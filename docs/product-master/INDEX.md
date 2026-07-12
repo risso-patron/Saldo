@@ -9,7 +9,7 @@
 - [x] [01-la-filosofia.md](01-la-filosofia.md) - La Filosofia (cerrado 2026-07-10)
 - [x] [02-quien-es-nuestro-usuario.md](02-quien-es-nuestro-usuario.md) - Quien es nuestro usuario (cerrado 2026-07-10)
 - [x] [03-principios-del-producto.md](03-principios-del-producto.md) - Principios del Producto (cerrado 2026-07-10)
-- [x] [04-ux-manifesto.md](04-ux-manifesto.md) - UX Manifesto (cerrado 2026-07-10)
+- [x] [04-ux-manifesto.md](04-ux-manifesto.md) - UX Manifesto (cerrado 2026-07-10, verificado 2026-07-12 — vocabulario Luis/José confirmado, ver 00-STATE.md)
 - [ ] [05-arquitectura-de-experiencia.md](05-arquitectura-de-experiencia.md) - Arquitectura de Experiencia
 - [ ] [06-onboarding.md](06-onboarding.md) - Onboarding
 - [ ] [07-ux-writing.md](07-ux-writing.md) - UX Writing

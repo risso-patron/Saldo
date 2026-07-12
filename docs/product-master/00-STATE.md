@@ -4,7 +4,12 @@
 - [x] 01 - La Filosofia (cerrado 2026-07-10)
 - [x] 02 - Quien es nuestro usuario (cerrado 2026-07-10)
 - [x] 03 - Principios del Producto (cerrado 2026-07-10)
-- [x] 04 - UX Manifesto (cerrado 2026-07-10)
+- [x] 04 - UX Manifesto (cerrado 2026-07-10, verificado 2026-07-12)
+  - Evidencia: "Vocabulario permitido" (04-ux-manifesto.md, lineas 25-34) incluye las dos frases acunadas en cap 03 —
+    "cómo te está yendo con tus clientes" (Luis, linea 32) y "tu plata" / "la plata del negocio" (Jose, lineas 33-34)
+  - Evidencia: las 4 preguntas de orientacion ("¿Dónde estoy? ¿Qué puedo hacer? ¿Qué pasa si aprieto esto? ¿Qué gano haciendo esto?",
+    lineas 6-9) quedan fijadas como criterio de cierre para toda pantalla de los capitulos siguientes
+  - Verificado sin contradicciones contra 01-03 antes de cerrar
 - [ ] 05 - Arquitectura de Experiencia
 - [ ] 06 - Onboarding
 - [ ] 07 - UX Writing
@@ -33,6 +38,8 @@
 - Luis necesita agrupar movimientos por cliente/origen, no solo por categoría de gasto; es una dimensión de datos distinta que Arquitectura (05) y Design System (12) no deben ignorar
 - Ana necesita señales anticipatorias ("semanas difíciles"), no solo registro histórico; marcar para que IA (15) y/o Roadmap UX (16) lo retomen explícitamente
 - José necesita separación clara entre caja personal y caja del negocio; no es una categoría más, es una distinción estructural de datos que debe resolverse explícitamente en arquitectura/categorías/design system más adelante
+- A partir de cap 05, releer completos los capítulos 01-04 antes de redactar cualquier capítulo nuevo: 04 pasa a ser fundacional junto con 01-03, porque fija el vocabulario oficial (prohibido/permitido) que rige el resto del documento
+- A partir de cap 05, todo cierre de capítulo requiere checklist con evidencia y citas textuales (línea/sección concreta), no alcanza con el tilde
 
 ## Contradicciones abiertas (requieren tu decision)
 - (vacio)
