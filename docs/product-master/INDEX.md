@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 18 de 20
+- Capitulos cerrados: 20 de 20 — documento completo
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -25,4 +25,4 @@
 - [x] [17-qa.md](17-qa.md) - QA (cerrado 2026-07-12 — 3 hallazgos de simulación end-to-end, reabre cap 05/15, ver 00-STATE.md)
 - [x] [18-definition-of-done.md](18-definition-of-done.md) - Definition of Done (cerrado 2026-07-12 — 10 criterios citados, ver 00-STATE.md)
 - [x] [19-anti-patterns.md](19-anti-patterns.md) - Anti-Patterns (cerrado 2026-07-12 — 14 anti-patrones activos, ver 00-STATE.md)
-- [ ] [20-la-regla-de-oro.md](20-la-regla-de-oro.md) - La Regla de Oro
+- [x] [20-la-regla-de-oro.md](20-la-regla-de-oro.md) - La Regla de Oro (cerrado 2026-07-12 — cierre del documento, ver 00-STATE.md)

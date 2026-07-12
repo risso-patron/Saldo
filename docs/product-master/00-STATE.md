@@ -144,7 +144,13 @@
   - Evidencia: 6 anti-patrones nuevos, todos con cita a un capítulo y decisión concreta — 2 de ellos formalizan
     directamente los hallazgos de cap 17 como patrón reutilizable
   - Verificado sin contradicciones contra 01-18 antes de cerrar
-- [ ] 20 - La Regla de Oro
+- [x] 20 - La Regla de Oro (cerrado 2026-07-12)
+  - Evidencia: no define nada nuevo — cada sección cita un capítulo anterior; verificado sin vocabulario prohibido
+    ni mención de stack técnico (grep limpio)
+  - Evidencia: frase de cierre adaptada de la propuesta original ("sentir inteligente" → "sentir en control de su
+    plata"), justificada contra la misión de cap 01, no dejada genérica
+  - Evidencia: elección de Rosa como prueba más exigente (no la más fácil) sostenida con cita textual de cap 02
+  - Verificado sin contradicciones contra 01-19 antes de cerrar — documento completo, 20/20
 
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
