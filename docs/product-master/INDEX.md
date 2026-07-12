@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 6 de 20
+- Capitulos cerrados: 7 de 20
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -12,7 +12,7 @@
 - [x] [04-ux-manifesto.md](04-ux-manifesto.md) - UX Manifesto (cerrado 2026-07-10, verificado 2026-07-12 — vocabulario Luis/José confirmado, ver 00-STATE.md)
 - [x] [05-arquitectura-de-experiencia.md](05-arquitectura-de-experiencia.md) - Arquitectura de Experiencia (cerrado 2026-07-12 — recorrido de 12 etapas con citas de persona, ver 00-STATE.md)
 - [x] [06-onboarding.md](06-onboarding.md) - Onboarding (cerrado 2026-07-12 — esqueleto de 3 pasos, ver 00-STATE.md)
-- [ ] [07-ux-writing.md](07-ux-writing.md) - UX Writing
+- [x] [07-ux-writing.md](07-ux-writing.md) - UX Writing (cerrado 2026-07-12 — copy final onboarding + hallazgo IA, ver 00-STATE.md)
 - [ ] [08-microinteracciones.md](08-microinteracciones.md) - Microinteracciones
 - [ ] [09-sistema-de-feedback.md](09-sistema-de-feedback.md) - Sistema de Feedback
 - [ ] [10-accesibilidad.md](10-accesibilidad.md) - Accesibilidad

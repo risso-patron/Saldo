@@ -27,7 +27,14 @@
   - Evidencia: decisiones de persona aplicadas con cita — José (no repreguntar personal/negocio, Paso B), Ana
     (interrupción/retomado, cita cap 02 tiempo en bloques), Rosa y Luis (énfasis en "Onboarding por persona")
   - Verificado sin contradicciones contra 01-05 antes de cerrar
-- [ ] 07 - UX Writing
+- [x] 07 - UX Writing (cerrado 2026-07-12)
+  - Evidencia: texto final cerrado para "hallazgo IA" → "Una idea sobre tu plata" y para "onboarding" → "Primeros
+    pasos" (07-ux-writing.md, secciones 1 y 2), ambos citando cap 03 regla 7 y cap 06
+  - Evidencia: copy final de los 3 pasos de onboarding (cap 06) resuelto sin agregar pasos ni pantallas nuevas
+  - Evidencia: las 4 preguntas de cap 04 resueltas con copy real para las 12 etapas de cap 05, incluida nota⁴ en
+    Primer presupuesto trazando "Te avisamos antes de que lo pases, no después" a la señal anticipatoria de Ana/José
+    (cap 05, etapa 7) — agregada a pedido del usuario para no dejar excepciones sin trazar
+  - Verificado sin contradicciones contra 01-06 antes de cerrar
 - [ ] 08 - Microinteracciones
 - [ ] 09 - Sistema de Feedback
 - [ ] 10 - Accesibilidad
