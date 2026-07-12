@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
+import { usePeriod } from '../../contexts/PeriodContext'
+import { filterByDateRange } from '../../utils/calculations'
 import { EXPENSE_CATEGORIES } from '../../constants/categories'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -12,6 +14,7 @@ const BUDGETS_KEY = 'budget_calculator_budgets'
  */
 export function BudgetManager({ expenses }) {
   const { t, i18n } = useTranslation()
+  const { dateRange, type, year, month, from, to } = usePeriod()
   const [budgets, setBudgets] = useLocalStorage(BUDGETS_KEY, {})
   const [editingCategory, setEditingCategory] = useState(null)
   const [inputValue, setInputValue] = useState('')
@@ -24,29 +27,32 @@ export function BudgetManager({ expenses }) {
     return null
   }
 
-  // Gastos del mes actual por categoría
-  const currentMonthSpending = useMemo(() => {
-    const now = new Date()
-    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  // Gastos del período global elegido por categoría (dashboard, presupuestos y
+  // exportación MUST coincidir en el mismo rango — spec "BudgetManager respeta
+  // el período global"). Sin período elegido (type='all', dateRange=null) no
+  // hay rango que aplicar: se consideran todas las transacciones.
+  const periodSpending = useMemo(() => {
+    const relevant = dateRange
+      ? filterByDateRange(expenses, dateRange.from, dateRange.to)
+      : expenses
     const result = {}
 
-    expenses.forEach(exp => {
-      if (!exp.date || !exp.category) return
-      if (!exp.date.startsWith(yearMonth)) return
+    relevant.forEach(exp => {
+      if (!exp.category) return
       result[exp.category] = (result[exp.category] || 0) + exp.amount
     })
 
     return result
-  }, [expenses])
+  }, [expenses, dateRange])
 
-  // Categorías con presupuesto asignado + las que tienen gastos este mes
+  // Categorías con presupuesto asignado + las que tienen gastos en el período
   const activeCategories = useMemo(() => {
     const cats = new Set([
       ...Object.keys(budgets),
-      ...Object.keys(currentMonthSpending),
+      ...Object.keys(periodSpending),
     ])
     return EXPENSE_CATEGORIES.filter(c => cats.has(c.value))
-  }, [budgets, currentMonthSpending])
+  }, [budgets, periodSpending])
 
   const handleSaveBudget = (category) => {
     const val = parseFloat(inputValue)
@@ -87,6 +93,24 @@ export function BudgetManager({ expenses }) {
   const formatCurrency = (amount) =>
     new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(amount || 0)
 
+  // Etiqueta del período activo para el encabezado — MUST ser consistente con
+  // los montos mostrados abajo (misma fuente `usePeriod()`), no el mes
+  // calendario real. Antes el título usaba `new Date()` directo y podía leerse
+  // "Julio" mientras los montos ya reflejaban el período elegido (ej. Marzo).
+  const periodLabel = useMemo(() => {
+    switch (type) {
+      case 'month':
+        return new Date(year, month, 1).toLocaleString(i18n.language, { month: 'long', year: 'numeric' })
+      case 'year':
+        return String(year)
+      case 'custom':
+        return `${from} — ${to}`
+      case 'all':
+      default:
+        return t('header.all')
+    }
+  }, [type, year, month, from, to, i18n.language, t])
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
       {/* Header */}
@@ -96,7 +120,7 @@ export function BudgetManager({ expenses }) {
             🎯 Presupuestos por Categoría
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {new Date().toLocaleString(i18n.language, { month: 'long', year: 'numeric' })} — {t('budgets.monthly_limits')}
+            {periodLabel} — {t('budgets.monthly_limits')}
           </p>
         </div>
       </div>
@@ -105,7 +129,7 @@ export function BudgetManager({ expenses }) {
       {activeCategories.length > 0 && (
         <div className="space-y-4 mb-6">
           {activeCategories.map(cat => {
-            const spent = currentMonthSpending[cat.value] || 0
+            const spent = periodSpending[cat.value] || 0
             const data = getBudgetData(cat.value)
             const limit = data?.limit
             const note = data?.note

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useLocalStorage } from './useLocalStorage'
+import { usePeriod } from '../contexts/PeriodContext'
 import {
   calculateTotal,
   calculateBalance,
@@ -13,10 +13,21 @@ import {
 /**
  * Encapsula toda la lógica de filtrado por año/mes y los cálculos derivados.
  * Extrae ~15 useMemos que antes vivían en AppContent.
+ *
+ * Delega el estado de año/mes a `PeriodContext` (fuente única del período
+ * global) manteniendo exactamente la misma API pública de siempre — spec
+ * "Consumidor existente sin cambios" (App.jsx/AppHeader.jsx no se tocan).
  */
 export function useFilters(incomes, expenses) {
-  const [selectedYear, setSelectedYear] = useLocalStorage('budgetrp_ui_selectedYear', null)
-  const [selectedMonth, setSelectedMonth] = useLocalStorage('budgetrp_ui_selectedMonth', null)
+  const {
+    year: selectedYear,
+    setYear: setSelectedYear,
+    month: selectedMonth,
+    setMonth: setSelectedMonth,
+    type,
+    from,
+    to,
+  } = usePeriod()
 
   const filteredIncomes = useMemo(() => {
     const byYear = filterByYear(incomes, selectedYear)
@@ -42,7 +53,10 @@ export function useFilters(incomes, expenses) {
     () => getAvailableMonths(incomes, expenses, selectedYear),
     [incomes, expenses, selectedYear]
   )
-  const monthlyComparison = useMemo(() => calculateMonthlyComparison(incomes, expenses), [incomes, expenses])
+  const monthlyComparison = useMemo(
+    () => calculateMonthlyComparison(incomes, expenses, { type, year: selectedYear, month: selectedMonth, from, to }),
+    [incomes, expenses, type, selectedYear, selectedMonth, from, to]
+  )
 
   return {
     selectedYear, setSelectedYear,

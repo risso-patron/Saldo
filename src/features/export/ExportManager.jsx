@@ -4,6 +4,8 @@ import { Card } from '../../components/Shared/Card';
 import { Button } from '../../components/Shared/Button';
 import { exportToCSV, exportToPDF } from './exportUtils';
 import { useSubscription } from '../../hooks/useSubscription';
+import { usePeriod } from '../../contexts/PeriodContext';
+import { filterByDateRange } from '../../utils/calculations';
 import { UpgradeModal } from '../../components/Subscription/UpgradeModal';
 
 /**
@@ -11,25 +13,32 @@ import { UpgradeModal } from '../../components/Subscription/UpgradeModal';
  */
 export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport }) => {
   const { hasFeature } = useSubscription();
+  const { dateRange: globalDateRange } = usePeriod();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [blockedFeature, setBlockedFeature] = useState(null);
-  
-  const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0],
+
+  // El rango por defecto MUST coincidir con el período activo del dashboard
+  // (spec "ExportManager usa el rango activo del dashboard"). El usuario
+  // puede sobrescribirlo manualmente después — al ser estado inicial (no
+  // sincronizado por efecto), la edición manual del usuario se preserva.
+  const [dateRange, setDateRange] = useState(() => {
+    if (globalDateRange) {
+      return { start: globalDateRange.from, end: globalDateRange.to };
+    }
+    // Sin período elegido (type='all'): no hay rango natural que heredar,
+    // se conserva el default histórico (mes calendario real).
+    return {
+      start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      end: new Date().toISOString().split('T')[0],
+    };
   });
   const [includeCharts, setIncludeCharts] = useState(true);
   const [exporting, setExporting] = useState(false);
 
-  // Filtrar transacciones por rango de fechas
-  const filterByDateRange = (transactions) => {
-    return transactions.filter(t => {
-      const date = new Date(t.date);
-      const start = new Date(dateRange.start);
-      const end = new Date(dateRange.end);
-      return date >= start && date <= end;
-    });
-  };
+  // Filtrar transacciones por rango de fechas (usa `filterByDateRange` compartido
+  // con BudgetManager/calculateMonthlyComparison — normaliza timezone consistente).
+  const filterTransactionsByDateRange = (transactions) =>
+    filterByDateRange(transactions, dateRange.start, dateRange.end);
 
   const handleExportCSV = async () => {
     // Feature gate: Solo PRO puede exportar
@@ -41,8 +50,8 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
 
     setExporting(true);
     try {
-      const filteredIncomes = filterByDateRange(incomes);
-      const filteredExpenses = filterByDateRange(expenses);
+      const filteredIncomes = filterTransactionsByDateRange(incomes);
+      const filteredExpenses = filterTransactionsByDateRange(expenses);
       
       await exportToCSV(filteredIncomes, filteredExpenses, dateRange);
       onExport?.();
@@ -64,8 +73,8 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
 
     setExporting(true);
     try {
-      const filteredIncomes = filterByDateRange(incomes);
-      const filteredExpenses = filterByDateRange(expenses);
+      const filteredIncomes = filterTransactionsByDateRange(incomes);
+      const filteredExpenses = filterTransactionsByDateRange(expenses);
       
       // Calcular totales filtrados
       const filteredTotalIncome = filteredIncomes.reduce((sum, i) => sum + i.amount, 0);
@@ -94,7 +103,7 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
   };
 
   // Calcular número de transacciones en el rango
-  const filteredCount = filterByDateRange([...incomes, ...expenses]).length;
+  const filteredCount = filterTransactionsByDateRange([...incomes, ...expenses]).length;
 
   return (
     <Card title="📥 Exportar Datos">

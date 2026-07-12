@@ -36,6 +36,7 @@ import { useAchievements } from './hooks/gamification/useAchievements';
 import { AchievementNotifications } from './features/gamification/AchievementNotification';
 import { useRecurring } from './hooks/useRecurring';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+import { PeriodProvider } from './contexts/PeriodContext';
 import { CurrencySelector } from './features/currency/CurrencySelector';
 import { filterByMonth } from './utils/calculations';
 
@@ -327,7 +328,9 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <CurrencyProvider>
-            <AppContent />
+            <PeriodProvider>
+              <AppContent />
+            </PeriodProvider>
           </CurrencyProvider>
         </AuthProvider>
       </ThemeProvider>
