@@ -128,7 +128,14 @@
   - Evidencia: nota honesta de que cap 02 no define una persona "adulto mayor" — ese checklist prueba principios
     universales, no cita una necesidad inventada
   - Verificado sin contradicciones contra 01-16 antes de cerrar
-- [ ] 18 - Definition of Done
+- [x] 18 - Definition of Done (cerrado 2026-07-12)
+  - Evidencia: los 10 criterios de la propuesta original, cada uno con cita a capítulo específico (01, 03, 04, 09,
+    10, 11, 12, 15, 17) y frase textual cuando existe
+  - Evidencia: checklist demostrada como verificable con un caso real (cap 05, etapa 8), 10 de 10 evaluados con
+    evidencia, no solo en teoría
+  - Evidencia: el hueco detectado en el criterio 8 (Luis sin contenido V2 propio de "hallazgo IA") se elevó a
+    Contradicción abierta en 00-STATE.md a pedido del usuario, en vez de quedar enterrado dentro del ejemplo
+  - Verificado sin contradicciones contra 01-17 antes de cerrar
 - [ ] 19 - Anti-Patterns
 - [ ] 20 - La Regla de Oro
 
@@ -174,7 +181,11 @@
 - Jerarquía del Inicio con el tiempo (cap 17, Hallazgo 3): el trío de cifras de cap 01 siempre es el elemento más prominente, ninguna pieza de V2/V3 (hallazgo IA, logros, señales) puede competir con él ni apilarse con otra al mismo tiempo — combina reglas ya existentes de cap 09 y cap 12, no crea una regla nueva
 
 ## Contradicciones abiertas (requieren tu decision)
-- (vacio)
+- "Primer hallazgo IA" en V2 (cap 15) solo tiene contenido definido para Ana (gasto) y José (ingreso del negocio) —
+  Luis no tiene una señal semanal propia y hereda indefinidamente el contenido genérico de V1 (detectado en cap 18,
+  criterio 8, ejemplo aplicado; relacionado con el Hallazgo 2 de cap 17). No bloquea nada hoy: V1 cubre el mínimo
+  para las 4 personas. Si en algún momento se define contenido V2 específico para Luis, actualizar cap 15 (nueva
+  sección o evolución de la sección 1) y reflejarlo acá y en cap 18.
 
 ## Contradicciones resueltas (historial)
 - Cap 05 detectó que el mapa original nombraba la etapa 8 como "Primer insight IA", pero "Insights" es vocabulario
