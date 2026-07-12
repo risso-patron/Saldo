@@ -60,6 +60,13 @@ gasto que lo pasa por poco un día, cuenta como ruptura)? Mismo patrón que cap 
 de Ana y José (*"la profundidad de esta señal... se define en los capítulos 15 y 16"*): la definición numérica exacta
 de "sostenido" queda delegada a cap 15 (IA) o cap 16 (Roadmap UX), no resuelta acá.
 
+**Actualización 2026-07-12 (resuelta la ambigüedad que quedaba abierta en 00-STATE.md):** "Primer presupuesto
+sostenido" es **repetible**, no un logro único en la vida de la cuenta — se reactiva cada vez que se cumplen 3 meses
+consecutivos nuevos (cap 15 define el número exacto). Un logro de una sola vez sería, en los hechos, un streak con
+vencimiento invertido — contradiría la constancia sin castigo que este mismo capítulo ya eligió para el resto del
+mecanismo (punto 2, ventana móvil sin punto de ruptura). Ser repetible es la opción coherente con esa misma lógica,
+no una excepción a ella.
+
 Cuatro logros, no una lista abierta — un sistema de logros que crece sin límite se vuelve ruido (cap 03, regla 4: *"no
 mostrar información sin valor todavía"*), y cada logro nuevo que no venga de una etapa ya definida sería exactamente
 el tipo de decisión sin justificación que cap 08 prohíbe.
@@ -108,8 +115,9 @@ recorrido (punto 3), y no introducir comparación social ni una economía parale
   no inventa nuevos") → implementación, no este documento
 
 ## Aplicación concreta a Saldo
-- 4 logros: 3 mapeados directo a etapas de cap 05, 1 ("sostenido") con criterio nuevo delegado a cap 15/16 con
-  definición numérica pendiente — ninguno inventado sin trazabilidad
+- 4 logros: 3 mapeados directo a etapas de cap 05, 1 ("sostenido") con criterio nuevo — número definido en cap 15
+  (3 meses consecutivos) y repetibilidad resuelta acá (2026-07-12: repetible, no único) — ninguno inventado sin
+  trazabilidad
 - La constancia se mide en ventana móvil (12 de los últimos 14 días), nunca como racha que vuelve a cero
 - El reconocimiento de hitos usa los tokens de cap 12 sin inventar color o animación nueva
 - Sin comparación social, sin sistema de puntos paralelo

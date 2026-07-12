@@ -185,7 +185,7 @@
 - Mecanismo de constancia (cap 14, resuelve la regla obligatoria de cap 13): ventana móvil (ej. "12 de los últimos 14 días"), nunca streak clásico con punto de ruptura que vuelve a cero
 - "Primer presupuesto sostenido" (logro de cap 14) introduce un criterio nuevo no presente en cap 05 etapa 7 (que solo define crear un presupuesto, no mantenerlo) — la definición numérica de "sostenido" (cuántos períodos, con qué tolerancia) queda delegada a cap 15 (IA) o cap 16 (Roadmap UX), mismo patrón que las señales anticipatorias de Ana/José
 - Señales anticipatorias (cap 15): comparación contra el promedio histórico propio de cada persona, nunca contra otros usuarios; mínimo 4 semanas de historial antes de calcular cualquier señal; margen de 20% de desviación (propuesta ajustable con datos reales, no constante fija)
-- "Primer presupuesto sostenido" (cap 15, resuelve lo delegado por cap 14): 3 meses calendario consecutivos sin superar el límite, sin tolerancia parcial dentro del mes (se evalúa el total del mes cerrado, no día a día)
+- "Primer presupuesto sostenido" (cap 15, resuelve lo delegado por cap 14): 3 meses calendario consecutivos sin superar el límite, sin tolerancia parcial dentro del mes (se evalúa el total del mes cerrado, no día a día). Es REPETIBLE, no único en la vida de la cuenta — se vuelve a activar cada vez que se cumplen 3 meses consecutivos nuevos, mismo criterio numérico. Decidido 2026-07-12: un logro de una sola vez sería un streak con vencimiento invertido, no coherente con la constancia sin castigo de cap 14 (ventana móvil, sin punto de ruptura)
 - Pendiente explícito para cap 16: granularidad diaria de "caja diaria" para José (cap 03, regla 9) — la señal de cap 15 es semanal (recalculada en cada entrada); una señal diaria confiable necesita su propia definición de historial mínimo y umbral, no resuelta todavía
 - Roadmap (cap 16): V1 (recorrido completo, sin dependencia de historial de uso) — V2 (≥4 semanas, señal semanal Ana/José) — V3 (≥3 meses, gamificación completa incluido "sostenido") — V4 (caja diaria de José, sin fecha, bloqueada por diseño pendiente, no por antigüedad de datos)
 - Accesibilidad (cap 10), Responsive (cap 11) y Design System (cap 12) son piso desde V1, nunca una fase tardía del roadmap
@@ -199,16 +199,18 @@
 - "Primer hallazgo IA" en V2 (cap 15) solo tiene contenido definido para Ana (gasto) y José (ingreso del negocio) —
   Luis no tiene una señal semanal propia y hereda indefinidamente el contenido genérico de V1 (detectado en cap 18,
   criterio 8, ejemplo aplicado; relacionado con el Hallazgo 2 de cap 17). No bloquea nada hoy: V1 cubre el mínimo
-  para las 4 personas. Si en algún momento se define contenido V2 específico para Luis, actualizar cap 15 (nueva
-  sección o evolución de la sección 1) y reflejarlo acá y en cap 18.
-- "Primer presupuesto sostenido" (logro de cap 14, definido en cap 15 como 3 meses consecutivos): no está resuelto
-  si es un logro único (se otorga una sola vez en la vida de la cuenta) o repetible (se vuelve a otorgar cada vez
-  que se cumplen 3 meses consecutivos nuevos, incluso después de una ruptura). Detectado en cap 17, checklist
-  "usuario experto" — marcado ahí como ambigüedad menor, elevado acá el 2026-07-12 para tratarlo con el mismo
-  criterio que la ambigüedad de Luis, en vez de dejarlo mejor rastreado por casualidad. No bloquea nada hoy. Si se
-  resuelve, actualizar cap 14 o cap 15 y reflejarlo acá.
+  para las 4 personas. **Decisión consciente de no resolver ahora, revisado 2026-07-12, sin bloqueo** — el usuario
+  evaluó la ambigüedad y eligió dejarla abierta en vez de forzar una definición sin el mismo rigor numérico que
+  cap 15 usó para Ana/José. Si en algún momento se define contenido V2 específico para Luis, actualizar cap 15
+  (nueva sección o evolución de la sección 1) y reflejarlo acá y en cap 18.
 
 ## Contradicciones resueltas (historial)
+- "Primer presupuesto sostenido" (logro de cap 14, definido en cap 15 como 3 meses consecutivos): quedaba sin
+  resolver si era único en la vida de la cuenta o repetible. Detectado en cap 17, checklist "usuario experto",
+  elevado a contradicción abierta en la revisión de consistencia del cap 20. Resuelta 2026-07-12: es **repetible**
+  — se reactiva cada vez que se cumplen 3 meses consecutivos nuevos, mismo criterio numérico de cap 15. Razón: un
+  logro único sería un streak con vencimiento invertido, no coherente con la constancia sin castigo de cap 14
+  (ventana móvil, sin punto de ruptura). Actualizado en cap 14 y cap 15.
 - Cap 05 detectó que el mapa original nombraba la etapa 8 como "Primer insight IA", pero "Insights" es vocabulario
   prohibido (cap 04, línea 17). El capítulo se redactó usando "Primer hallazgo IA" y quedó pendiente de confirmación.
   Resuelta 2026-07-12: se usa "hallazgo IA" en vez de "insight IA" en todo el documento, por vocabulario prohibido de
