@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../../components/Shared/Card';
 import { Button } from '../../components/Shared/Button';
 import { exportToCSV, exportToPDF } from './exportUtils';
 import { useSubscription } from '../../hooks/useSubscription';
 import { usePeriod } from '../../contexts/PeriodContext';
-import { filterByDateRange } from '../../utils/calculations';
+import { filterByDateRange, calculateCategoryAnalysis, calculateTotal } from '../../utils/calculations';
 import { UpgradeModal } from '../../components/Subscription/UpgradeModal';
 
 /**
  * Componente para exportar datos a CSV/PDF
  */
-export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport }) => {
+export const ExportManager = ({ incomes, expenses, onExport }) => {
   const { hasFeature } = useSubscription();
   const { dateRange: globalDateRange } = usePeriod();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -19,8 +19,7 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
 
   // El rango por defecto MUST coincidir con el período activo del dashboard
   // (spec "ExportManager usa el rango activo del dashboard"). El usuario
-  // puede sobrescribirlo manualmente después — al ser estado inicial (no
-  // sincronizado por efecto), la edición manual del usuario se preserva.
+  // puede sobrescribirlo manualmente después.
   const [dateRange, setDateRange] = useState(() => {
     if (globalDateRange) {
       return { start: globalDateRange.from, end: globalDateRange.to };
@@ -32,6 +31,25 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
       end: new Date().toISOString().split('T')[0],
     };
   });
+
+  // Preserva el contrato de exportación personalizada: el usuario puede
+  // exportar un rango DISTINTO al período que está mirando en el dashboard
+  // (ej. "veo Marzo pero exporto el año completo"). Por eso `dateRange` no
+  // se resincroniza sin condición — solo mientras el usuario no haya tocado
+  // los inputs de fecha a mano. En cuanto edita, ese rango manual manda
+  // hasta que este componente se desmonte, y un cambio posterior del período
+  // global (ej. AppHeader, visible en cualquier pestaña) deja de pisarlo.
+  const [hasManualOverride, setHasManualOverride] = useState(false);
+  useEffect(() => {
+    if (hasManualOverride || !globalDateRange) return;
+    setDateRange({ start: globalDateRange.from, end: globalDateRange.to });
+  }, [globalDateRange, hasManualOverride]);
+
+  const handleDateChange = (field, value) => {
+    setHasManualOverride(true);
+    setDateRange(prev => ({ ...prev, [field]: value }));
+  };
+
   const [includeCharts, setIncludeCharts] = useState(true);
   const [exporting, setExporting] = useState(false);
 
@@ -75,16 +93,21 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
     try {
       const filteredIncomes = filterTransactionsByDateRange(incomes);
       const filteredExpenses = filterTransactionsByDateRange(expenses);
-      
+
       // Calcular totales filtrados
-      const filteredTotalIncome = filteredIncomes.reduce((sum, i) => sum + i.amount, 0);
-      const filteredTotalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const filteredTotalIncome = calculateTotal(filteredIncomes);
+      const filteredTotalExpenses = calculateTotal(filteredExpenses);
       const filteredBalance = filteredTotalIncome - filteredTotalExpenses;
-      
+
+      // categoryAnalysis se deriva del MISMO filteredExpenses que el resto
+      // del documento — nunca de una prop aparte, para que transacciones,
+      // totales y categorías nunca puedan disentir dentro del mismo PDF.
+      const filteredCategoryAnalysis = calculateCategoryAnalysis(filteredExpenses, filteredTotalExpenses);
+
       await exportToPDF(
         filteredIncomes,
         filteredExpenses,
-        categoryAnalysis,
+        filteredCategoryAnalysis,
         {
           totalIncome: filteredTotalIncome,
           totalExpenses: filteredTotalExpenses,
@@ -121,7 +144,7 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
             <input
               type="date"
               value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+              onChange={(e) => handleDateChange('start', e.target.value)}
               className="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none"
             />
           </div>
@@ -132,7 +155,7 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
             <input
               type="date"
               value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+              onChange={(e) => handleDateChange('end', e.target.value)}
               className="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none"
             />
           </div>
@@ -254,8 +277,5 @@ export const ExportManager = ({ incomes, expenses, categoryAnalysis, onExport })
 ExportManager.propTypes = {
   incomes: PropTypes.array.isRequired,
   expenses: PropTypes.array.isRequired,
-  categoryAnalysis: PropTypes.array.isRequired,
-  totalIncome: PropTypes.number.isRequired,
-  totalExpenses: PropTypes.number.isRequired,
-  balance: PropTypes.number.isRequired,
+  onExport: PropTypes.func,
 };
