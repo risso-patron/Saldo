@@ -45,6 +45,25 @@ export const calculateCategoryAnalysis = (expenses = [], totalExpenses = 0) => {
 };
 
 /**
+ * Detecta si la categoría "Otros" domina el gasto del período (HAL-001).
+ * Un "Otros" alto no es un patrón de gasto real (a diferencia de, por ejemplo,
+ * "Vivienda" siendo la categoría más grande, que es normal) — es señal de que
+ * hay transacciones mal categorizadas. Por eso el chequeo es específico a
+ * "Otros", no genérico a "la categoría con mayor porcentaje".
+ * @param {Array<{category: string, percentage: number}>} categoryAnalysis - Salida de calculateCategoryAnalysis.
+ * @param {number} threshold - Umbral en escala 0-100 que "Otros" debe SUPERAR (default: 20).
+ * @returns {{isDominant: boolean, percentage: number}}
+ */
+export const getCategoryDominance = (categoryAnalysis = [], threshold = 20) => {
+  const otros = categoryAnalysis.find(c => c.category === 'Otros');
+  const percentage = otros ? otros.percentage : 0;
+  return {
+    isDominant: percentage > threshold,
+    percentage,
+  };
+};
+
+/**
  * Filtra una lista de transacciones por un año específico.
  * @param {Array} items - Lista de transacciones.
  * @param {number|null} year - Año a filtrar (null para no filtrar).

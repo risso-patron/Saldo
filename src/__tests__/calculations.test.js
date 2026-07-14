@@ -6,6 +6,7 @@ import {
   filterByMonth,
   filterByDateRange,
   calculateMonthlyComparison,
+  getCategoryDominance,
 } from '../utils/calculations';
 
 describe('Cálculos de Presupuesto', () => {
@@ -229,5 +230,57 @@ describe('filterByDateRange — filtrado por rango inclusive con normalización 
   it('devuelve la lista sin filtrar si falta from o to', () => {
     expect(filterByDateRange(items, null, '2026-03-31')).toHaveLength(items.length);
     expect(filterByDateRange(items, '2026-03-01', undefined)).toHaveLength(items.length);
+  });
+});
+
+// HAL-001 parte 1: aviso de dominancia de "Otros". Un "Otros" alto no es un
+// patrón de gasto real (a diferencia de, ej., "Vivienda" siendo la categoría
+// más grande) — es señal de mala categorización. Por eso el chequeo es
+// específico a "Otros", no genérico a "la categoría más grande".
+describe('getCategoryDominance — aviso cuando "Otros" supera el umbral (HAL-001)', () => {
+  it('marca isDominant=true cuando "Otros" supera el umbral por defecto (20%)', () => {
+    const analysis = [
+      { category: 'Vivienda', amount: 600, percentage: 55 },
+      { category: 'Otros', amount: 280, percentage: 25 },
+    ];
+    const result = getCategoryDominance(analysis);
+    expect(result.isDominant).toBe(true);
+    expect(result.percentage).toBe(25);
+  });
+
+  it('NO marca dominancia cuando "Otros" está exactamente en el umbral (20% no es "superar")', () => {
+    const analysis = [{ category: 'Otros', amount: 200, percentage: 20 }];
+    const result = getCategoryDominance(analysis);
+    expect(result.isDominant).toBe(false);
+    expect(result.percentage).toBe(20);
+  });
+
+  it('NO marca dominancia cuando "Otros" está por debajo del umbral', () => {
+    const analysis = [{ category: 'Otros', amount: 50, percentage: 10 }];
+    const result = getCategoryDominance(analysis);
+    expect(result.isDominant).toBe(false);
+    expect(result.percentage).toBe(10);
+  });
+
+  it('devuelve isDominant=false y percentage=0 cuando no existe la categoría "Otros"', () => {
+    const analysis = [
+      { category: 'Vivienda', amount: 600, percentage: 60 },
+      { category: 'Transporte', amount: 400, percentage: 40 },
+    ];
+    const result = getCategoryDominance(analysis);
+    expect(result.isDominant).toBe(false);
+    expect(result.percentage).toBe(0);
+  });
+
+  it('devuelve isDominant=false y percentage=0 con un análisis vacío', () => {
+    const result = getCategoryDominance([]);
+    expect(result.isDominant).toBe(false);
+    expect(result.percentage).toBe(0);
+  });
+
+  it('respeta un umbral personalizado', () => {
+    const analysis = [{ category: 'Otros', amount: 150, percentage: 15 }];
+    expect(getCategoryDominance(analysis, 20).isDominant).toBe(false);
+    expect(getCategoryDominance(analysis, 10).isDominant).toBe(true);
   });
 });

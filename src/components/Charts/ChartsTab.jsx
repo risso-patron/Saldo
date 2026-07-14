@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
   PiggyBank, TrendDown, CalendarBlank, Coins,
-  ArrowUp, ArrowDown, Minus,
+  ArrowUp, ArrowDown, Minus, WarningCircle,
 } from '@phosphor-icons/react';
 import { BalanceDonutChart } from './BalanceDonutChart';
 import { MonthlyCashFlowChart } from './MonthlyCashFlowChart';
@@ -10,6 +10,7 @@ import { SpendingByDayChart } from './SpendingByDayChart';
 import { CategoryBarChart } from './CategoryBarChart';
 import { formatCurrency, formatPercentageSafe } from '../../utils/formatters';
 import { transformToSpendingByDay } from '../../utils/chartHelpers';
+import { getCategoryDominance } from '../../utils/calculations';
 
 // ─── KPI Card ────────────────────────────────────────────────────────────────
 
@@ -91,8 +92,23 @@ export const ChartsTab = ({
     : savingRate < 0   ? 'down'
     : 'neutral';
 
+  // ── Dominancia de "Otros": señal de mala categorización, no de gasto real (HAL-001) ──
+  const otrosDominance = useMemo(() => getCategoryDominance(categoryAnalysis), [categoryAnalysis]);
+
   return (
     <div className="space-y-6">
+
+      {/* ── Aviso: "Otros" domina el período ─────────────────────────────────── */}
+      {otrosDominance.isDominant && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-500/8 dark:bg-amber-500/10 border border-amber-500/20">
+          <div className="shrink-0 text-amber-500">
+            <WarningCircle size={20} weight="fill" />
+          </div>
+          <p className="text-xs font-bold text-amber-700 dark:text-amber-400">
+            {`"Otros" representa el ${formatPercentageSafe(otrosDominance.percentage)} de tu gasto en este período — probablemente hay transacciones que podés reclasificar a una categoría más específica.`}
+          </p>
+        </div>
+      )}
 
       {/* ── 4 KPIs ─────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
