@@ -54,6 +54,7 @@ export const ChartsTab = ({
   filteredTotalIncome,
   filteredTotalExpenses,
   categoryAnalysis,
+  onReclassifyOtros,
 }) => {
 
   // ── KPI 1: Tasa de ahorro del período seleccionado ──
@@ -100,13 +101,21 @@ export const ChartsTab = ({
 
       {/* ── Aviso: "Otros" domina el período ─────────────────────────────────── */}
       {otrosDominance.isDominant && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-500/8 dark:bg-amber-500/10 border border-amber-500/20">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-500/8 dark:bg-amber-500/10 border border-amber-500/20 flex-wrap">
           <div className="shrink-0 text-amber-500">
             <WarningCircle size={20} weight="fill" />
           </div>
-          <p className="text-xs font-bold text-amber-700 dark:text-amber-400">
+          <p className="text-xs font-bold text-amber-700 dark:text-amber-400 flex-1 min-w-[200px]">
             {`"Otros" representa el ${formatPercentageSafe(otrosDominance.percentage)} de tu gasto en este período — probablemente hay transacciones que podés reclasificar a una categoría más específica.`}
           </p>
+          {onReclassifyOtros && (
+            <button
+              onClick={onReclassifyOtros}
+              className="shrink-0 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-black transition-colors"
+            >
+              Ver y reclasificar →
+            </button>
+          )}
         </div>
       )}
 
@@ -183,4 +192,5 @@ ChartsTab.propTypes = {
   filteredTotalIncome:   PropTypes.number.isRequired,
   filteredTotalExpenses: PropTypes.number.isRequired,
   categoryAnalysis:      PropTypes.array.isRequired,
+  onReclassifyOtros:     PropTypes.func,
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { 
   Trash, 
@@ -24,15 +24,28 @@ export const ExpenseList = ({
   onUpdateExpense,
   onRemoveMultiple,
   onCategorizeMultiple,
+  initialCategoryFilter = null,
+  onInitialFilterConsumed,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState(initialCategoryFilter || 'all');
   const [activeView, setActiveView] = useState('all');
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkCategory, setBulkCategory] = useState('');
   const [editingItem, setEditingItem] = useState(null);
 
-  const filteredIncomes = incomes.filter(inc => 
+  // Consume el filtro inicial una sola vez al montar (deep-link desde el
+  // banner de dominancia de "Otros" en ChartsTab, HAL-001 parte 2) — así una
+  // visita posterior a esta pestaña, sin pasar por el CTA, no reaplica un
+  // filtro que el usuario ya pudo haber limpiado.
+  useEffect(() => {
+    if (initialCategoryFilter) {
+      onInitialFilterConsumed?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const filteredIncomes = incomes.filter(inc =>
     inc.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredExpenses = expenses.filter(exp => {
@@ -46,11 +59,20 @@ export const ExpenseList = ({
     ...filteredExpenses.map(e => ({ ...e, type: 'expense' }))
   ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const displayList = activeView === 'income' 
+  const displayList = activeView === 'income'
     ? allTransactions.filter(t => t.type === 'income')
     : activeView === 'expense'
     ? allTransactions.filter(t => t.type === 'expense')
     : allTransactions;
+
+  // Total de la vista activa (tipo), SIN aplicar búsqueda/categoría — permite
+  // dejar explícito cuándo displayList es un subconjunto filtrado (HAL-001 parte 2).
+  const totalForView = activeView === 'income'
+    ? incomes.length
+    : activeView === 'expense'
+    ? expenses.length
+    : incomes.length + expenses.length;
+  const isFiltered = categoryFilter !== 'all' || searchTerm.trim() !== '';
 
   const getCategoryIcon = (cat) => EXPENSE_CATEGORIES.find(c => c.value === cat)?.icon || '•';
 
@@ -155,7 +177,9 @@ export const ExpenseList = ({
             className="w-4 h-4 rounded border-2 border-slate-300 text-primary-600 cursor-pointer"
           />
           <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Seleccionar todo</span>
-          <span className="ml-auto text-[9px] text-slate-400 font-bold">{displayList.length} movimientos</span>
+          <span className="ml-auto text-[9px] text-slate-400 font-bold">
+            {isFiltered ? `${displayList.length} de ${totalForView} movimientos` : `${displayList.length} movimientos`}
+          </span>
         </div>
       )}
 
@@ -271,4 +295,6 @@ ExpenseList.propTypes = {
   onUpdateExpense: PropTypes.func,
   onRemoveMultiple: PropTypes.func,
   onCategorizeMultiple: PropTypes.func,
+  initialCategoryFilter: PropTypes.string,
+  onInitialFilterConsumed: PropTypes.func,
 };
