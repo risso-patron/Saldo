@@ -14,6 +14,7 @@ import { formatCurrency, formatDate } from '../utils/formatters';
 import { EXPENSE_CATEGORIES, MESSAGES } from '../constants/categories';
 import { EditTransactionModal } from './Transactions/EditTransactionModal';
 import { OnboardingBubble } from './UI/OnboardingBubble';
+import { suggestExpenseCategory } from '../core/categorizationEngine';
 
 export const ExpenseList = ({ 
   incomes = [], 
@@ -200,72 +201,103 @@ export const ExpenseList = ({
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{MESSAGES.EMPTY?.NO_TRANSACTIONS || 'Sin movimientos'}</p>
           </div>
         ) : (
-          displayList.map((item) => (
-            <div 
+          displayList.map((item) => {
+            // Sugerencia de categoría vía heurística local, solo para gastos en
+            // "Otros" (HAL-001 parte 3) — opcional, no intrusiva, el usuario decide.
+            const suggestion = item.type === 'expense' && item.category === 'Otros'
+              ? suggestExpenseCategory(item.description)
+              : null;
+
+            return (
+            <div
               key={item.id}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all duration-200 group ${
-                selectedIds.includes(item.id) 
-                  ? 'bg-primary-50/80 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700' 
+              className={`flex flex-col gap-1.5 px-3 py-2.5 rounded-2xl transition-all duration-200 group ${
+                selectedIds.includes(item.id)
+                  ? 'bg-primary-50/80 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700'
                   : 'bg-white/60 dark:bg-slate-800/40 border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80'
               }`}
             >
-              {/* Checkbox */}
-              <input
-                type="checkbox"
-                checked={selectedIds.includes(item.id)}
-                onChange={(e) => {
-                  if (e.target.checked) setSelectedIds(prev => [...prev, item.id]);
-                  else setSelectedIds(prev => prev.filter(i => i !== item.id));
-                }}
-                className="w-3.5 h-3.5 shrink-0 rounded border-2 border-slate-300 text-primary-600 cursor-pointer"
-              />
-              
-              {/* Indicador de tipo */}
-              <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
-                item.type === 'income'
-                  ? 'bg-emerald-500/10'
-                  : 'bg-rose-500/10'
-              }`}>
-                {item.type === 'income'
-                  ? <ArrowUp size={14} weight="bold" className="text-emerald-500" />
-                  : <ArrowDown size={14} weight="bold" className="text-rose-500" />}
-              </div>
+              <div className="flex items-center gap-3">
+                {/* Checkbox */}
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(item.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) setSelectedIds(prev => [...prev, item.id]);
+                    else setSelectedIds(prev => prev.filter(i => i !== item.id));
+                  }}
+                  className="w-3.5 h-3.5 shrink-0 rounded border-2 border-slate-300 text-primary-600 cursor-pointer"
+                />
 
-              {/* Datos — tap abre edición */}
-              <button
-                className="flex-1 min-w-0 text-left"
-                onClick={() => setEditingItem(item)}
-                aria-label={`Editar: ${item.description}`}
-              >
-                <p className="text-xs font-black text-slate-800 dark:text-white truncate leading-tight">
-                  {item.description}
-                </p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[9px] font-bold text-slate-400">{formatDate(item.date)}</span>
-                  {item.category && (
-                    <span className="text-[9px] text-slate-400">
-                      {getCategoryIcon(item.category)} {item.category}
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              {/* Monto + Botón borrar */}
-              <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-sm font-black tracking-tight flex flex-col items-end ${
-                  item.type === 'income' ? 'text-emerald-500' : 'text-rose-500'
+                {/* Indicador de tipo */}
+                <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                  item.type === 'income'
+                    ? 'bg-emerald-500/10'
+                    : 'bg-rose-500/10'
                 }`}>
-                  <span>{item.type === 'income' ? '+' : '-'}{formatCurrency(item.amount, item.currency || 'USD')}</span>
-                </span>
-                <button 
-                  onClick={() => item.type === 'income' ? onRemoveIncome(item.id) : onRemoveExpense(item.id)}
-                  className="p-1.5 text-slate-300 dark:text-slate-600 hover:text-rose-400 dark:hover:text-rose-400 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                  {item.type === 'income'
+                    ? <ArrowUp size={14} weight="bold" className="text-emerald-500" />
+                    : <ArrowDown size={14} weight="bold" className="text-rose-500" />}
+                </div>
+
+                {/* Datos — tap abre edición */}
+                <button
+                  className="flex-1 min-w-0 text-left"
+                  onClick={() => setEditingItem(item)}
+                  aria-label={`Editar: ${item.description}`}
                 >
-                  <Trash size={13} />
+                  <p className="text-xs font-black text-slate-800 dark:text-white truncate leading-tight">
+                    {item.description}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[9px] font-bold text-slate-400">{formatDate(item.date)}</span>
+                    {item.category && (
+                      <span className="text-[9px] text-slate-400">
+                        {getCategoryIcon(item.category)} {item.category}
+                      </span>
+                    )}
+                  </div>
                 </button>
+
+                {/* Monto + Botón borrar */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`text-sm font-black tracking-tight flex flex-col items-end ${
+                    item.type === 'income' ? 'text-emerald-500' : 'text-rose-500'
+                  }`}>
+                    <span>{item.type === 'income' ? '+' : '-'}{formatCurrency(item.amount, item.currency || 'USD')}</span>
+                  </span>
+                  <button
+                    onClick={() => item.type === 'income' ? onRemoveIncome(item.id) : onRemoveExpense(item.id)}
+                    className="p-1.5 text-slate-300 dark:text-slate-600 hover:text-rose-400 dark:hover:text-rose-400 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash size={13} />
+                  </button>
+                </div>
               </div>
+
+              {/* Chip de sugerencia — opcional, se ignora sin costo (HAL-001 parte 3).
+                  "Aplicar" usa onCategorizeMultiple([id], categoria) — el mismo
+                  camino ya probado de la reclasificación masiva (parte 2) — y NO
+                  onUpdateExpense: ese último corre validateTransaction() sobre el
+                  payload completo y exige description/amount no vacíos, así que un
+                  payload parcial de solo {category} fallaba en silencio y la
+                  categoría nunca cambiaba (detectado en verificación manual). */}
+              {suggestion && (
+                <div className="flex items-center gap-1.5 pl-9 text-[9px]">
+                  <span className="text-slate-400 font-bold">
+                    Sugerencia: {suggestion.emoji} {suggestion.category}
+                  </span>
+                  <button
+                    onClick={() => onCategorizeMultiple?.([item.id], suggestion.category)}
+                    className="px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 font-black uppercase tracking-wide"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              )}
             </div>
-          ))
+            );
+          })
         )}
       </div>
 

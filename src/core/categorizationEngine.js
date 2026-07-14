@@ -52,6 +52,28 @@ export const categorizeWithRules = (description) => {
   return null; // Indica que se necesita IA o fallback
 };
 
+/**
+ * Categorías de DEFAULT_RULES que ya coinciden 1:1 con EXPENSE_CATEGORIES
+ * (constants/categories.js), sin necesidad de traducción. "Comida", "Compras"
+ * e "Ingresos" quedan fuera a propósito — no existen en EXPENSE_CATEGORIES y
+ * requieren una decisión de arquitectura antes de sugerirse (ver HAL-009/HAL-010).
+ */
+const SUGGESTABLE_CATEGORIES = ['Transporte', 'Entretenimiento', 'Salud', 'Servicios'];
+
+/**
+ * Sugiere una categoría para un gasto usando SOLO la heurística local ya
+ * existente (categorizeWithRules) — sin IA, sin llamadas externas. No
+ * modifica DEFAULT_RULES ni agrega ningún mapeo/traducción: es un filtro de
+ * solo lectura sobre el resultado, limitado a SUGGESTABLE_CATEGORIES.
+ * @param {string} description - Descripción del gasto.
+ * @returns {{category: string, emoji: string, source: string}|null}
+ */
+export const suggestExpenseCategory = (description) => {
+  const match = categorizeWithRules(description);
+  if (!match || !SUGGESTABLE_CATEGORIES.includes(match.category)) return null;
+  return match;
+};
+
 /** Categoriza un lote de transacciones usando el pipeline híbrido (Híbrido) */
 export const categorizeTransactionsFull = async (transactions) => {
   const results = [];
