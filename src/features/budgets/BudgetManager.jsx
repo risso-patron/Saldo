@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { usePeriod } from '../../contexts/PeriodContext'
+import { useCurrency } from '../../contexts/CurrencyContext'
 import { filterByDateRange } from '../../utils/calculations'
 import { EXPENSE_CATEGORIES } from '../../constants/categories'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,6 +16,7 @@ const BUDGETS_KEY = 'budget_calculator_budgets'
 export function BudgetManager({ expenses }) {
   const { t, i18n } = useTranslation()
   const { dateRange, type, year, month, from, to } = usePeriod()
+  const { convertCurrency, formatAmount, selectedCurrency, currencyInfo } = useCurrency()
   const [budgets, setBudgets] = useLocalStorage(BUDGETS_KEY, {})
   const [editingCategory, setEditingCategory] = useState(null)
   const [inputValue, setInputValue] = useState('')
@@ -39,11 +41,14 @@ export function BudgetManager({ expenses }) {
 
     relevant.forEach(exp => {
       if (!exp.category) return
-      result[exp.category] = (result[exp.category] || 0) + exp.amount
+      // Cada transacción guarda su propia moneda (useTransactions) — normalizar
+      // a USD base antes de sumar, para no mezclar monedas distintas en un total.
+      const amountUSD = convertCurrency(exp.amount, exp.currency || 'USD', 'USD')
+      result[exp.category] = (result[exp.category] || 0) + amountUSD
     })
 
     return result
-  }, [expenses, dateRange])
+  }, [expenses, dateRange, convertCurrency])
 
   // Categorías con presupuesto asignado + las que tienen gastos en el período
   const activeCategories = useMemo(() => {
@@ -57,7 +62,10 @@ export function BudgetManager({ expenses }) {
   const handleSaveBudget = (category) => {
     const val = parseFloat(inputValue)
     if (isNaN(val) || val <= 0) return
-    setBudgets(prev => ({ ...prev, [category]: { limit: val, note: inputNote.trim() } }))
+    // El usuario escribe el límite en SU moneda; se guarda en USD base para ser
+    // coherente con los gastos normalizados y con los límites ya existentes.
+    const limitUSD = convertCurrency(val, selectedCurrency, 'USD')
+    setBudgets(prev => ({ ...prev, [category]: { limit: limitUSD, note: inputNote.trim() } }))
     setEditingCategory(null)
     setInputValue('')
     setInputNote('')
@@ -74,7 +82,10 @@ export function BudgetManager({ expenses }) {
   const startEdit = (category) => {
     setEditingCategory(category)
     const data = getBudgetData(category)
-    setInputValue(data?.limit?.toString() || '')
+    // Prefill en la moneda del usuario (inversa de handleSaveBudget)
+    setInputValue(data?.limit != null
+      ? Number(convertCurrency(data.limit, 'USD', selectedCurrency).toFixed(2)).toString()
+      : '')
     setInputNote(data?.note || '')
   }
 
@@ -90,8 +101,9 @@ export function BudgetManager({ expenses }) {
     return 'text-emerald-400'
   }
 
-  const formatCurrency = (amount) =>
-    new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(amount || 0)
+  // Mostrar en la moneda elegida — formatAmount (CurrencyContext) recibe USD base
+  // y convierte/formatea, mismo patrón que BalanceCard y el resto del dashboard.
+  const formatCurrency = (amount) => formatAmount(amount || 0)
 
   // Etiqueta del período activo para el encabezado — MUST ser consistente con
   // los montos mostrados abajo (misma fuente `usePeriod()`), no el mes
@@ -220,7 +232,7 @@ export function BudgetManager({ expenses }) {
                           value={inputValue}
                           onChange={e => setInputValue(e.target.value)}
                           onKeyDown={e => { if (e.key === 'Enter') handleSaveBudget(cat.value) }}
-                          placeholder="Límite mensual ($)"
+                          placeholder={`Límite mensual (${currencyInfo.symbol})`}
                           autoFocus
                           className="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
                         />
