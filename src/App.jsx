@@ -254,7 +254,7 @@ function AppContent() {
             <main className="space-y-4 sm:space-y-10 pb-32">
               <DailyOnboardingToast /> <DailyReminder />
               <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} />
-              <FloatingChatWidget isOpen={isChatWidgetOpen} onClose={() => setIsChatWidgetOpen(false)} context={{ balance: filteredBalance, savingsRate: filteredTotalIncome > 0 ? Math.round(((filteredBalance) / filteredTotalIncome) * 100) : 0 }} />
+              <FloatingChatWidget isOpen={isChatWidgetOpen} onClose={() => setIsChatWidgetOpen(false)} context={{ balance: filteredBalance, savingsRate: filteredTotalIncome > 0 ? (filteredBalance / filteredTotalIncome) * 100 : 0 }} />
               <FloatingChatButton onClick={() => setIsChatWidgetOpen(!isChatWidgetOpen)} isOpen={isChatWidgetOpen} />
 
               {activeTab === 'resumen' && (

@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Target, PencilSimple, CheckCircle } from '@phosphor-icons/react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatPercentageSafe } from '../../utils/formatters';
 
 export const GlobalBudgetTracker = ({ totalExpenses }) => {
   const [budgetLimit, setBudgetLimit] = useLocalStorage('budgetrp_global_limit', 1000);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(budgetLimit.toString());
 
-  // Lógica de cálculo
+  // Lógica de cálculo — sin redondear: umbrales, barra y texto usan el valor
+  // real; el display lo resuelve formatPercentageSafe (HAL-004)
   const safeBudget = Number(budgetLimit) || 0;
-  const percentage = safeBudget > 0 ? Math.min(100, Math.round((totalExpenses / safeBudget) * 100)) : 100;
+  const percentage = safeBudget > 0 ? Math.min(100, (totalExpenses / safeBudget) * 100) : 100;
   
   // Psicología del color para UX
   const getProgressColor = () => {
@@ -86,7 +87,7 @@ export const GlobalBudgetTracker = ({ totalExpenses }) => {
       <div className="space-y-1.5">
         <div className="flex justify-between text-[11px] font-bold">
           <span className="text-gray-300">Usado: {formatCurrency(totalExpenses)}</span>
-          <span className={percentage >= 90 ? 'text-red-400' : 'text-gray-400'}>{percentage}%</span>
+          <span className={percentage >= 90 ? 'text-red-400' : 'text-gray-400'}>{formatPercentageSafe(percentage)}</span>
         </div>
         <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-700/50">
           <div

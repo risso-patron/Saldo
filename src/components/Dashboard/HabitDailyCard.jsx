@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Fire, Plus, TrendUp, TrendDown, CheckCircle, Circle } from '@phosphor-icons/react';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatPercentageSafe } from '../../utils/formatters';
 import { OnboardingBubble } from '../UI/OnboardingBubble';
 
 /**
@@ -40,7 +40,8 @@ export function HabitDailyCard({
   const hasPrevData = prevTotalExpenses > 0;
   const expenseDelta =
     hasPrevData
-      ? Math.round(((filteredTotalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100)
+      // Sin redondear: -0.4% es una mejora real, no "sin cambio" (HAL-004)
+      ? ((filteredTotalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100
       : null;
   const isImproving = expenseDelta !== null && expenseDelta < 0;
   const isWorse = expenseDelta !== null && expenseDelta > 0;
@@ -154,7 +155,7 @@ export function HabitDailyCard({
           {topCategory && (
             <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">
               Mayor gasto: <span className="font-semibold text-slate-500 dark:text-slate-400">{topCategory.category}</span>
-              {' '}— {formatCurrency(topCategory.amount)} ({Math.round(topCategory.percentage)}%)
+              {' '}— {formatCurrency(topCategory.amount)} ({formatPercentageSafe(topCategory.percentage)})
             </p>
           )}
         </div>
@@ -187,9 +188,9 @@ export function HabitDailyCard({
               : 'text-slate-500'
           }`}>
             {isImproving
-              ? `Gastaste ${Math.abs(expenseDelta)}% menos que el mes pasado — ¡buen hábito!`
+              ? `Gastaste ${formatPercentageSafe(Math.abs(expenseDelta))} menos que el mes pasado — ¡buen hábito!`
               : isWorse
-              ? `Gastaste ${expenseDelta}% más que el mes pasado`
+              ? `Gastaste ${formatPercentageSafe(expenseDelta)} más que el mes pasado`
               : 'Gastos estables vs el mes pasado'
             }
           </p>

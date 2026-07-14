@@ -8,7 +8,7 @@ import { BalanceDonutChart } from './BalanceDonutChart';
 import { MonthlyCashFlowChart } from './MonthlyCashFlowChart';
 import { SpendingByDayChart } from './SpendingByDayChart';
 import { CategoryBarChart } from './CategoryBarChart';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatPercentageSafe } from '../../utils/formatters';
 import { transformToSpendingByDay } from '../../utils/chartHelpers';
 
 // ─── KPI Card ────────────────────────────────────────────────────────────────
@@ -58,8 +58,8 @@ export const ChartsTab = ({
   // ── KPI 1: Tasa de ahorro del período seleccionado ──
   const savingRate = useMemo(() => {
     if (!filteredTotalIncome || filteredTotalIncome === 0) return null;
-    const rate = ((filteredTotalIncome - filteredTotalExpenses) / filteredTotalIncome) * 100;
-    return Math.round(rate);
+    // Sin redondear: los umbrales (>=20, <0) y el display usan el valor real (HAL-004)
+    return ((filteredTotalIncome - filteredTotalExpenses) / filteredTotalIncome) * 100;
   }, [filteredTotalIncome, filteredTotalExpenses]);
 
   // ── KPI 2: Categoría con más gasto ──
@@ -100,7 +100,7 @@ export const ChartsTab = ({
           iconNode={<PiggyBank size={22} weight="fill" className="text-white" />}
           iconBg={savingTrend === 'up' ? 'bg-emerald-500' : savingTrend === 'down' ? 'bg-red-400' : 'bg-slate-400'}
           label="Tasa de ahorro"
-          value={savingRate !== null ? `${savingRate}%` : '—'}
+          value={savingRate !== null ? formatPercentageSafe(savingRate) : '—'}
           sub={
             savingRate === null ? null :
             savingRate >= 20 ? 'Buen ritmo de ahorro' :

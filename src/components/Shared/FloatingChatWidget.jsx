@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Robot, PaperPlaneRight, User, Sparkle, ArrowClockwise } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatPercentageSafe } from '../../utils/formatters';
 
 const WELCOME_MSG = {
   id: 'welcome_1',
@@ -27,7 +28,7 @@ const getBotReply = (text, context) => {
   }
   if (t.includes('ahorr')) {
     const rate = context?.savingsRate ?? 0;
-    return `Tu tasa de ahorro actual es del **${rate}%**. Para mejorarla, una buena regla es aplicar el método **50/30/20**: 50% necesidades, 30% gustos, 20% ahorro.`;
+    return `Tu tasa de ahorro actual es del **${formatPercentageSafe(rate)}**. Para mejorarla, una buena regla es aplicar el método **50/30/20**: 50% necesidades, 30% gustos, 20% ahorro.`;
   }
   if (t.includes('hola') || t.includes('hola') || t.includes('buenos') || t.includes('buenas')) {
     return '¡Hola! 😊 Estoy aquí para ayudarte. Puedes preguntarme sobre tu balance, tus categorías de gasto, consejos de ahorro o cualquier cosa relacionada con tus finanzas.';

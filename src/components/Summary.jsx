@@ -9,13 +9,15 @@ import {
 } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Card } from './UI/Card';
-import { formatCurrency } from '../utils/formatters';
+import { formatCurrency, formatPercentageSafe } from '../utils/formatters';
 import { calculatePercentage } from '../utils/currencyHelpers';
 import { STRATEGIC_MESSAGES } from '../constants/categories';
 
 function calcDelta(current, previous) {
   if (previous === 0) return null;
-  return Math.round(((current - previous) / Math.abs(previous)) * 100);
+  // Sin redondear: el valor crudo decide neutralidad y dirección (HAL-004).
+  // Con Math.round, un cambio real de 0.3% se trataba como "sin cambio".
+  return ((current - previous) / Math.abs(previous)) * 100;
 }
 
 function DeltaBadge({ current, previous, inverseColor = false }) {
@@ -40,7 +42,7 @@ function DeltaBadge({ current, previous, inverseColor = false }) {
   return (
     <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold ${colorClass}`}>
       <Icon size={10} weight="bold" />
-      {isNeutral ? t('summary.equal') : `${isUp ? '+' : ''}${delta}%`}
+      {isNeutral ? t('summary.equal') : `${isUp && delta >= 0.1 ? '+' : ''}${formatPercentageSafe(delta)}`}
       <span className="text-slate-400 dark:text-slate-500 font-normal"> {t('summary.vs_prev')}</span>
     </span>
   );

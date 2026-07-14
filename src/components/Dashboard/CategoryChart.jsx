@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card } from '../Shared/Card';
-import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import { formatCurrency, formatPercentage, formatPercentageSafe } from '../../utils/formatters';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
 
 const COLORS = ['#667eea', '#764ba2', '#2ecc71', '#3498db', '#e74c3c', '#f39c12', '#1abc9c', '#95a5a6'];
@@ -61,7 +61,7 @@ export const CategoryChart = ({ expenses = [] }) => {
     if (percent < 0.05) return null;
     return (
       <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-sm font-semibold">
-        {`${(percent * 100).toFixed(0)}%`}
+        {formatPercentageSafe(percent * 100)}
       </text>
     );
   };
