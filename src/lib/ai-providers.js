@@ -63,7 +63,12 @@ export const getAvailableProviders = () => {
  * Llama al proxy seguro de Netlify Functions
  * La API key (GROQ_API_KEY) vive solo en el servidor
  */
-const callViaProxy = async (prompt) => {
+// Exportada (Checkpoint 2, tarea 1.13): `groqProvider.js` la reutiliza para no
+// duplicar la lógica de sesión/fetch al proxy (design.md §4 "llama al proxy
+// vía callViaProxy"). El `.status` adjunto al error permite que AIContext
+// (design.md §7, Área 5 caso 2) distinga un 429 real del servidor de
+// cualquier otra falla del proveedor — antes no se propagaba.
+export const callViaProxy = async (prompt) => {
   const { data: { session } } = await supabase.auth.getSession();
   const accessToken = session?.access_token;
 
@@ -81,11 +86,11 @@ const callViaProxy = async (prompt) => {
   });
 
   if (response.status === 429) {
-    throw new Error('Rate limit alcanzado. Espera 1 minuto.');
+    throw Object.assign(new Error('Rate limit alcanzado. Espera 1 minuto.'), { status: 429 });
   }
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.error || `Proxy error: ${response.status}`);
+    throw Object.assign(new Error(err.error || `Proxy error: ${response.status}`), { status: response.status });
   }
 
   const data = await response.json();

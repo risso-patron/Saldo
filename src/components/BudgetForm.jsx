@@ -21,6 +21,10 @@ import { validateDescription, validateAmount, validateDate } from '../utils/vali
 import { sanitizeText, sanitizeDate, sanitizeCategory } from '../utils/sanitize';
 import { ReceiptScanner } from '../features/scanner/ReceiptScanner';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { useAI } from '../contexts/AIContext';
+import { SmartCategorySelector } from './AI/SmartCategorySelector';
+import { AIConsentPrompt } from './AI/AIConsentPrompt';
+import { AIStatusNotice } from './AI/AIStatusNotice';
 
 export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   // MODOS: 'choice', 'manual', 'scan'
@@ -29,12 +33,63 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
   const { t } = useTranslation()
   
   const { currencies, getSmartDefaultCurrency, recordCurrencyUsage } = useCurrency();
-  
+  const ai = useAI();
+
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [ currency, setCurrency] = useState(() => getSmartDefaultCurrency());
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [category, setCategory] = useState(EXPENSE_CATEGORIES[0].value);
+  // Categorización asistida (design.md §5, spec.md Área 3): sugerencia propuesta
+  // por separado del valor confirmado (`category`) — nunca se escribe sola
+  // (Principio 2/8); solo se aplica cuando el usuario toca "Aplicar".
+  const [suggestedCategory, setSuggestedCategory] = useState(null);
+  // Casos 2/4 de Área 5 (design.md §7): surgen de un intento real de pedir
+  // sugerencia mientras SmartCategorySelector ya está montado (canUseAI &&
+  // hasConsent). Se guardan aparte de `suggestedCategory` para no confundir
+  // "sin sugerencia todavía" con "la IA falló esta vez".
+  const [aiFallbackStatus, setAiFallbackStatus] = useState(null);
+  const handleGetCategorySuggestion = async (desc) => {
+    const result = await ai.suggestCategory(desc);
+    if (result?.status) {
+      setSuggestedCategory(null);
+      setAiFallbackStatus(result.status);
+      return;
+    }
+    setAiFallbackStatus(null);
+    setSuggestedCategory(result || null);
+  };
+
+  // Consentimiento just-in-time (spec.md Área 6, proposal.md §7.1): se pide
+  // la primera vez que el usuario escribe una descripción de >=3 caracteres
+  // sin consentimiento activo — nunca en onboarding, nunca más de una vez
+  // por sesión de formulario si el usuario elige "Ahora no" (Área 5 caso 3:
+  // sin insistencia repetida).
+  const [showConsentPrompt, setShowConsentPrompt] = useState(false);
+  const [consentPromptDismissed, setConsentPromptDismissed] = useState(false);
+
+  useEffect(() => {
+    if (
+      activeType === 'expense' &&
+      description.trim().length >= 3 &&
+      ai.canUseAI &&
+      ai.consentLoaded &&
+      !ai.hasConsent &&
+      !consentPromptDismissed
+    ) {
+      setShowConsentPrompt(true);
+    }
+  }, [description, activeType, ai.canUseAI, ai.consentLoaded, ai.hasConsent, consentPromptDismissed]);
+
+  const handleAcceptConsent = () => {
+    ai.grantConsent();
+    setShowConsentPrompt(false);
+  };
+
+  const handleDeclineConsent = () => {
+    setConsentPromptDismissed(true);
+    setShowConsentPrompt(false);
+  };
   const [errors, setErrors] = useState({});
   const [, setShowSuccess] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -73,6 +128,11 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
     setErrors(newErrors);
     if (Object.values(newErrors).some(err => err !== null)) return;
 
+    // Principio 8 (design.md): al guardar, el borrador de sugerencia pasa a
+    // "committed" — cualquier respuesta de IA que resuelva después se
+    // descarta y nunca reabre/reescribe este movimiento ya guardado.
+    ai.commitCategoryDraft();
+
     let success = false;
     if (activeType === 'income') {
       success = onAddIncome(sanitizeText(description), amount, sanitizeDate(date) || date, currency);
@@ -108,6 +168,15 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
     value: cat.value,
     label: `${cat.icon} ${cat.label}`
   }));
+
+  // Casos 1/3 de Área 5 (design.md §7): condiciones "estáticas" que impiden
+  // montar SmartCategorySelector del todo (a diferencia de 2/4, que surgen de
+  // un intento de red ya en curso). Caso 3 solo se muestra DESPUÉS de que el
+  // usuario ya vio y cerró el pedido de consentimiento — nunca antes, para no
+  // insistir (Área 5 caso 3).
+  const staticAiFallbackStatus = !ai.canUseAI
+    ? 'no_plan'
+    : (ai.consentLoaded && !ai.hasConsent && consentPromptDismissed ? 'no_consent' : null);
 
   return (
     <Card className="max-w-4xl mx-auto overflow-visible relative" padding="p-0">
@@ -223,6 +292,9 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              {showConsentPrompt && (
+                <AIConsentPrompt onAccept={handleAcceptConsent} onDecline={handleDeclineConsent} />
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   id="budget-description"
@@ -235,14 +307,32 @@ export const BudgetForm = ({ onAddIncome, onAddExpense }) => {
                 />
 
                 {activeType === 'expense' && (
-                  <Select
-                    id="budget-category"
-                    label="Clasificación"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    options={categoryOptions}
-                    required
-                  />
+                  ai.canUseAI && ai.hasConsent ? (
+                    <div className="space-y-2">
+                      <SmartCategorySelector
+                        description={description}
+                        selectedCategory={category}
+                        categories={EXPENSE_CATEGORIES.map((cat) => cat.value)}
+                        onCategoryChange={setCategory}
+                        onGetSuggestion={handleGetCategorySuggestion}
+                        suggestedCategory={suggestedCategory}
+                        loading={ai.status === 'loading'}
+                      />
+                      <AIStatusNotice status={aiFallbackStatus} />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Select
+                        id="budget-category"
+                        label="Clasificación"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        options={categoryOptions}
+                        required
+                      />
+                      {!showConsentPrompt && <AIStatusNotice status={staticAiFallbackStatus} />}
+                    </div>
+                  )
                 )}
 
                 <div className="flex flex-col gap-2">

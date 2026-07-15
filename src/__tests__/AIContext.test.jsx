@@ -205,13 +205,11 @@ describe('Estado único observado desde dos consumidores (spec.md Área 4, desig
 
 // ── 3.7/3.8 — suggestCategory: 4 estados de error + éxito ──────────────────
 //
-// DESVIACIÓN DOCUMENTADA (decisión de secuenciación entre checkpoints, no un
-// atajo de calidad — ver reporte final): `groqProvider.categorize` (tarea
-// 1.12/1.13) es del Checkpoint 2 y no existe todavía. `AIProvider` acepta acá
-// una prop `provider` (implementación de la interfaz de `src/lib/aiProvider.js`)
-// inyectable para testing; estos tests inyectan un stub/mock mínimo de
-// `categorize` para verificar el ENRUTAMIENTO de `suggestCategory` a cada
-// estado, sin depender de la implementación real de Groq.
+// `AIProvider` acepta una prop `provider` (implementación de la interfaz de
+// `src/lib/aiProvider.js`) inyectable para testing; estos tests inyectan un
+// stub/mock mínimo de `categorize` para verificar el ENRUTAMIENTO de
+// `suggestCategory` a cada estado, sin depender de la implementación real de
+// Groq (cubierta aparte en `src/lib/groqProvider.test.js`, tarea 1.12/1.13).
 
 describe('suggestCategory — 4 estados de error + éxito (spec.md Área 5, design.md §7, Principio 6)', () => {
   beforeEach(() => {
@@ -307,7 +305,7 @@ describe('suggestCategory — 4 estados de error + éxito (spec.md Área 5, desi
     expect(suggestion).toBeNull();
   });
 
-  it('sin prop `provider` inyectada, el default degrada a provider_error sin lanzar (groqProvider real es Checkpoint 2)', async () => {
+  it('sin prop `provider` inyectada, el default degrada a provider_error sin lanzar (App.jsx inyecta groqProvider en la composición raíz)', async () => {
     const { result } = renderHook(() => useAI(), { wrapper });
     await waitFor(() => expect(result.current.consentLoaded).toBe(true));
 

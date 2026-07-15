@@ -31,13 +31,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 **Tipo**: infra
 **Criterio de finalización**: archivo exporta `AI_IDEA = { MIN_CATEGORIZED_EXPENSES: 20, MIN_HISTORY_DAYS: 28, EXCLUDED_CATEGORY: 'Otros' }`. Verificado manualmente (`grep`) que ningún otro archivo del repo repite el literal `20` o `28` como umbral de elegibilidad.
 
-### 1.4 — Test rojo: `toConfidenceLabel` (src/lib/aiConfidence.js)
+### 1.4 — Test rojo: `toConfidenceLabel` (src/lib/aiConfidence.js) [x]
 **Depende de**: ninguna
 **Satisface**: spec.md Área 10 (Requirement: "Toda sugerencia de categoría MUST tener una etiqueta de confianza válida... MUST NOT mostrar una sugerencia con una etiqueta de confianza no reconocida"), design.md §4 (`toConfidenceLabel`)
 **Tipo**: test-rojo
 **Criterio de finalización**: test con casos `>=0.8 → 'alta'`, `>=0.5 y <0.8 → 'media'`, `>0 y <0.5 → 'baja'`, `0`/negativo/`>1`/`NaN`/`undefined` → `null`. Falla en rojo (módulo no existe).
 
-### 1.5 — Implementar hasta verde: `src/lib/aiConfidence.js`
+### 1.5 — Implementar hasta verde: `src/lib/aiConfidence.js` [x]
 **Depende de**: 1.4
 **Satisface**: igual que 1.4
 **Tipo**: implementación
@@ -79,13 +79,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 **Tipo**: infra
 **Criterio de finalización**: archivo sigue la convención verificada de `supabase/subscriptions-schema.sql` (`gen_random_uuid()`, FK a `auth.users(id) ON DELETE CASCADE`, RLS habilitada, índice por `user_id`). Crea tabla `user_settings(id, user_id, setting_key TEXT, setting_value JSONB, updated_at)` con `UNIQUE(user_id, setting_key)`, políticas `own_settings_select/insert/update` (patrón `transactions`, no el lockdown de `subscriptions`), y **reutiliza** la función `update_updated_at_column()` ya definida en `subscriptions-schema.sql` (no la redefine) en un nuevo trigger `set_user_settings_updated_at`. Verificado manualmente: el SQL es sintácticamente válido y no re-declara la función compartida.
 
-### 1.12 — Test rojo: `groqProvider.categorize`
+### 1.12 — Test rojo: `groqProvider.categorize` [x]
 **Depende de**: 1.10
 **Satisface**: spec.md Área 10 (deuda técnica bloqueante — shape mismatch de `confidence`), design.md §4 ("Fix del shape mismatch"), §2 (`groqProvider.js`)
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre: respuesta Groq válida → `{ category, confidence:number }` (número crudo 0..1, el mapeo a etiqueta ocurre en el gateway, no acá); JSON de Groq malformado → rechazo controlado (no lanza excepción no manejada). Falla en rojo (módulo no existe).
 
-### 1.13 — Implementar hasta verde: `groqProvider.js` — `categorize`
+### 1.13 — Implementar hasta verde: `groqProvider.js` — `categorize` [x]
 **Depende de**: 1.12
 **Satisface**: igual que 1.12
 **Tipo**: implementación
@@ -187,49 +187,49 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 
 ## Fase 4 — Integración UI
 
-### 4.1 — Test rojo: `SmartCategorySelector` — confirmar/corregir y confianza inválida
+### 4.1 — Test rojo: `SmartCategorySelector` — confirmar/corregir y confianza inválida [x]
 **Depende de**: 3.8
 **Satisface**: spec.md Área 3 (Scenarios: "Confirmar con un toque", "Corregir manualmente anula la sugerencia"), Área 10 (Scenario: "Confianza fuera del conjunto reconocido no se muestra rota"); design.md Principio 2, §4
 **Tipo**: test-rojo
 **Criterio de finalización**: test con `@testing-library/react` cubre: tocar "Aplicar" guarda `suggestedCategory.category` vía `onCategoryChange`; elegir una categoría distinta del `<select>` guarda esa, no la sugerida; `suggestedCategory=null` (confianza no reconocida ya filtrada por el gateway) no renderiza ningún badge roto. Falla en rojo si el wiring actual no cumple alguno de los tres.
 
-### 4.2 — Implementar hasta verde: ajustes de wiring en `SmartCategorySelector`
+### 4.2 — Implementar hasta verde: ajustes de wiring en `SmartCategorySelector` [x]
 **Depende de**: 4.1
 **Satisface**: igual que 4.1
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 4.1. `SmartCategorySelector.jsx` no cambia su contrato de props (`propTypes` ya declara `confidence: oneOf(['alta','media','baja'])`); solo se ajusta si el test de 4.1 revela un gap real de wiring.
 
-### 4.3 — Test rojo: `BudgetForm` monta `SmartCategorySelector` con fallback manual
+### 4.3 — Test rojo: `BudgetForm` monta `SmartCategorySelector` con fallback manual [x]
 **Depende de**: 4.2, 3.10
 **Satisface**: spec.md Área 3 (Requirement: "Sin sugerencia disponible, el selector manual sigue siendo el camino completo"), design.md §5 (Puntos de integración), Principios 4/5
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre: con `activeType==='expense'`, `canUseAI && hasConsent` → se renderiza `SmartCategorySelector` alimentado por `useAI()`; con `!canUseAI || !hasConsent` → se renderiza el `<Select id="budget-category">` de siempre, sin bloquear el guardado. Falla en rojo (hoy `BudgetForm.jsx:238-245` siempre renderiza el `<Select>` plano).
 
-### 4.4 — Implementar hasta verde: montar `SmartCategorySelector` en `BudgetForm`
+### 4.4 — Implementar hasta verde: montar `SmartCategorySelector` en `BudgetForm` [x]
 **Depende de**: 4.3
 **Satisface**: igual que 4.3
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 4.3. Reemplaza el bloque `<Select id="budget-category">` (`BudgetForm.jsx:238-245`) cuando corresponde; alimenta `onGetSuggestion={ai.suggestCategory}`, `suggestedCategory`, `loading` desde `useAI()`; usa `EXPENSE_CATEGORIES` (ya en `BudgetForm.jsx:107`).
 
-### 4.5 — Test rojo: consentimiento just-in-time al primer uso
+### 4.5 — Test rojo: consentimiento just-in-time al primer uso [x]
 **Depende de**: 3.4, 4.4
 **Satisface**: spec.md Área 6 (Requirement: "El consentimiento se pide al primer uso, en contexto, no en onboarding"), Scenario: "Primer uso dispara el pedido de consentimiento"; design.md §3.2, propuesta §7.1
 **Tipo**: test-rojo
 **Criterio de finalización**: test simula un usuario sin consentimiento previo escribiendo por primera vez una descripción de ≥3 caracteres en `BudgetForm`; se muestra el pedido de consentimiento ("Activar"/"Ahora no") antes de cualquier salida de red; no aparece en ningún flujo de onboarding. Falla en rojo.
 
-### 4.6 — Implementar hasta verde: UI de consentimiento just-in-time
+### 4.6 — Implementar hasta verde: UI de consentimiento just-in-time [x]
 **Depende de**: 4.5
 **Satisface**: igual que 4.5
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 4.5. Copy exacto de propuesta §7.1 ("Para sugerirte la categoría, Saldo le muestra la descripción de este movimiento a un servicio que nos ayuda con eso. Vos decidís." / "Activar" / "Ahora no"), sin nombrar al proveedor.
 
-### 4.7 — Test rojo: fallback visual de los 4 casos de Área 5
+### 4.7 — Test rojo: fallback visual de los 4 casos de Área 5 [x]
 **Depende de**: 3.8
 **Satisface**: spec.md Área 5 (los 4 Requirements con reglas de copy comunes: sin jerga, sin código de error, sin nombrar proveedor, sin culpar), design.md §7 (tabla de manejo de errores)
 **Tipo**: test-rojo
 **Criterio de finalización**: test con los 4 `status` (`no_plan`, `rate_limited`, `no_consent`, `provider_error`) inyectados en el consumidor de `useAI()`; cada uno renderiza su copy distinto (invitación a mejorar / espera sin cifra / superficie ausente sin insistencia / reintento calmo); ninguno muestra "429", "rate limit", nombre de proveedor ni código técnico; el selector manual está siempre operable. Falla en rojo.
 
-### 4.8 — Implementar hasta verde: componentes de fallback por `status`
+### 4.8 — Implementar hasta verde: componentes de fallback por `status` [x]
 **Depende de**: 4.7
 **Satisface**: igual que 4.7
 **Tipo**: implementación

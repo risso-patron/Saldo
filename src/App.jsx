@@ -34,6 +34,7 @@ import { useRecurring } from './hooks/useRecurring';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PeriodProvider } from './contexts/PeriodContext';
 import { AIProvider } from './contexts/AIContext';
+import { groqProvider } from './lib/groqProvider';
 import { CurrencySelector } from './features/currency/CurrencySelector';
 import { filterByMonth } from './utils/calculations';
 
@@ -328,7 +329,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <AIProvider>
+          <AIProvider provider={groqProvider}>
             <CurrencyProvider>
               <PeriodProvider>
                 <AppContent />

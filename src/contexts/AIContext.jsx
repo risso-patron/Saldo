@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import { useSubscription } from '../hooks/useSubscription';
 import { supabase } from '../lib/supabase';
 import { planHasCapability } from '../../shared/aiCapabilities';
+import { toConfidenceLabel } from '../lib/aiConfidence';
 
 /**
  * src/contexts/AIContext.jsx — ENTRADA ÚNICA de IA (design.md §1, §4, Área 4).
@@ -49,33 +50,12 @@ const cacheConsent = (value) => {
 };
 
 /**
- * toConfidenceLabel — mapeo número→etiqueta (design.md §4, Área 10).
- *
- * DESVIACIÓN DOCUMENTADA (ver reporte final): la fuente única real de este
- * mapeo es la tarea 1.4/1.5 (`src/lib/aiConfidence.js`), explícitamente FUERA
- * de alcance de este checkpoint. Se define acá una copia privada con la MISMA
- * semántica exacta (>=0.8 'alta'; >=0.5 'media'; >0 'baja'; si no, `null`)
- * únicamente para que `suggestCategory` (3.7/3.8, sí en alcance) cumpla su
- * criterio de aceptación. Cuando 1.4/1.5 se implemente, este helper debe
- * eliminarse y reemplazarse por el import de `src/lib/aiConfidence.js` — no
- * debe quedar como una segunda fuente de verdad permanente.
- * @param {number} n
- * @returns {'alta'|'media'|'baja'|null}
- */
-const toConfidenceLabelInternal = (n) => {
-  if (typeof n !== 'number' || Number.isNaN(n) || n <= 0 || n > 1) return null;
-  if (n >= 0.8) return 'alta';
-  if (n >= 0.5) return 'media';
-  return 'baja';
-};
-
-/**
  * Provider por defecto cuando `AIProvider` se monta sin una prop `provider`
- * explícita: `groqProvider.js` (tareas 1.12-1.15, implementación real de
- * `AIProvider` Interface contra Groq) es del Checkpoint 2 y no existe todavía
- * en este checkpoint. Este default degrada honestamente a `provider_error`
- * (nunca lanza sin manejar, nunca finge un resultado — Principio 6) hasta que
- * el Checkpoint 2 inyecte la implementación real en `App.jsx`/composición raíz.
+ * explícita. `App.jsx` inyecta la implementación real (`groqProvider.js`,
+ * tareas 1.12/1.13) en la composición raíz; este default solo cubre el caso
+ * de un `AIProvider` montado sin esa prop (p.ej. tests) y degrada
+ * honestamente a `provider_error` (nunca lanza sin manejar, nunca finge un
+ * resultado — Principio 6).
  */
 const DEFAULT_PROVIDER = {
   categorize: () =>
@@ -225,7 +205,7 @@ export const AIProvider = ({ children, provider = DEFAULT_PROVIDER }) => {
           setStatus('idle');
           return null;
         }
-        const label = toConfidenceLabelInternal(raw.confidence);
+        const label = toConfidenceLabel(raw.confidence);
         if (!label) {
           // Confianza fuera de rango o parseo roto: se trata como "no disponible",
           // nunca se muestra una sugerencia con etiqueta rota (Área 10).
