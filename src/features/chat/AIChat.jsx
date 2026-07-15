@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
-import { callAI } from '../../lib/ai-providers'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const QUICK_QUESTIONS = [
@@ -15,7 +14,7 @@ const QUICK_QUESTIONS = [
  * AIChat — Chat conversacional con IA sobre tus finanzas
  * Inspirado en MonAi: "Pregúntale a tus finanzas cualquier cosa"
  */
-export function AIChat({ transactions, totalIncome, totalExpenses, balance }) {
+export function AIChat() {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
@@ -27,43 +26,6 @@ export function AIChat({ transactions, totalIncome, totalExpenses, balance }) {
   const [isOpen, setIsOpen] = useState(false)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
-
-  // Contexto financiero comprimido para el prompt
-  const financialContext = useMemo(() => {
-    const now = new Date()
-    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-    const thisMonth = transactions.filter(t => t.date?.startsWith(yearMonth))
-    const incomeThisMonth = thisMonth.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-    const expensesThisMonth = thisMonth.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-
-    // Gastos por categoría este mes
-    const byCategory = {}
-    thisMonth.filter(t => t.type === 'expense').forEach(t => {
-      byCategory[t.category || 'Otros'] = (byCategory[t.category || 'Otros'] || 0) + t.amount
-    })
-
-    const catSummary = Object.entries(byCategory)
-      .sort((a, b) => b[1] - a[1])
-      .map(([cat, amt]) => `${cat}: $${amt.toFixed(2)}`)
-      .join(', ')
-
-    const recentTx = transactions
-      .slice(-10)
-      .map(t => `${t.type === 'income' ? '+' : '-'}$${t.amount} ${t.description || ''} (${t.date || ''})`)
-      .join('\n')
-
-    return `DATOS FINANCIEROS DEL USUARIO:
-Ingresos totales: $${totalIncome.toFixed(2)}
-Gastos totales: $${totalExpenses.toFixed(2)}
-Balance actual: $${balance.toFixed(2)}
-Ingresos este mes: $${incomeThisMonth.toFixed(2)}
-Gastos este mes: $${expensesThisMonth.toFixed(2)}
-Gastos por categoría este mes: ${catSummary || 'Sin gastos'}
-Últimas 10 transacciones:
-${recentTx || 'Sin transacciones'}
-Total de transacciones registradas: ${transactions.length}`
-  }, [transactions, totalIncome, totalExpenses, balance])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -81,23 +43,16 @@ Total de transacciones registradas: ${transactions.length}`
     setMessages(prev => [...prev, { role: 'user', content: question }])
     setLoading(true)
 
-    try {
-      const prompt = `${financialContext}
-
-Eres un asistente financiero personal amigable y directo. Responde en español, de forma concisa (máximo 3-4 líneas). No uses markdown complejo. Usa emojis de forma moderada para hacer la respuesta más legible.
-
-PREGUNTA DEL USUARIO: ${question}`
-
-      const result = await callAI(prompt, 500, false)
-      setMessages(prev => [...prev, { role: 'ai', content: result.content }])
-    } catch {
-      setMessages(prev => [
-        ...prev,
-        { role: 'ai', content: '⚠️ No pude conectarme con la IA en este momento. Verifica tu conexión e inténtalo de nuevo.' },
-      ])
-    } finally {
-      setLoading(false)
-    }
+    // AIChat queda diferido, sin implementar (proposal.md Decisión 2; design.md §10 —
+    // dirección de producto ya fijada, no su código). No debe llamar a ningún proveedor
+    // de IA directamente (Arquitectura de Confianza, Principio 3): cuando se implemente,
+    // MUST consumir la AIProvider Interface (src/lib/aiProvider.js), nunca
+    // ai-providers.js/groqProvider.js ni callAI de forma directa.
+    setMessages(prev => [
+      ...prev,
+      { role: 'ai', content: 'Este chat todavía no está disponible.' },
+    ])
+    setLoading(false)
   }
 
   return (
