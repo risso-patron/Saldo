@@ -6,6 +6,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
+import { useAI } from '../contexts/AIContext'
 import { AccountSettingsModal } from '../components/Auth/AccountSettingsModal'
 import { LanguageSelector } from '../components/Shared/LanguageSelector';
 import { PricingPlans } from '../components/Subscription/PricingPlans';
@@ -25,9 +26,20 @@ export const ProfilePage = ({
 }) => {
   const { user, signOut } = useAuth()
   const { theme, setTheme } = useTheme()
+  const { hasConsent, consentLoaded, grantConsent, revokeConsent } = useAI()
   const { t } = useTranslation()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
+
+  // Revocación inmediata, sin justificación (spec.md Área 6). Toggle optimista:
+  // AIContext ya pone hasConsent=false de inmediato en memoria (Riesgo R3).
+  const handleToggleAIConsent = () => {
+    if (hasConsent) {
+      revokeConsent()
+    } else {
+      grantConsent()
+    }
+  }
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuario'
   const email = user?.email || ''
@@ -185,6 +197,37 @@ export const ProfilePage = ({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── Consentimiento de IA (Área 6: revocación inmediata, sin justificación) ── */}
+      <div className="flex items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 rounded-3xl shadow-sm mb-4">
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-slate-700 dark:text-slate-200 text-sm leading-snug">
+            Usar la IA de Saldo
+          </p>
+          <p className="text-slate-400 dark:text-slate-500 text-xs mt-0.5 leading-snug">
+            podés apagarla cuando quieras.
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={hasConsent}
+          aria-label="Usar la IA de Saldo"
+          disabled={!consentLoaded}
+          onClick={handleToggleAIConsent}
+          className={[
+            'relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors disabled:opacity-50',
+            hasConsent ? 'bg-violet-600' : 'bg-slate-300 dark:bg-slate-600',
+          ].join(' ')}
+        >
+          <span
+            className={[
+              'inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform',
+              hasConsent ? 'translate-x-6' : 'translate-x-1',
+            ].join(' ')}
+          />
+        </button>
       </div>
 
       {/* ── Menu list ── */}

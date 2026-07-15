@@ -13,13 +13,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 
 ## Fase 1 — Infraestructura compartida (sin UI)
 
-### 1.1 — Test rojo: `planHasCapability` (shared/aiCapabilities.js)
+### 1.1 — Test rojo: `planHasCapability` (shared/aiCapabilities.js) [x]
 **Depende de**: ninguna
 **Satisface**: spec.md Área 8 (Requirement: "Ninguna función de IA se ejecuta sin pasar el gate de plan"), design.md §4 (`shared/aiCapabilities.js`, `AI_CAPABILITIES`/`AI_PLANS_WITH_AI`), §9 (catálogo compartido, ex-R3)
 **Tipo**: test-rojo
 **Criterio de finalización**: existe `shared/aiCapabilities.test.js` (o ubicación equivalente) con casos: plan `free` → `planHasCapability('free','assisted_categorization')` false; `pro_monthly`/`pro_yearly`/`lifetime` → true; capacidad inexistente → false. Test corre y falla (rojo) porque el módulo no existe aún.
 
-### 1.2 — Implementar hasta verde: `shared/aiCapabilities.js`
+### 1.2 — Implementar hasta verde: `shared/aiCapabilities.js` [x]
 **Depende de**: 1.1
 **Satisface**: mismos Requirement/§ que 1.1
 **Tipo**: implementación
@@ -67,13 +67,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa los 2 escenarios de 1.8 además de los 5 de 1.6/1.7. La ausencia de hallazgo es un resultado válido de la función, no un `null` accidental ni una excepción.
 
-### 1.10 — Crear `src/lib/aiProvider.js` (AIProvider Interface, contrato)
+### 1.10 — Crear `src/lib/aiProvider.js` (AIProvider Interface, contrato) [x]
 **Depende de**: ninguna
 **Satisface**: design.md §1 (Capa de abstracción de proveedor), §4 (contrato `AIProvider`), Principio 3, decisión de arquitectura del PO #3
 **Tipo**: infra
 **Criterio de finalización**: archivo documenta vía JSDoc (`@typedef`/`@callback`, sin lógica runtime) las 4 capacidades: `categorize(description)`, `generateIdea(aggregates)`, `predict(aggregates)`, `mapColumns(headers, sampleRows)`, con sus shapes de retorno tal como los define design.md §4. Verificado manualmente que no importa React ni `ai-providers`/`groqProvider`.
 
-### 1.11 — Migración SQL: `supabase/user-settings-schema.sql`
+### 1.11 — Migración SQL: `supabase/user-settings-schema.sql` [x]
 **Depende de**: ninguna
 **Satisface**: spec.md Área 6 (Requirements: "revocación inmediata... desde el área de cuenta", "sin consentimiento activo la superficie de IA desaparece", "ningún dato viaja al proveedor de IA antes de que exista consentimiento activo"), design.md §8 (esquema `user_settings`, decisión de arquitectura del PO #2)
 **Tipo**: infra
@@ -107,13 +107,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 
 ## Fase 2 — Enforcement de servidor
 
-### 2.1 — Test rojo: `ai-proxy.js` — enforcement de plan (403)
+### 2.1 — Test rojo: `ai-proxy.js` — enforcement de plan (403) [x]
 **Depende de**: 1.2
 **Satisface**: spec.md Área 8 (Requirement: "Ninguna función de IA se ejecuta sin pasar el gate de plan"), Scenarios: "Usuario free no dispara la función de IA subyacente" (403, sin llamar a Groq), "Usuario pro/lifetime accede con normalidad"; design.md §9 (enforcement doble capa), Principio 7
 **Tipo**: test-rojo
 **Criterio de finalización**: extiende `src/__tests__/aiProxy.security.test.js` (o archivo equivalente, mismo patrón `__private`) con: usuario autenticado cuyo `plan_type` en `subscriptions` es `free` → respuesta 403, `callGroq` nunca invocado; usuario `pro_monthly`/`lifetime` → continúa el flujo normal (no 403). Falla en rojo (el proxy no consulta plan hoy).
 
-### 2.2 — Implementar hasta verde: `ai-proxy.js` — enforcement de plan
+### 2.2 — Implementar hasta verde: `ai-proxy.js` — enforcement de plan [x]
 **Depende de**: 2.1
 **Satisface**: igual que 2.1
 **Tipo**: implementación
@@ -123,61 +123,61 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 
 ## Fase 3 — Entrada única de IA (AIContext)
 
-### 3.1 — Test rojo: `assertOutboundAllowed` — fail-closed
+### 3.1 — Test rojo: `assertOutboundAllowed` — fail-closed [x]
 **Depende de**: ninguna
 **Satisface**: spec.md Área 6 (Requirement: "Ningún dato viaja al proveedor de IA antes de que exista consentimiento activo... garantía dura, sin excepciones"), design.md §8 ("Cero llamadas salientes... en UN solo punto de control"), Principio 3, Riesgo R1
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre: `hasConsent=false` → deniega; `hasConsent=true, consentLoaded=false` (cache stale antes de reconciliar) → deniega igual (fail-closed); `hasConsent=true, consentLoaded=true` → permite. Falla en rojo.
 
-### 3.2 — Implementar hasta verde: `assertOutboundAllowed`
+### 3.2 — Implementar hasta verde: `assertOutboundAllowed` [x]
 **Depende de**: 3.1
 **Satisface**: igual que 3.1
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 3.1. Vive dentro de `src/contexts/AIContext.jsx` como guarda previa a cualquier llamada saliente.
 
-### 3.3 — Test rojo: `grantConsent` / `revokeConsent`
+### 3.3 — Test rojo: `grantConsent` / `revokeConsent` [x]
 **Depende de**: 1.11, 3.2
 **Satisface**: spec.md Área 6 (Requirements: "consentimiento al primer uso, en contexto", "revocación inmediata, sin justificación, desde el área de cuenta"), design.md §3.2 (secuencia de consentimiento), §8, Riesgo R3
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre: `grantConsent()` hace UPSERT sobre `(user_id, 'ai_consent')` en `user_settings` con `setting_value=true` y actualiza cache `localStorage['budgetrp_ai_consent']`; `revokeConsent()` pone `consent=false` de inmediato en memoria (optimista) antes de que resuelva la escritura remota, y reintenta si la escritura falla. Falla en rojo.
 
-### 3.4 — Implementar hasta verde: `grantConsent` / `revokeConsent`
+### 3.4 — Implementar hasta verde: `grantConsent` / `revokeConsent` [x]
 **Depende de**: 3.3
 **Satisface**: igual que 3.3
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 3.3. Al montar, `AIContext` lee cache de `localStorage` (evita flicker) y luego reconcilia con Supabase (`SELECT setting_value WHERE setting_key='ai_consent'`); ausencia de fila = sin consentimiento (fail-closed).
 
-### 3.5 — Test rojo: estado único observado desde dos consumidores
+### 3.5 — Test rojo: estado único observado desde dos consumidores [x]
 **Depende de**: 3.4
 **Satisface**: spec.md Área 4 (Requirement: "Un único punto de verdad para gate, límite y consentimiento"), Scenario: "Dos pantallas, mismo estado en el mismo instante"; design.md §1 (Arquitectura AIContext), §4 (`AIState`)
 **Tipo**: test-rojo
 **Criterio de finalización**: test con dos componentes de prueba que consumen `useAI()` simultáneamente bajo el mismo `AIProvider`; al cambiar `hasConsent`/`canUseAI` en uno, el otro observa el mismo valor en el mismo render, sin desincronización. Falla en rojo (`AIContext` no existe aún como Provider completo).
 
-### 3.6 — Implementar hasta verde: `AIContext` Provider + `useAI()`
+### 3.6 — Implementar hasta verde: `AIContext` Provider + `useAI()` [x]
 **Depende de**: 3.5
 **Satisface**: igual que 3.5
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 3.5. Sigue el patrón `createContext(null)` + `Provider` con `value` memoizado + hook `useAI()` que lanza fuera del provider, igual que `PeriodContext.jsx`/`CurrencyContext.jsx`. Expone `hasConsent`, `consentLoaded`, `canUseAI` (`planHasCapability(planType, 'assisted_categorization')`), `status`.
 
-### 3.7 — Test rojo: `suggestCategory` — 4 casos de error mapean a `status` tipado
+### 3.7 — Test rojo: `suggestCategory` — 4 casos de error mapean a `status` tipado [x]
 **Depende de**: 1.15, 1.5, 3.6
 **Satisface**: spec.md Área 5 (los 4 Requirements de casos 1-4), design.md §7 (tabla de manejo de errores), Principio 6
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre: sin plan → `status:'no_plan'` sin llamar a la red; 429 del proxy → `status:'rate_limited'`; sin consentimiento → `status:'no_consent'` (corto-circuito, sin red); 503/red caída → `status:'provider_error'`; éxito → `{category, confidence:'alta'|'media'|'baja'}` vía `toConfidenceLabel`. Ninguna promesa queda sin manejar. Falla en rojo.
 
-### 3.8 — Implementar hasta verde: `AIContext.suggestCategory`
+### 3.8 — Implementar hasta verde: `AIContext.suggestCategory` [x]
 **Depende de**: 3.7
 **Satisface**: igual que 3.7
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 3.7. El gateway envuelve la llamada a `groqProvider.categorize` en `try/catch`, nunca propaga la excepción cruda al render, delega el mapeo número→etiqueta a `toConfidenceLabel` (1.5) en un solo lugar.
 
-### 3.9 — Test rojo: guarda de sesión de borrador (respuesta tardía descartada)
+### 3.9 — Test rojo: guarda de sesión de borrador (respuesta tardía descartada) [x]
 **Depende de**: 3.8
 **Satisface**: spec.md Área 3 (Requirement: "La sugerencia se confirma o se corrige — nunca se aplica en silencio"; "la categoría final del movimiento MUST ser siempre la que el usuario confirmó"), design.md Principio 8, §3.1 (secuencia, caso "RESPUESTA TARDÍA"), §14 Riesgo R2
 **Tipo**: test-rojo
 **Criterio de finalización**: test simula: se emite `suggestCategory` con `requestId`+`AbortController`; el usuario confirma/guarda antes de que la respuesta resuelva (`committed=true`); cuando la respuesta tardía resuelve, se descarta — no se escribe ni se propone al `SmartCategorySelector`, la categoría persistida sigue siendo la confirmada por el usuario. Falla en rojo.
 
-### 3.10 — Implementar hasta verde: guarda de sesión de borrador
+### 3.10 — Implementar hasta verde: guarda de sesión de borrador [x]
 **Depende de**: 3.9
 **Satisface**: igual que 3.9
 **Tipo**: implementación
@@ -235,13 +235,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 4.7.
 
-### 4.9 — Test rojo: revocación desde `ProfilePage` se refleja sin pasos adicionales
+### 4.9 — Test rojo: revocación desde `ProfilePage` se refleja sin pasos adicionales [x]
 **Depende de**: 3.6, 3.4
 **Satisface**: spec.md Área 6 (Requirement: "revocación inmediata, sin justificación, desde el área de cuenta"), Área 4 (Requirement: "Un cambio de consentimiento se refleja en todas las pantallas sin pasos adicionales"); design.md §8, Riesgo R3
 **Tipo**: test-rojo
 **Criterio de finalización**: test monta `ProfilePage` y otro consumidor de `useAI()` bajo el mismo `AIProvider`; al apagar el interruptor "Usar la IA de Saldo" en `ProfilePage`, el otro consumidor ve `hasConsent=false` sin recargar ni repetir ninguna acción; no se pide motivo ni confirmación adicional. Falla en rojo.
 
-### 4.10 — Implementar hasta verde: toggle de consentimiento en `ProfilePage`
+### 4.10 — Implementar hasta verde: toggle de consentimiento en `ProfilePage` [x]
 **Depende de**: 4.9
 **Satisface**: igual que 4.9
 **Tipo**: implementación
@@ -263,19 +263,19 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 **Tipo**: implementación
 **Criterio de finalización**: `npm test` pasa 5.1. Se reemplaza `const aiInsights = useAIInsights([])` (`ImportManager.jsx:138`) por `const ai = useAI()`; `aiInsights.mapImportColumns(...)` (`ImportManager.jsx:292`) pasa a `ai.mapColumns(...)`.
 
-### 5.3 — Retirar `FloatingChatWidget`/`FloatingChatButton`
+### 5.3 — Retirar `FloatingChatWidget`/`FloatingChatButton` [x]
 **Depende de**: ninguna
 **Satisface**: spec.md Área 2 (Requirement: "El widget de chat falso deja de mostrarse en toda la aplicación", Scenario: "Ausencia total, incluyendo mobile"), design.md §6 ("borrado directo, sin flag ni estado transicional")
 **Tipo**: manual
 **Criterio de finalización**: se elimina el mount (`App.jsx:266-267`) y los imports (`App.jsx:29-30`); se borran `src/components/Shared/FloatingChatWidget.jsx` y `src/components/Shared/FloatingChatButton.jsx`. Verificado manualmente en viewport de 375px que no queda ningún botón flotante ni espacio reservado, en ninguna pestaña.
 
-### 5.4 — Limpiar instancia descartada de `useAIInsights` e imports muertos en `App.jsx`
+### 5.4 — Limpiar instancia descartada de `useAIInsights` e imports muertos en `App.jsx` [x]
 **Depende de**: 5.5
 **Satisface**: spec.md Área 1 (Requirement: "El sistema MUST NOT exponer ninguna otra superficie de IA... componentes excluidos o diferidos no aparecen"), design.md §6 ("`App.jsx:125`... se elimina; el estado ahora vive en `AIProvider`")
 **Tipo**: manual
 **Criterio de finalización**: se elimina `useAIInsights(allTransactions)` (`App.jsx:125`, resultado ya descartado) y el import de `useAIInsights` (`App.jsx:26`). Se eliminan los imports muertos de `AIAlerts`/`AIProviderStatus` (`App.jsx:25`) y el `lazy` de `AIInsightsPanel` (`App.jsx:55`) — ninguno tenía JSX que los invocara (0 renders confirmados). Verificado manualmente que `npm run build` no reporta imports rotos.
 
-### 5.5 — Montar `AIProvider` en `App.jsx`
+### 5.5 — Montar `AIProvider` en `App.jsx` [x]
 **Depende de**: 3.6
 **Satisface**: spec.md Área 4 (entrada única), design.md §1 (arquitectura general, `AIProvider` envolviendo el árbol autenticado)
 **Tipo**: infra

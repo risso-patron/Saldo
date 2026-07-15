@@ -22,12 +22,8 @@ import { hasPendingMigration } from './utils/dataMigration';
 import { Summary } from './components/Summary';
 import { HabitDailyCard } from './components/Dashboard/HabitDailyCard';
 import { GlobalBudgetTracker } from './components/Budget/GlobalBudgetTracker';
-import { AIAlerts, AIProviderStatus } from './components/AI';
-import { useAIInsights } from './hooks/useAIInsightsMulti';
 import { DailyReminder } from './components/Notifications/DailyReminder';
 import { DailyOnboardingToast } from './components/Notifications/DailyOnboardingToast';
-import { FloatingChatButton } from './components/Shared/FloatingChatButton';
-import { FloatingChatWidget } from './components/Shared/FloatingChatWidget';
 import { Omnibar } from './components/Shared/Omnibar';
 import { Sidebar } from './components/Shared/Sidebar';
 import { InstallPWA } from './components/InstallPWA';
@@ -37,6 +33,7 @@ import { AchievementNotifications } from './features/gamification/AchievementNot
 import { useRecurring } from './hooks/useRecurring';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PeriodProvider } from './contexts/PeriodContext';
+import { AIProvider } from './contexts/AIContext';
 import { CurrencySelector } from './features/currency/CurrencySelector';
 import { filterByMonth } from './utils/calculations';
 
@@ -52,7 +49,6 @@ const ExportManager = lazy(() => import('./features/export/ExportManager').then(
 const ImportManager = lazy(() => import('./features/import/ImportManager'));
 const GamificationDashboard = lazy(() => import('./features/gamification').then(m => ({ default: m.GamificationDashboard })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
-const AIInsightsPanel = lazy(() => import('./components/AI').then(m => ({ default: m.AIInsightsPanel })));
 
 const TabLoader = () => (
   <div className="flex items-center justify-center py-16">
@@ -65,7 +61,6 @@ function AppContent() {
   const { t, i18n } = useTranslation();
   const [showAuth, setShowAuth] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
-  const [isChatWidgetOpen, setIsChatWidgetOpen] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
 
   useEffect(() => {
@@ -122,7 +117,6 @@ function AppContent() {
 
   const achievements = useAchievements();
   const { recurring, addRecurring, toggleRecurring, removeRecurring } = useRecurring(addIncome, addExpense);
-  useAIInsights(allTransactions);
 
   const [activeTab, setActiveTab] = useLocalStorage('budgetrp_ui_activeTab', 'resumen');
 
@@ -263,8 +257,6 @@ function AppContent() {
             <main className="space-y-4 sm:space-y-10 pb-32">
               <DailyOnboardingToast /> <DailyReminder />
               <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} />
-              <FloatingChatWidget isOpen={isChatWidgetOpen} onClose={() => setIsChatWidgetOpen(false)} context={{ balance: filteredBalance, savingsRate: filteredTotalIncome > 0 ? (filteredBalance / filteredTotalIncome) * 100 : 0 }} />
-              <FloatingChatButton onClick={() => setIsChatWidgetOpen(!isChatWidgetOpen)} isOpen={isChatWidgetOpen} />
 
               {activeTab === 'resumen' && (
                 <>
@@ -336,11 +328,13 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <CurrencyProvider>
-            <PeriodProvider>
-              <AppContent />
-            </PeriodProvider>
-          </CurrencyProvider>
+          <AIProvider>
+            <CurrencyProvider>
+              <PeriodProvider>
+                <AppContent />
+              </PeriodProvider>
+            </CurrencyProvider>
+          </AIProvider>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

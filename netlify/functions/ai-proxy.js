@@ -22,6 +22,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { planHasCapability } from '../../shared/aiCapabilities.js';
 
 const MAX_REQUESTS_PER_MINUTE = 10;
 const WINDOW_SECONDS = 60;
@@ -102,6 +103,15 @@ function isOriginAllowed(origin) {
   return allowed.includes(origin);
 }
 
+function createSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('supabase_not_configured');
+  }
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
 async function authenticateRequest(event) {
   const authHeader = event.headers.authorization || event.headers.Authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -111,20 +121,34 @@ async function authenticateRequest(event) {
   const token = authHeader.slice('Bearer '.length).trim();
   if (!token) throw new Error('missing_auth');
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('supabase_not_configured');
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabase = createSupabaseClient();
   const { data, error } = await supabase.auth.getUser(token);
 
   if (error || !data?.user?.id) {
     throw new Error('invalid_auth');
   }
 
-  return data.user;
+  return { user: data.user, supabase };
+}
+
+/**
+ * Enforcement de plan server-side (Área 8, design.md §9, Principio 7).
+ * Consulta `subscriptions` por user.id; ausencia de fila = 'free' (fail-closed,
+ * igual criterio que create_default_subscription() en subscriptions-schema.sql).
+ * La AUTORIZACIÓN vive acá (servidor, no bypasseable); la DEFINICIÓN de qué
+ * capacidades habilita cada plan vive en shared/aiCapabilities.js (fuente única
+ * compartida con el cliente, ex-R3).
+ * @returns {Promise<string>} plan_type resuelto ('free' si no hay fila)
+ */
+async function getUserPlanType(supabase, userId) {
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('plan_type')
+    .eq('user_id', userId)
+    .single();
+
+  if (error || !data) return 'free';
+  return data.plan_type;
 }
 
 /**
@@ -182,8 +206,9 @@ export const handler = async (event) => {
   }
 
   let user;
+  let supabase;
   try {
-    user = await authenticateRequest(event);
+    ({ user, supabase } = await authenticateRequest(event));
   } catch (authError) {
     const statusCode = authError.message === 'supabase_not_configured' ? 500 : 401;
     const message = authError.message === 'supabase_not_configured'
@@ -205,6 +230,16 @@ export const handler = async (event) => {
     return {
       statusCode: 429,
       body: JSON.stringify({ error: 'Demasiadas solicitudes. Espera 1 minuto.' }),
+    };
+  }
+
+  // Enforcement server-side del plan (Área 8, p7): ninguna función de IA se
+  // ejecuta sin pasar el gate — ni siquiera si el cliente fuerza su estado.
+  const planType = await getUserPlanType(supabase, user.id);
+  if (!planHasCapability(planType, 'assisted_categorization')) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Esta función requiere un plan Pro.' }),
     };
   }
 
@@ -256,5 +291,6 @@ export const __private = {
   checkRateLimitRedis,
   sanitizePrompt,
   isOriginAllowed,
+  getUserPlanType,
   clearRateLimits: () => rateLimits.clear(),
 };
