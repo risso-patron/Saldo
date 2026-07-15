@@ -231,6 +231,36 @@ export const AIProvider = ({ children, provider = DEFAULT_PROVIDER }) => {
     [canUseAI, hasConsent, consentLoaded, provider]
   );
 
+  /**
+   * mapColumns — mapeo de columnas CSV asistido por IA (design.md §4 `AIApi`,
+   * §6 "Estrategia de migración"; spec.md Área 7). Mismo gateway/gate que
+   * `suggestCategory`: gate de plan + `assertOutboundAllowed` ANTES de
+   * cualquier salida de red (Principio 3). Cualquier falla — denegación de
+   * plan/consentimiento o error del proveedor — degrada a `null`, nunca
+   * propaga una excepción cruda (Principio 6); `ImportManager` cae a sus
+   * modos no-IA existentes (`template|profile|pattern|manual`) sin bloquear
+   * la importación.
+   * @param {string[]} headers
+   * @param {string[][]} sampleRows
+   * @returns {Promise<import('../lib/aiProvider').ColumnMap | null>}
+   */
+  const mapColumns = useCallback(
+    async (headers, sampleRows) => {
+      if (!canUseAI) return null;
+      try {
+        assertOutboundAllowed({ hasConsent, consentLoaded });
+      } catch {
+        return null;
+      }
+      try {
+        return await provider.mapColumns(headers, sampleRows);
+      } catch {
+        return null;
+      }
+    },
+    [canUseAI, hasConsent, consentLoaded, provider]
+  );
+
   const value = useMemo(
     () => ({
       hasConsent,
@@ -240,9 +270,20 @@ export const AIProvider = ({ children, provider = DEFAULT_PROVIDER }) => {
       grantConsent,
       revokeConsent,
       suggestCategory,
+      mapColumns,
       commitCategoryDraft,
     }),
-    [hasConsent, consentLoaded, canUseAI, status, grantConsent, revokeConsent, suggestCategory, commitCategoryDraft]
+    [
+      hasConsent,
+      consentLoaded,
+      canUseAI,
+      status,
+      grantConsent,
+      revokeConsent,
+      suggestCategory,
+      mapColumns,
+      commitCategoryDraft,
+    ]
   );
 
   return <AIContext.Provider value={value}>{children}</AIContext.Provider>;

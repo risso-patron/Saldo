@@ -251,13 +251,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 
 ## Fase 5 — Migración y retiro
 
-### 5.1 — Test rojo: `ImportManager` usa `useAI().mapColumns`
+### 5.1 — Test rojo: `ImportManager` usa `useAI().mapColumns` [x]
 **Depende de**: 1.15, 3.6
 **Satisface**: spec.md Área 7 (Requirement: "Mapeo de columnas CSV — encabezados, sin filas completas sin enmascarar"), design.md §6 (Estrategia de migración, `ImportManager.jsx:138`)
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre: con acceso, el mapeo de columnas usa `useAI().mapColumns(headers, sampleRows)` y conserva la firma de salida `columnMap` idéntica al pipeline actual (`ImportManager.jsx:292`); sin acceso (gate/consentimiento denegado), cae a los modos no-IA existentes (`template|profile|pattern|manual`) sin romper el flujo de importación. Falla en rojo (hoy usa `useAIInsights([])` directo).
 
-### 5.2 — Implementar hasta verde: migrar `ImportManager` a `useAI()`
+### 5.2 — Implementar hasta verde: migrar `ImportManager` a `useAI()` [x]
 **Depende de**: 5.1
 **Satisface**: igual que 5.1
 **Tipo**: implementación
@@ -281,13 +281,13 @@ Se releyó el código real de `App.jsx`, `BudgetForm.jsx`, `SmartCategorySelecto
 **Tipo**: infra
 **Criterio de finalización**: `AIProvider` envuelve el árbol autenticado en `App.jsx` al mismo nivel que los providers existentes (`PeriodContext`, `CurrencyContext`). Verificado manualmente que `useAI()` resuelve sin lanzar en cualquier componente autenticado.
 
-### 5.6 — Test rojo: gatear la categorización en lote de importación (hallazgo de verificación)
+### 5.6 — Test rojo: gatear la categorización en lote de importación (hallazgo de verificación) [x]
 **Depende de**: 5.5
 **Satisface**: spec.md Área 6 (Requirement: "Ningún dato viaja al proveedor de IA antes de que exista consentimiento activo... garantía dura, sin excepciones por tipo de flujo"), Área 8 (Requirement: "Ninguna función de IA se ejecuta sin pasar el gate de plan"); design.md §6 (enmendado post-aprobación para cubrir explícitamente esta ruta — ver bullet de `ImportManager.jsx:204`), §9 (alcance del enforcement), §13, §15
 **Tipo**: test-rojo
 **Criterio de finalización**: test cubre que `categorizeTransactionsFull` (`categorizationEngine.js`, invocado desde `ImportManager.jsx:204`) **no** invoca su ruta de IA (`aiService.categorizeWithAI` → `bulkCategorizeTransactions`) cuando `!canUseAI || !hasConsent`; en ese caso, las transacciones sin match de reglas locales caen a `category:'Otros'` (fallback ya existente en el propio motor) en vez de llamar a Groq. Falla en rojo (hoy no hay ningún gate en esa ruta).
 
-### 5.7 — Implementar hasta verde: gate en la categorización en lote de importación
+### 5.7 — Implementar hasta verde: gate en la categorización en lote de importación [x]
 **Depende de**: 5.6
 **Satisface**: igual que 5.6
 **Tipo**: implementación

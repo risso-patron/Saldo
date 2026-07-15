@@ -74,8 +74,17 @@ export const suggestExpenseCategory = (description) => {
   return match;
 };
 
-/** Categoriza un lote de transacciones usando el pipeline híbrido (Híbrido) */
-export const categorizeTransactionsFull = async (transactions) => {
+/**
+ * Categoriza un lote de transacciones usando el pipeline híbrido (Híbrido).
+ * @param {Array} transactions
+ * @param {boolean} [allowAI=false] Guarda previa (tareas 5.6/5.7, design.md
+ *   §6/§9; spec.md Área 6/Área 8): habilita el paso de IA en lote. La resuelve
+ *   el llamador (ImportManager, vía `useAI().canUseAI && hasConsent`) — esta
+ *   función no conoce plan ni consentimiento, solo obedece la guarda. Por
+ *   defecto `false` (fail-closed): sin acceso explícito, NUNCA se invoca
+ *   `categorizeWithAI`/Groq; lo no resuelto por reglas locales cae a 'Otros'.
+ */
+export const categorizeTransactionsFull = async (transactions, allowAI = false) => {
   const results = [];
   const pendingForAI = [];
   const descriptionIndices = new Map(); // Para re-insertar resultados de IA
@@ -91,7 +100,7 @@ export const categorizeTransactionsFull = async (transactions) => {
         descriptionIndices.set(t.description, []);
       }
       descriptionIndices.get(t.description).push(i);
-      
+
       // Solo agregamos a la lista de batch descripciones únicas
       if (descriptionIndices.get(t.description).length === 1) {
         pendingForAI.push(t.description);
@@ -99,8 +108,10 @@ export const categorizeTransactionsFull = async (transactions) => {
     }
   });
 
-  // 2. PASO 2: IA como Fallback (en lotes de 20 por eficiencia)
-  if (pendingForAI.length > 0) {
+  // 2. PASO 2: IA como Fallback (en lotes de 20 por eficiencia) — SOLO si
+  // allowAI habilita la salida (gate previo, Área 6/8). Sin acceso, las
+  // descripciones pendientes quedan sin resultado acá y caen al PASO 3.
+  if (allowAI && pendingForAI.length > 0) {
     const BATCH_SIZE = 20;
     
     for (let i = 0; i < pendingForAI.length; i += BATCH_SIZE) {

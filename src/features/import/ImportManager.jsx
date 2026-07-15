@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import Lottie from 'lottie-react';
 import loadingAnimation from '../../assets/loading-csv.json';
-import { useAIInsights } from '../../hooks/useAIInsightsMulti';
+import { useAI } from '../../contexts/AIContext';
 import { parseRawText } from '../../core/parserEngine';
 import { findHeaderIndex, normalizeHeader } from '../../core/headerDetector';
 import { findColumnIndices } from '../../core/mappingEngine';
@@ -134,8 +134,9 @@ export default function ImportManager({ onImport, onBulkImport }) {
   const [mappingMode, setMappingMode] = useState(null); // 'template'|'profile'|'pattern'|'ai'|'manual'|'modular'
   const [loadingFile, setLoadingFile] = useState(false);
   
-  // Hook de IA para auto-categorización (manteniendo por si se necesita externamente)
-  const aiInsights = useAIInsights([]);
+  // Entrada única de IA (design.md §1, §6): gate de plan + consentimiento
+  // resuelto adentro de useAI(); mapColumns degrada a null sin acceso.
+  const ai = useAI();
 
   const handleUpdateTransaction = (index, field, value) => {
     setPreviewData(prev => {
@@ -201,7 +202,9 @@ export default function ImportManager({ onImport, onBulkImport }) {
     // 5. Categorization Engine Híbrido (Reglas + IA Fallback) (Fase 5)
     // El motor usa reglas locales primero, y si no encuentra match o es "Otros",
     // hace consultas en batch a la IA para categorizar inteligentemente.
-    const categorized = await categorizeTransactionsFull(normalized);
+    // Gate (tarea 5.6/5.7, design.md §6/§9): sin plan+consentimiento, el paso
+    // de IA en lote NUNCA se invoca — el motor cae a reglas locales + 'Otros'.
+    const categorized = await categorizeTransactionsFull(normalized, ai.canUseAI && ai.hasConsent);
 
     console.log('✅ MODULAR PIPELINE COMPLETE (Fase 5 - Híbrido):', { 
       totalRows: rows.length, 
@@ -283,28 +286,23 @@ export default function ImportManager({ onImport, onBulkImport }) {
       console.warn('⚠️ Patrones detectados pero 0 filas válidas — continuando...');
     }
 
-    // 5. OPCIÓN C: Detección por IA (si hay API key)
-    const providers = aiInsights.checkProviders();
-    if (providers.length > 0) {
-      try {
-        setError('🤖 Analizando formato del archivo con IA...');
-        const sampleRows = lines.slice(1, 4).map(l => parseCSVLineFlexible(l, sep));
-        const aiMap = await aiInsights.mapImportColumns(rawH, sampleRows);
-        setError(null);
-        if (aiMap && Object.keys(aiMap).length >= 2) {
-          console.log('✅ IA detectó el mapa de columnas:', aiMap);
-          const parsed = parseWithColumnMap(lines, sep, rawHAll, aiMap);
-          if (parsed.length > 0) {
-            setMappingMode('ai');
-            setPreviewData(parsed);
-            return;
-          }
-          console.warn('⚠️ IA mapeó columnas pero no hay filas válidas — pasando a manual');
-        }
-      } catch (aiErr) {
-        console.warn('⚠️ IA no pudo mapear:', aiErr.message);
-        setError(null);
+    // 5. OPCIÓN C: Detección por IA — useAI().mapColumns (tarea 5.1/5.2,
+    // design.md §6). El gate de plan + consentimiento se resuelve adentro del
+    // gateway (AIContext): sin acceso, mapColumns degrada a null sin lanzar,
+    // y se cae a la OPCIÓN B (mapeador manual) más abajo sin bloquear el import.
+    setError('🤖 Analizando formato del archivo con IA...');
+    const sampleRows = lines.slice(1, 4).map(l => parseCSVLineFlexible(l, sep));
+    const aiMap = await ai.mapColumns(rawH, sampleRows);
+    setError(null);
+    if (aiMap && Object.keys(aiMap).length >= 2) {
+      console.log('✅ IA detectó el mapa de columnas:', aiMap);
+      const parsed = parseWithColumnMap(lines, sep, rawHAll, aiMap);
+      if (parsed.length > 0) {
+        setMappingMode('ai');
+        setPreviewData(parsed);
+        return;
       }
+      console.warn('⚠️ IA mapeó columnas pero no hay filas válidas — pasando a manual');
     }
 
     // 6. OPCIÓN B: Mapeador manual

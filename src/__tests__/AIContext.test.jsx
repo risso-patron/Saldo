@@ -393,3 +393,79 @@ describe('Guarda de sesión de borrador — respuesta tardía descartada (spec.m
     expect(suggestion).toEqual({ category: 'Comida', confidence: 'alta' });
   });
 });
+
+// ── Checkpoint 3, tarea 5.1/5.2 — useAI().mapColumns ────────────────────────
+//
+// design.md §4 declara `mapColumns` en el contrato `AIApi` pero Checkpoint 2
+// no lo expuso en `AIContext`. Se agrega acá siguiendo el mismo patrón de
+// gateway que `suggestCategory`: gate de plan + `assertOutboundAllowed` ANTES
+// de cualquier salida de red (Principio 3), y degradación calma a `null` ante
+// cualquier falla (denegación o error del proveedor) — nunca propaga una
+// excepción cruda (Principio 6). `ImportManager` (tarea 5.1/5.2) consume esto
+// para caer a sus modos no-IA existentes sin bloquear la importación.
+
+describe('mapColumns — gate + delegación al provider (spec.md Área 7, design.md §4/§6, Principios 3/6)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+    upsertMock.mockResolvedValue({ data: null, error: null });
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
+  });
+
+  it('sin plan (canUseAI=false) → null, sin invocar al provider (sin salida de red)', async () => {
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'free' } });
+    const mapColumnsMock = vi.fn();
+    const { result } = renderHook(() => useAI(), { wrapper: wrapperWithProvider({ mapColumns: mapColumnsMock }) });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    let mapResult;
+    await act(async () => {
+      mapResult = await result.current.mapColumns(['Fecha', 'Detalle'], [['15/07/2026', 'algo']]);
+    });
+
+    expect(mapResult).toBeNull();
+    expect(mapColumnsMock).not.toHaveBeenCalled();
+  });
+
+  it('sin consentimiento → null, sin invocar al provider (corto-circuito, sin red)', async () => {
+    singleMock.mockResolvedValue({ data: null, error: { code: 'PGRST116' } }); // sin fila = sin consentimiento
+    const mapColumnsMock = vi.fn();
+    const { result } = renderHook(() => useAI(), { wrapper: wrapperWithProvider({ mapColumns: mapColumnsMock }) });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    let mapResult;
+    await act(async () => {
+      mapResult = await result.current.mapColumns(['Fecha', 'Detalle'], [['15/07/2026', 'algo']]);
+    });
+
+    expect(mapResult).toBeNull();
+    expect(mapColumnsMock).not.toHaveBeenCalled();
+  });
+
+  it('con acceso, delega a provider.mapColumns(headers, sampleRows) y devuelve el ColumnMap tal cual', async () => {
+    const mapColumnsMock = vi.fn().mockResolvedValue({ fecha: 'Fecha Valor', descripcion: 'Detalle' });
+    const { result } = renderHook(() => useAI(), { wrapper: wrapperWithProvider({ mapColumns: mapColumnsMock }) });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    let mapResult;
+    await act(async () => {
+      mapResult = await result.current.mapColumns(['Fecha Valor', 'Detalle'], [['15/07/2026', 'super']]);
+    });
+
+    expect(mapResult).toEqual({ fecha: 'Fecha Valor', descripcion: 'Detalle' });
+    expect(mapColumnsMock).toHaveBeenCalledWith(['Fecha Valor', 'Detalle'], [['15/07/2026', 'super']]);
+  });
+
+  it('si provider.mapColumns rechaza (error del proveedor) → null, nunca propaga la excepción cruda (Principio 6)', async () => {
+    const mapColumnsMock = vi.fn().mockRejectedValue(new Error('ai_malformed_response: roto'));
+    const { result } = renderHook(() => useAI(), { wrapper: wrapperWithProvider({ mapColumns: mapColumnsMock }) });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    let mapResult;
+    await expect(act(async () => {
+      mapResult = await result.current.mapColumns(['a'], [['1']]);
+    })).resolves.not.toThrow();
+
+    expect(mapResult).toBeNull();
+  });
+});
