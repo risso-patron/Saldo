@@ -152,6 +152,28 @@ async function getUserPlanType(supabase, userId) {
 }
 
 /**
+ * Enforcement de consentimiento server-side (C1 — auditoría RC: el
+ * consentimiento solo se validaba en el cliente). Consulta `user_settings`
+ * por (user_id, setting_key='ai_consent'); mismo criterio fail-closed que
+ * `AIContext.jsx` usa en el cliente (`data?.setting_value === true` en el
+ * `useEffect` de reconciliación) — no se inventa un criterio distinto.
+ * Fail-closed en TODOS los casos: fila ausente, error de query, o
+ * `setting_value` no estrictamente `true` → sin consentimiento.
+ * @returns {Promise<boolean>}
+ */
+async function getUserConsent(supabase, userId) {
+  const { data, error } = await supabase
+    .from('user_settings')
+    .select('setting_value')
+    .eq('user_id', userId)
+    .eq('setting_key', 'ai_consent')
+    .single();
+
+  if (error || !data) return false;
+  return data.setting_value === true;
+}
+
+/**
  * Sanitiza el input para prevenir prompt injection
  */
 function sanitizePrompt(text) {
@@ -243,6 +265,18 @@ export const handler = async (event) => {
     };
   }
 
+  // Enforcement server-side del consentimiento (C1 — auditoría RC): este
+  // proxy es genérico (recibe un `prompt` libre, no distingue capacidades),
+  // así que es el único punto por el que CUALQUIER salida hacia Groq puede
+  // pasar. Fail-closed: sin fila, error, o setting_value !== true → 403.
+  const hasConsent = await getUserConsent(supabase, user.id);
+  if (!hasConsent) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Esta función requiere consentimiento para usar IA.' }),
+    };
+  }
+
   // Parsear y validar el body
   let body;
   try {
@@ -292,5 +326,6 @@ export const __private = {
   sanitizePrompt,
   isOriginAllowed,
   getUserPlanType,
+  getUserConsent,
   clearRateLimits: () => rateLimits.clear(),
 };

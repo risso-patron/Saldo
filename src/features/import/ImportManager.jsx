@@ -202,9 +202,14 @@ export default function ImportManager({ onImport, onBulkImport }) {
     // 5. Categorization Engine Híbrido (Reglas + IA Fallback) (Fase 5)
     // El motor usa reglas locales primero, y si no encuentra match o es "Otros",
     // hace consultas en batch a la IA para categorizar inteligentemente.
-    // Gate (tarea 5.6/5.7, design.md §6/§9): sin plan+consentimiento, el paso
-    // de IA en lote NUNCA se invoca — el motor cae a reglas locales + 'Otros'.
-    const categorized = await categorizeTransactionsFull(normalized, ai.canUseAI && ai.hasConsent);
+    // Gate (tarea 5.6/5.7, design.md §6/§9; M1 hallazgo de auditoría RC): sin
+    // plan+consentimiento RECONCILIADO, el paso de IA en lote NUNCA se
+    // invoca — el motor cae a reglas locales + 'Otros'. Usa ai.isAIAuthorized
+    // (único punto de control real, AIContext.jsx) en vez de reimplementar la
+    // condición a mano — `canUseAI && hasConsent` omitía `consentLoaded` y
+    // podía autorizar IA con el consentimiento de una sesión anterior durante
+    // la ventana de reconciliación tras un cambio de usuario.
+    const categorized = await categorizeTransactionsFull(normalized, ai.isAIAuthorized);
 
     console.log('✅ MODULAR PIPELINE COMPLETE (Fase 5 - Híbrido):', { 
       totalRows: rows.length, 

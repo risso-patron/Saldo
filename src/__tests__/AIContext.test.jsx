@@ -1,6 +1,14 @@
 import { renderHook, render, screen, waitFor, act } from '@testing-library/react';
 import { assertOutboundAllowed, AIProvider, useAI } from '../contexts/AIContext';
 
+// `useAuthMock` (hoisted, vi.fn) reemplaza el mock estático original para
+// poder simular un cambio de usuario a mitad de sesión (M1: ventana de
+// carrera en la que `consentLoaded` se resetea a `false` pero `hasConsent`
+// conserva el valor stale del usuario anterior).
+const { useAuthMock } = vi.hoisted(() => ({
+  useAuthMock: vi.fn(() => ({ user: { id: 'user-1' } })),
+}));
+
 // Fase 3 — Entrada única de IA (AIContext). Se construye incrementalmente,
 // tarea por tarea (3.1 → 3.10), agregando describe blocks conforme cada
 // tarea lo requiere, siguiendo strict TDD (rojo → verde por tarea).
@@ -41,7 +49,7 @@ vi.mock('../lib/supabase', () => ({
 }));
 
 vi.mock('../contexts/AuthContext', () => ({
-  useAuth: () => ({ user: { id: 'user-1' } }),
+  useAuth: useAuthMock,
 }));
 
 vi.mock('../hooks/useSubscription', () => ({
@@ -467,5 +475,75 @@ describe('mapColumns — gate + delegación al provider (spec.md Área 7, design
     })).resolves.not.toThrow();
 
     expect(mapResult).toBeNull();
+  });
+});
+
+// ── M1 — isAIAuthorized: único punto de control real reusado ──────────────
+//
+// Hallazgo de auditoría RC: `ImportManager.jsx` invocaba
+// `categorizeTransactionsFull` con `ai.canUseAI && ai.hasConsent` (línea
+// ~207), que omite `consentLoaded` — durante la ventana de reconciliación
+// tras un cambio de usuario, `hasConsent` conserva el valor del usuario
+// anterior. `isAIAuthorized` reusa `assertOutboundAllowed` (la MISMA función
+// que ya usan `suggestCategory`/`mapColumns`) para que exista un solo
+// criterio real, no una copia que pueda divergir.
+
+describe('isAIAuthorized — único punto de control reusado (M1, hallazgo de auditoría RC)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useAuthMock.mockReturnValue({ user: { id: 'user-1' } });
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
+    upsertMock.mockResolvedValue({ data: null, error: null });
+  });
+
+  it('false si !canUseAI, aunque haya consentimiento otorgado', async () => {
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'free' } });
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+
+    const { result } = renderHook(() => useAI(), { wrapper });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    expect(result.current.isAIAuthorized).toBe(false);
+  });
+
+  it('false si hasConsent=false, aunque consentLoaded=true', async () => {
+    singleMock.mockResolvedValue({ data: null, error: { code: 'PGRST116' } });
+
+    const { result } = renderHook(() => useAI(), { wrapper });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    expect(result.current.isAIAuthorized).toBe(false);
+  });
+
+  it('true solo cuando canUseAI, hasConsent y consentLoaded son true a la vez', async () => {
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+
+    const { result } = renderHook(() => useAI(), { wrapper });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+
+    expect(result.current.canUseAI).toBe(true);
+    expect(result.current.hasConsent).toBe(true);
+    expect(result.current.isAIAuthorized).toBe(true);
+  });
+
+  it('false cuando consentLoaded=false aunque hasConsent quedó stale en true (ventana de carrera al cambiar de usuario)', async () => {
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+
+    const { result, rerender } = renderHook(() => useAI(), { wrapper });
+    await waitFor(() => expect(result.current.consentLoaded).toBe(true));
+    expect(result.current.hasConsent).toBe(true);
+    expect(result.current.isAIAuthorized).toBe(true);
+
+    // Cambio de usuario: consentLoaded se resetea a false vía el useEffect de
+    // reconciliación (AIContext.jsx), pero hasConsent NO se toca hasta que la
+    // nueva consulta resuelva — acá la dejamos sin resolver a propósito para
+    // capturar la ventana de carrera con hasConsent stale en true.
+    singleMock.mockImplementation(() => new Promise(() => {}));
+    useAuthMock.mockReturnValue({ user: { id: 'user-2' } });
+    rerender();
+
+    expect(result.current.consentLoaded).toBe(false);
+    expect(result.current.hasConsent).toBe(true); // stale del usuario anterior
+    expect(result.current.isAIAuthorized).toBe(false);
   });
 });

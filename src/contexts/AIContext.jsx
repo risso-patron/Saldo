@@ -261,11 +261,27 @@ export const AIProvider = ({ children, provider = DEFAULT_PROVIDER }) => {
     [canUseAI, hasConsent, consentLoaded, provider]
   );
 
+  // isAIAuthorized — segunda puerta de autorización cerrada (M1, hallazgo de
+  // auditoría RC). Reusa `assertOutboundAllowed`, el MISMO punto de control
+  // que ya usan `suggestCategory`/`mapColumns` — no reimplementa la condición
+  // a mano, para que exista un solo criterio real y no una copia que pueda
+  // divergir (p.ej. `ImportManager.jsx` omitiendo `consentLoaded`).
+  const isAIAuthorized = useMemo(() => {
+    if (!canUseAI) return false;
+    try {
+      assertOutboundAllowed({ hasConsent, consentLoaded });
+      return true;
+    } catch {
+      return false;
+    }
+  }, [canUseAI, hasConsent, consentLoaded]);
+
   const value = useMemo(
     () => ({
       hasConsent,
       consentLoaded,
       canUseAI,
+      isAIAuthorized,
       status,
       grantConsent,
       revokeConsent,
@@ -277,6 +293,7 @@ export const AIProvider = ({ children, provider = DEFAULT_PROVIDER }) => {
       hasConsent,
       consentLoaded,
       canUseAI,
+      isAIAuthorized,
       status,
       grantConsent,
       revokeConsent,
