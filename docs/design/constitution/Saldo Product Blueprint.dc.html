@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #3E5568; }
+    body { margin: 0; background: #ECECEA; color: #1A1A1A; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: #1A1A1A; }
+    ::selection { background: #E4E9ED; }
+  </style>
+</helmet>
+
+<div style="padding: 64px; display: flex; flex-direction: column; gap: 80px; width: 1180px;" data-screen-label="Product Blueprint">
+
+  <!-- CABECERA -->
+  <header style="max-width: 900px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);">Saldo · Documento maestro</div>
+    <h1 style="font-size: 44px; font-weight: 600; letter-spacing: -0.02em; margin: 12px 0 0;">Product Blueprint</h1>
+    <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 16px 0 0; max-width: 660px;">La Design Constitution dice cómo se ve Saldo. La Experience Constitution dice cómo se siente. Este documento dice <strong>cómo se vive</strong>: desde el primer minuto hasta el año cinco. Responde una sola pregunta — ¿cómo evoluciona la relación entre una persona y su dinero cuando Saldo está en medio? — y gobierna todo diseño futuro.</p>
+    <div style="display: flex; gap: 24px; margin-top: 20px; font-size: 12px; color: #9E9E9E;">
+      <span>v1.0 — Julio 2026</span>
+      <span>Conecta la Design Constitution v1.2 y la Experience Constitution v1.1</span>
+    </div>
+  </header>
+
+  <!-- ============ 01 VIAJE ============ -->
+  <section data-screen-label="Blueprint · El viaje">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">01 · El viaje completo — la relación, no las sesiones</div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 28px 32px; display: grid; grid-template-columns: 180px 1fr 320px; gap: 28px;">
+        <div><div style="font-size: 17px; font-weight: 600;">Primer minuto</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">La primera cifra</div></div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 0;">Sin tour, sin vídeo, sin ocho pantallas de onboarding. Una decisión: conectar el banco o registrar un gasto a mano. En menos de sesenta segundos el usuario ve <strong style="color: #1A1A1A;">su</strong> primera cifra en Numeric XL. Ese momento — mi dinero, tratado con dignidad tipográfica — es la primera impresión completa del producto.</p>
+        <p style="font-size: 13px; line-height: 1.7; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Descubre:</strong> la cifra protagonista, la calma. <strong style="color: #444444;">Nunca aún:</strong> IA, categorías, planes de pago, ajustes.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 28px 32px; display: grid; grid-template-columns: 180px 1fr 320px; gap: 28px;">
+        <div><div style="font-size: 17px; font-weight: 600;">Primer día</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">El gesto</div></div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 0;">Aprende el único gesto que importa: registrar un movimiento. Diez segundos, importe primero, Enter. Si conectó el banco, revisa que los movimientos importados se parecen a su vida. El producto entero cabe en dos ideas: <strong style="color: #1A1A1A;">una cifra que dice la verdad y un gesto para alimentarla.</strong></p>
+        <p style="font-size: 13px; line-height: 1.7; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Descubre:</strong> la hoja, Deshacer, que cerrar no pierde nada. <strong style="color: #444444;">Nunca aún:</strong> insights, comparativas, exportación.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 28px 32px; display: grid; grid-template-columns: 180px 1fr 320px; gap: 28px;">
+        <div><div style="font-size: 17px; font-weight: 600;">Primera semana</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">La confianza</div></div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 0;">El hábito se forma o no se forma aquí. La IA empieza a sugerir categorías — acertando, porque ya vio una semana de datos. El Historial se vuelve legible como diario. La primera nota de IA aparece recién cuando tiene algo material que decir; si la semana no da para una observación honesta, no hay nota.</p>
+        <p style="font-size: 13px; line-height: 1.7; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Descubre:</strong> sugerencias, el diario, «Saldo me entiende». <strong style="color: #444444;">Nunca aún:</strong> proyecciones anuales, permisos avanzados.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 28px 32px; display: grid; grid-template-columns: 180px 1fr 320px; gap: 28px;">
+        <div><div style="font-size: 17px; font-weight: 600;">Primer mes</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">El espejo</div></div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 0;">Por primera vez existe «tu media»: el mes se compara contra el propio usuario, nunca contra un ideal. Insights cobra sentido — no antes, porque un gráfico de tres días es ruido con ejes. Aquí aparece la invitación a Premium, una vez, en contexto, cuando la IA ya demostró su valor gratis.</p>
+        <p style="font-size: 13px; line-height: 1.7; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Descubre:</strong> su patrón, Insights, la oferta Premium. <strong style="color: #444444;">Nunca:</strong> culpa por el mes que salió mal.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 28px 32px; display: grid; grid-template-columns: 180px 1fr 320px; gap: 28px;">
+        <div><div style="font-size: 17px; font-weight: 600;">Primer año</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">El silencio ganado</div></div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 0;">La relación madura es casi muda: sesiones de veinte segundos — abrir, ver que todo está bien, cerrar. La IA habla cada vez menos porque hay cada vez menos que corregir; su silencio es la señal de éxito. El aniversario no se celebra con confeti: se constata con la observación más valiosa del año, en una frase.</p>
+        <p style="font-size: 13px; line-height: 1.7; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Descubre:</strong> que ya no piensa en dinero a diario. <strong style="color: #444444;">Éxito:</strong> Saldo se volvió aburrido en el mejor sentido.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 MAPA ============ -->
+  <section data-screen-label="Blueprint · Mapa del producto">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">02 · Mapa completo del producto — todas las superficies y sus conexiones</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 44px;">
+      <!-- Fila entrada -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 200px; border: 1px dashed #C4C4C4; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6B6B6B;">Onboarding</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">1 decisión: banco o mano. Se visita una vez, jamás vuelve.</div>
+        </div>
+        <div style="font-size: 16px; color: #C4C4C4;">→</div>
+        <div style="width: 200px; border: 1px dashed #C4C4C4; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6B6B6B;">Permisos</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Banco (OAuth) e IA (consentimiento). Contextuales, nunca en lote.</div>
+        </div>
+        <div style="font-size: 16px; color: #C4C4C4;">→</div>
+        <div style="flex: 1; background: #EEF1F4; border: 1px solid var(--accent); border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--accent);">DASHBOARD — el hogar</div>
+          <div style="font-size: 12px; color: #6B6B6B; margin-top: 4px;">Toda sesión empieza aquí. Responde «¿cuánto tengo?» en 5 s. Núcleo del producto junto con la hoja.</div>
+        </div>
+      </div>
+      <!-- Fila núcleo -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px;">
+        <div style="background: #EEF1F4; border: 1px solid var(--accent); border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--accent);">HOJA — Nuevo movimiento</div>
+          <div style="font-size: 12px; color: #6B6B6B; margin-top: 4px;">Singleton sobre cualquier vista (5 entradas). El gesto que alimenta todo.</div>
+        </div>
+        <div style="background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600;">Historial — el diario</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Desde Dashboard («Ver todos») o nav. Detalle en línea; editar reusa la hoja.</div>
+        </div>
+        <div style="background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600;">Insights — el espejo</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Aparece con un mes de datos. Recibe enlaces de notas IA con filtro aplicado.</div>
+        </div>
+      </div>
+      <!-- Fila soporte -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-top: 16px;">
+        <div style="background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600;">Perfil y ajustes</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Trastienda: cuentas, categorías, consentimiento IA, plan, exportar. Se entra con propósito y se sale.</div>
+        </div>
+        <div style="background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600;">Importación</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">CSV / banco. Nace del estado vacío y de Perfil. Revisión antes de confirmar; reversible por lote.</div>
+        </div>
+        <div style="background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600;">Suscripción</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Una página franca en Perfil + una invitación contextual al mes. Sin contadores de urgencia.</div>
+        </div>
+        <div style="background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600;">⌘K — la palette</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Atajo transversal: navegar, registrar, buscar. Une todas las superficies sin ser una superficie.</div>
+        </div>
+      </div>
+      <!-- Capa transversal -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+        <div style="border: 1px dashed #C4C4C4; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6B6B6B;">Capa de estados — vacío · cargando · error · offline</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">No son pantallas: son modos de cada superficie. Regla común: lo conocido permanece visible y fechado; el fallo se constata en ámbar, nunca bloquea.</div>
+        </div>
+        <div style="border: 1px dashed #C4C4C4; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6B6B6B;">Capa de IA — notas, sugerencias, respuestas</div>
+          <div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Tampoco es una pantalla: no hay «pestaña de IA». Vive dentro de las superficies como caption y nota, gobernada por el Mapa de IA (§05).</div>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: #9E9E9E; margin: 20px 0 0;">Trazo del acento = núcleo (donde vive el 90% del tiempo) · trazo sólido gris = soporte · trazo discontinuo = superficies que aspiran a no ser visitadas.</p>
+    </div>
+  </section>
+
+  <!-- ============ 03 ARQUITECTURA EMOCIONAL ============ -->
+  <section data-screen-label="Blueprint · Arquitectura emocional">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">03 · Arquitectura emocional — una emoción por superficie</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 12px 40px;">
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #E6E6E6; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">
+        <div>Superficie</div><div>Produce</div><div>Evita</div><div>Atención</div><div>Velocidad</div><div>Al salir deja</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Dashboard</div><div>Alivio — «todo está bien» o «ya sé qué mirar»</div><div>Urgencia, tareas pendientes</div><div>Mínima</div><div>Un vistazo</div><div>Permiso para cerrar sin culpa</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Hoja</div><div>Ligereza — anotar al margen</div><div>Sensación de formulario, miedo a equivocarse</div><div>Focal, 10 s</div><div>La más rápida</div><div>«Ya está» — sin residuo</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Historial</div><div>Reconocimiento — «esta es mi vida, ordenada»</div><div>Auditoría, sospecha</div><div>Media, exploratoria</div><div>De hojear</div><div>Memoria refrescada, no juzgada</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Insights</div><div>Comprensión — el patrón detrás de los días</div><div>Vergüenza, comparación con otros</div><div>Alta, contemplativa</div><div>La más lenta</div><div>Una idea accionable, máximo</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Perfil</div><div>Control — todo configurable, nada escondido</div><div>Laberinto, letra pequeña</div><div>Puntual</div><div>De trámite breve</div><div>Confianza en la casa</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Importación</div><div>Seguridad — nada entra sin revisión</div><div>Miedo a duplicar o romper</div><div>Alta, una vez</div><div>Deliberada</div><div>Datos completos, reversibles</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Suscripción</div><div>Respeto — precio claro, valor demostrado</div><div>Presión, urgencia fabricada</div><div>Puntual</div><div>Sin prisa</div><div>Decisión propia, cualquiera que sea</div></div>
+      <div style="display: grid; grid-template-columns: 150px 1fr 1fr 120px 150px 1fr; gap: 20px; padding: 14px 0; font-size: 13px; line-height: 1.6; color: #6B6B6B;"><div style="font-weight: 600; color: #1A1A1A;">Onboarding</div><div>Impulso — empezar ya</div><div>Deber, tutorial</div><div>Focal, 60 s</div><div>Ágil</div><div>Su primera cifra en pantalla</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 04 CURVA DE APRENDIZAJE ============ -->
+  <section data-screen-label="Blueprint · Curva de aprendizaje">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">04 · Curva de aprendizaje — profundo, nunca complejo</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);">Inmediato — día 0</div>
+        <ul style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 14px 0 0; padding-left: 16px;">
+          <li>Saldo disponible</li>
+          <li>Registrar (hoja completa)</li>
+          <li>Historial y búsqueda</li>
+          <li>Deshacer</li>
+          <li>Conectar banco / importar</li>
+        </ul>
+        <p style="font-size: 12px; line-height: 1.6; color: #9E9E9E; margin: 14px 0 0;">Lo que hace que Saldo sea Saldo. Visible sin aprender nada.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);">Con confianza — semanas</div>
+        <ul style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 14px 0 0; padding-left: 16px;">
+          <li>Sugerencias y notas de IA</li>
+          <li>Insights (al mes de datos)</li>
+          <li>Filtros del diario</li>
+          <li>⌘K y tecla N</li>
+          <li>Invitación a Premium</li>
+        </ul>
+        <p style="font-size: 12px; line-height: 1.6; color: #9E9E9E; margin: 14px 0 0;">Aparecen cuando los datos les dan sentido — nunca se anuncian con tooltips ni badges «nuevo».</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);">Bajo demanda — cuando lo pide el uso</div>
+        <ul style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 14px 0 0; padding-left: 16px;">
+          <li>⌘Enter (registro en ráfaga)</li>
+          <li>Categorías personalizadas</li>
+          <li>Varias cuentas / monedas</li>
+          <li>Exportación completa</li>
+          <li>Reglas de categorización</li>
+        </ul>
+        <p style="font-size: 12px; line-height: 1.6; color: #9E9E9E; margin: 14px 0 0;">Existen desde el día uno para quien las busca (⌘K las encuentra), pero jamás se ofrecen solas. La profundidad se descubre, no se presenta.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 MAPA DE IA ============ -->
+  <section data-screen-label="Blueprint · Mapa de IA">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">05 · Mapa de IA — dónde habla, dónde calla, dónde desaparece</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 12px 40px;">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Habla (2 lugares)</div><div style="color: #6B6B6B;">Caption de categoría en la hoja, y una nota máximo en Dashboard/Insights. Toda intervención pasa el triple filtro de la EC: <strong style="color: #1A1A1A;">accionable, material, oportuna</strong> — y siempre con «Descartar» visible.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Calla</div><div style="color: #6B6B6B;">Durante la escritura de dinero, en errores del sistema (la IA nunca da la cara por fallos), en meses malos que no admiten acción («gastaste mucho» sin remedio no es una nota, es un reproche), y siempre que la observación no supere el coste de leerla.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Observa y aprende</div><div style="color: #6B6B6B;">Correcciones de categoría (sin comentarlo jamás), patrones de gasto, ritmo de registro. Todo con consentimiento explícito otorgado en Perfil; revocarlo degrada a «sin IA» sin castigo funcional ni pantalla de despedida.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Desaparece</div><div style="color: #6B6B6B;">Cuando acierta: una categorización correcta se vuelve invisible — el usuario deja de notar que existe. La trayectoria de la IA en cinco años es <strong style="color: #1A1A1A;">hablar cada vez menos con cada vez más precisión</strong>. Su silencio creciente es la métrica de su éxito, no de su fracaso.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Jamás</div><div style="color: #6B6B6B;">Chat como interfaz primaria · avatar, nombre propio o personalidad de mascota · primera persona emocional («¡me encanta tu progreso!») · notas apilables · vender Premium · opinar sin datos · animarse para llamar la atención. La IA de Saldo es un buen bibliotecario: sabe todo, habla poco, nunca te sigue a casa.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 06 RITMO ============ -->
+  <section data-screen-label="Blueprint · Ritmo">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">06 · El ritmo del producto — la música de Saldo</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 36px 40px;">
+      <div style="display: flex; align-items: flex-end; gap: 8px; height: 96px;">
+        <div style="flex: 1.2; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;"><div style="height: 24px; background: #E6E6E6; border-radius: 3px;"></div><div style="font-size: 11px; color: #9E9E9E;">Abrir · vistazo</div></div>
+        <div style="flex: 0.9; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;"><div style="height: 72px; background: var(--accent); border-radius: 3px;"></div><div style="font-size: 11px; color: #9E9E9E;">Registrar · acción</div></div>
+        <div style="flex: 1.4; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;"><div style="height: 40px; background: #E6E6E6; border-radius: 3px;"></div><div style="font-size: 11px; color: #9E9E9E;">Hojear · paseo</div></div>
+        <div style="flex: 2; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;"><div style="height: 16px; background: #E6E6E6; border-radius: 3px;"></div><div style="font-size: 11px; color: #9E9E9E;">Insights · contemplación</div></div>
+        <div style="flex: 0.6; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;"><div style="height: 56px; background: #E6E6E6; border-radius: 3px;"></div><div style="font-size: 11px; color: #9E9E9E;">Confirmar · compás breve</div></div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;"><div style="height: 8px; background: #E6E6E6; border-radius: 3px;"></div><div style="font-size: 11px; color: #9E9E9E;">Cerrar · silencio</div></div>
+      </div>
+      <div style="border-top: 1px solid #F0F0F0; margin-top: 28px; padding-top: 24px; max-width: 760px;">
+        <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 0;">Saldo es <strong style="color: #1A1A1A;">lento por fuera y rápido por dentro</strong>. Las superficies contemplativas (Dashboard, Insights) tienen tempo largo: mucho aire, una idea, sin premio por quedarse. Las acciones (hoja, confirmaciones, deshacer) son staccato: entran, resuelven, salen. La regla de composición: <strong style="color: #1A1A1A;">después de cada acción, un silencio</strong> — jamás una acción invita a la siguiente. Un producto financiero que encadena acciones fabrica compulsión; uno que respira fabrica control. El crescendo no existe: la sesión ideal termina más tranquila de lo que empezó.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 ESCALABILIDAD ============ -->
+  <section data-screen-label="Blueprint · Escalabilidad">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">07 · Escalabilidad — cinco años sin romper el ADN</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 14px; font-weight: 600;">Puede crecer sin romper nada</div>
+        <ul style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Nuevas fuentes de datos (bancos, tarjetas, efectivo compartido) — entran por Importación y desaparecen en el diario.</li>
+          <li>Nuevos tipos de insight — compiten por el único hueco de nota; el filtro triple los raciona solo.</li>
+          <li>Presupuestos y metas — como contexto del mes («tu media», «tu límite»), nunca como gamificación.</li>
+          <li>Espacios compartidos (pareja, hogar) — mismo lenguaje, otra cuenta; cero mecánica social.</li>
+          <li>Más plataformas — el ADN es tipográfico y de ritmo, no de layout: sobrevive a cualquier pantalla.</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 14px; font-weight: 600;">Jamás debe agregarse</div>
+        <ul style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Feed, social, comparativas con otros usuarios.</li>
+          <li>Rachas, logros, niveles, confeti — la salud financiera no es un juego.</li>
+          <li>Notificaciones de engagement («¡hace 3 días que no entras!»).</li>
+          <li>Un segundo acento de color, un segundo FAB, una segunda superficie modal.</li>
+          <li>Widgets configurables por el usuario — la curaduría es el producto; delegarla es abdicar.</li>
+          <li>Publicidad o productos financieros de terceros dentro del diario.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px; margin-top: 16px;">
+      <div style="font-size: 14px; font-weight: 600;">Los tres frenos anti-ERP</div>
+      <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 12px 0 0; max-width: 860px;">Los ERP no nacen recargados: se recargan una feature razonable a la vez. Tres reglas estructurales lo impiden. <strong style="color: #1A1A1A;">(1) Presupuesto de superficie:</strong> el producto tiene 4 destinos de navegación y 1 hueco de nota — para siempre; toda función nueva debe caber en ellos o reemplazar a una existente. <strong style="color: #1A1A1A;">(2) Regla 0 aplicada a features:</strong> si una función no puede justificar su lugar en el camino del usuario en un minuto, vive en ⌘K y Perfil, no en la interfaz visible. <strong style="color: #1A1A1A;">(3) El presupuesto de ansiedad:</strong> cada elemento nuevo en Dashboard debe demostrar que reduce más ansiedad de la que su presencia añade. En caso de duda, la respuesta es no — mil noes por cada sí.</p>
+    </div>
+  </section>
+
+  <!-- ============ 08 PRODUCT REVIEW ============ -->
+  <footer style="max-width: 900px; background: #1A1A1A; border-radius: 12px; padding: 44px 48px;" data-screen-label="Blueprint · Product Review">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E;">08 · Product Review — si Apple comprara Saldo</div>
+    <div style="display: flex; flex-direction: column; margin-top: 24px; border-top: 1px solid #333333;">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.75;"><div style="font-weight: 600; color: #FAFAFA;">Conservaría</div><div style="color: #C4C4C4;">La cifra protagonista con decimales rebajados — es marca sin logo. El guardado optimista con Deshacer universal. La IA sin avatar ni chat. El diario en lugar de la tabla. El presupuesto de superficie: 4 destinos, 1 nota, 1 modal.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.75;"><div style="font-weight: 600; color: #FAFAFA;">Eliminaría</div><div style="color: #C4C4C4;">El gráfico de barras del Dashboard — la frase «340 € menos que tu media» ya responde; las barras son la misma información con menos honestidad. Los chips de filtro visibles en Historial cuando no hay filtro activo: la búsqueda ya los contiene. Probablemente también la pestaña Insights entera durante el primer año de vida del producto — es la más propensa a fabricar contenido para justificarse.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.75;"><div style="font-weight: 600; color: #FAFAFA;">Simplificaría</div><div style="color: #C4C4C4;">Los tabs Gasto/Ingreso de la hoja: el signo del importe (o el contexto de la palette) podría inferirlos y dejar un solo campo. El onboarding a una sola frase con dos botones. Las categorías: empezar con ocho del sistema, no con taxonomías editables — la personalización llegaría al demostrarse la necesidad.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 18px 0; font-size: 13px; line-height: 1.75;"><div style="font-weight: 600; color: #FAFAFA;">Haría más radical</div><div style="color: #C4C4C4;">El silencio como feature de pago: Premium no como «más insights» sino como <em>mejores silencios</em> — una IA tan precisa que solo habla tres veces al mes y acierta las tres. Y la sesión de veinte segundos como métrica pública de éxito: optimizar el producto para que el usuario lo use menos es la apuesta más valiente y más defendible de Saldo. Nadie más en la categoría puede permitírsela.</div></div>
+    </div>
+    <p style="font-size: 12px; line-height: 1.7; color: #9E9E9E; margin: 24px 0 0;">Veredicto honesto: el riesgo del producto no es el exceso — las constituciones lo tienen cercado — sino la anemia: que tanta contención deje días sin razón para volver. La respuesta correcta no es añadir ruido, es que la cifra diga siempre la verdad. La retención de Saldo es la confianza, no el hábito.</p>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3E5568&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#3E5568&quot;, &quot;#3D5C4A&quot;, &quot;#4C5270&quot;], &quot;section&quot;: &quot;Identidad&quot; }
+}">
+class Component extends DCLogic {
+  componentDidMount() { this.applyVars(); }
+  componentDidUpdate() { this.applyVars(); }
+  applyVars() {
+    document.documentElement.style.setProperty('--accent', this.props.accentColor ?? '#3E5568');
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

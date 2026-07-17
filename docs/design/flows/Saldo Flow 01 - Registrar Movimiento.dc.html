@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root { --accent: #3E5568; }
+    body { margin: 0; background: #ECECEA; color: #1A1A1A; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: #1A1A1A; }
+    ::selection { background: #E4E9ED; }
+  </style>
+</helmet>
+
+<div style="padding: 64px; display: flex; flex-direction: column; gap: 72px; width: 1180px;" data-screen-label="User Flow 01 · Registrar un movimiento">
+
+  <!-- CABECERA -->
+  <header style="max-width: 900px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);">Saldo · User Flow 01</div>
+    <h1 style="font-size: 40px; font-weight: 600; letter-spacing: -0.02em; margin: 12px 0 0;">Registrar un movimiento</h1>
+    <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 16px 0 0; max-width: 640px;">El gesto más repetido del producto — y por eso el que define su carácter. Este documento recorre la experiencia completa: entradas, transiciones, estados excepcionales, tiempo percibido y cada microinteracción. La medida del éxito: <strong>de la intención al dato guardado en menos de diez segundos, sin ningún momento de duda.</strong></p>
+  </header>
+
+  <!-- ============ 01 ENTRADAS ============ -->
+  <section data-screen-label="Flow 01 · Entradas">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">01 · Puntos de entrada — todos llegan a la misma hoja</div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Dashboard</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Botón «Nuevo movimiento», único primario de la vista. La entrada más deliberada.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">FAB (mobile)</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Siempre visible, siempre el mismo gesto. Existe solo para esto — por eso es el único FAB del producto.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Historial</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Mismo botón en cabecera. Registrar desde donde se revisa: el contexto no obliga a volver a Inicio.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">⌘K → «nuevo»</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">La palette entiende «nuevo», «gasto», «42,50». Escribir «café 3,20» pre-rellena la hoja.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Tecla N</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Desde cualquier vista, sin foco en un input. Para quien registra a diario, cero ceremonia.</p>
+      </div>
+    </div>
+    <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; max-width: 720px; margin: 16px 0 0;">Regla del flujo: <strong style="color: #1A1A1A;">una sola hoja, idéntica desde cualquier entrada.</strong> Cambia únicamente lo pre-rellenado (la palette puede traer importe y concepto). La memoria muscular se construye una vez y sirve siempre.</p>
+  </section>
+
+  <!-- ============ 02 RECORRIDO ============ -->
+  <section data-screen-label="Flow 01 · Recorrido">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">02 · Recorrido completo — siete momentos</div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">1</div>
+        <div style="font-size: 14px; font-weight: 600;">Intención</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">El usuario decide registrar. Pulsa, toca o teclea. No hay paso intermedio: ninguna elección de tipo, cuenta o plantilla antes de ver la hoja.</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> nada aún. <strong style="color: #444444;">Permanece:</strong> toda la vista actual.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">2</div>
+        <div style="font-size: 14px; font-weight: 600;">La hoja aparece</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">Velo al 24% + hoja centrada (desktop/tablet) o desde el borde inferior (mobile). El foco cae en Importe con teclado numérico ya activo. El caret parpadea: la hoja está lista antes de que la mano llegue.</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> velo 200 ms, hoja 320 ms (desacelerando). <strong style="color: #444444;">Permanece:</strong> la vista detrás, reconocible. <strong style="color: #444444;">Nunca:</strong> rebotes, escalados, blur del fondo.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">3</div>
+        <div style="font-size: 14px; font-weight: 600;">Escribe el importe</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">Los dígitos aparecen en Numeric XL, ya formateados (separador de miles, decimales al 50%). Enter aquí mismo guarda un movimiento válido: todo lo demás es opcional.</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> solo el caret. <strong style="color: #444444;">Nunca:</strong> la cifra saltando de tamaño ni reordenándose al formatear.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">4</div>
+        <div style="font-size: 14px; font-weight: 600;">Concepto y sugerencia</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">Tab o toque al concepto. Al tercer carácter, la categoría sugerida aparece como caption bajo el campo — antes de que el usuario piense en buscarla. Un toque en «Cambiar» abre la lista; elegir corrige y el sistema aprende sin comentarlo.</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> la caption funde en 200 ms, una sola vez — si la sugerencia cambia al seguir escribiendo, el texto se sustituye sin volver a animar. <strong style="color: #444444;">Nunca:</strong> pulsos, brillos ni sparkle animado.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">5</div>
+        <div style="font-size: 14px; font-weight: 600;">Ajustes opcionales</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">Fecha y cuenta viven en chips ya resueltos («Hoy», «Cuenta corriente»). Tocar uno lo edita en línea — un popover mínimo, nunca otra capa modal sobre la hoja.</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> popover 200 ms. <strong style="color: #444444;">Permanece:</strong> el importe visible — el usuario nunca pierde de vista cuánto está registrando.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">6</div>
+        <div style="font-size: 14px; font-weight: 600;">Añadir</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">Enter o «Añadir». Guardado optimista: la hoja se cierra de inmediato — el dato ya es del usuario, no del servidor. En la lista, la fila nueva aparece con fondo de selección que se desvanece; el saldo del Dashboard ya refleja el gasto. Toast: «Movimiento añadido · Deshacer».</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> cierre 320 ms, desvanecimiento de selección 320 ms, toast entra 200 ms. <strong style="color: #444444;">Nunca:</strong> spinner tras Enter, checkmarks celebratorios, confeti.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px 28px; display: grid; grid-template-columns: 44px 220px 1fr 300px; gap: 24px; align-items: start;">
+        <div style="font-size: 22px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">7</div>
+        <div style="font-size: 14px; font-weight: 600;">Reposo</div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 0;">A los 8 segundos el toast se retira solo. La pantalla queda exactamente como antes, con un dato más. La sincronización con el servidor ocurre sin testigos; si falla, reintenta sola. El usuario ya está en otra cosa.</p>
+        <p style="font-size: 13px; line-height: 1.65; color: #9E9E9E; margin: 0;"><strong style="color: #444444;">Anima:</strong> toast sale 200 ms. <strong style="color: #444444;">Permanece:</strong> todo. El final del flujo es indistinguible de no haberlo empezado — salvo por el dato.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 EXCEPCIONES ============ -->
+  <section data-screen-label="Flow 01 · Estados excepcionales">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">03 · Estados excepcionales — la calma se demuestra cuando algo falla</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Sin conexión</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">El flujo no cambia en nada. Caption en la hoja: «Sin conexión — se guardará en este dispositivo». Añadir funciona igual; el dato marca pendiente de sincronizar de forma invisible.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Sincronización posterior</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Al volver la conexión, silencio total: sin toast «sincronizado», sin badge. La logística no es noticia. Solo un conflicto real (editado en otro dispositivo) merece una fila con caption «Revisar».</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Sin IA</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">No hay caption de sugerencia ni hueco que la espere: el chip pasa a «Elegir categoría» en terciario. El flujo pierde una comodidad, no un paso.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Sin consentimiento de IA</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Idéntico a «sin IA». Jamás un aviso «activa la IA para sugerencias» dentro del flujo: pedir permiso mientras el usuario teclea dinero es vender en el peor momento. La invitación vive en Perfil.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Plan Free</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Registrar es gratis siempre e ilimitado — cobrar por anotar un gasto sería cobrar por la ansiedad. Free pierde sugerencias de IA, no velocidad. Ningún upsell dentro de la hoja.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Validación</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Solo existe una: Enter sin número. Una frase junto al campo — «El importe necesita un número para poder añadirse» — sin sacudidas. Nunca valida mientras se escribe.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Error de servidor</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">El usuario no lo ve: el guardado optimista ya cerró la hoja y el dato vive localmente. Saldo reintenta con backoff. Solo si el fallo persiste horas, una línea ámbar en el Dashboard lo constata con fecha.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 13px; font-weight: 600;">Cierre accidental</div>
+        <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Escape, clic fuera o swipe-down cierran sin preguntar — y conservan lo escrito. Reabrir la hoja en menos de un minuto la restaura tal cual. Cerrar nunca destruye: por eso no hace falta confirmar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 TIEMPO PERCIBIDO ============ -->
+  <section style="max-width: 900px;" data-screen-label="Flow 01 · Tiempo percibido">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">04 · Tiempo percibido — cómo debe sentirse, no cuánto tarda</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 36px 40px;">
+      <ul style="font-size: 14px; line-height: 1.9; color: #444444; margin: 0; padding-left: 20px; max-width: 720px;">
+        <li>La hoja está lista <strong>antes de que la mano llegue</strong>: el foco y el teclado no se hacen esperar jamás.</li>
+        <li>La categoría aparece <strong>antes de que el usuario piense en buscarla</strong>. Si la IA tarda más que la escritura, no aparece — llegar tarde es peor que no llegar.</li>
+        <li>Tras Enter <strong>no existe ningún momento donde la pantalla parezca congelada</strong>. El éxito es instantáneo porque es local; la red es problema de Saldo, no del usuario.</li>
+        <li>El toast se siente como un recibo deslizado sobre la mesa, no como una notificación: aparece abajo, en la periferia, y se marcha solo.</li>
+        <li>Registrar el gasto número mil se siente exactamente igual que el primero: <strong>ninguna parte del flujo se gana el derecho a ponerse interesante.</strong></li>
+        <li>El único tiempo largo permitido es el del usuario pensando cuánto gastó. La interfaz espera sin parpadear, sin timeout, sin recordarle que está ahí.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 05 MICROINTERACCIONES ============ -->
+  <section data-screen-label="Flow 01 · Microinteracciones">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">05 · Microinteracciones — catálogo completo</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 12px 40px;">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Focus</div><div style="color: #6B6B6B;">Anillo de 2 px en el acento, offset 2 px, solo con teclado (focus-visible). Los inputs hundidos ganan borde del acento. El orden de tabulación es el orden de lectura: tipo → importe → concepto → chips → Añadir.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Hover</div><div style="color: #6B6B6B;">Velo rgba(0,0,0,0.03) en chips y botones, 120 ms. El primario oscurece un paso. Nada se mueve, crece ni levanta sombra al pasar el cursor.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Pressed</div><div style="color: #6B6B6B;">Velo al 0.06 y desplazamiento de 0 — el feedback es tonal, nunca espacial. En touch, el estado pressed dura lo que dura el dedo.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Teclado</div><div style="color: #6B6B6B;">N abre · Tab recorre · Enter añade desde cualquier campo · Escape cierra conservando · ⌘Enter añade y reabre vacía (registro en ráfaga, descubrible en la palette). Tab en el chip de fecha abre el popover; las flechas mueven el día.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">VoiceOver / lector</div><div style="color: #6B6B6B;">La hoja es un dialog etiquetado «Nuevo movimiento»; el foco queda atrapado dentro. El importe se anuncia como moneda («cuarenta y dos euros con cincuenta»). La sugerencia de IA es un live region politeness=polite: se anuncia al terminar de escribir, nunca interrumpe. El toast anuncia «Movimiento añadido, Deshacer disponible».</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Undo</div><div style="color: #6B6B6B;">«Deshacer» en el toast (8 s) o ⌘Z mientras el toast vive. Restaura el movimiento eliminado de la lista y el saldo anterior en una sola operación. Soft-delete hasta expirar: deshacer nunca falla.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Escape / Back / clic fuera</div><div style="color: #6B6B6B;">Los tres son el mismo gesto: cerrar conservando. El botón Back del sistema (Android) cierra la hoja, no la app. Ninguno pide confirmación porque ninguno destruye.</div></div>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 16px 0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">Swipe (mobile)</div><div style="color: #6B6B6B;">Swipe-down sobre la hoja la cierra siguiendo el dedo (interrumpible: soltar a medias la devuelve). El teclado numérico baja junto con la hoja, nunca antes — dos capas moviéndose a destiempo se sienten rotas.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 06 AUTOAUDITORIA ============ -->
+  <section style="max-width: 900px; background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 44px;" data-screen-label="Flow 01 · Autoauditoría">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Autoauditoría del Director de Diseño</div>
+    <div style="display: flex; flex-direction: column; margin-top: 20px; border-top: 1px solid #F0F0F0;">
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">¿Dónde se piensa de más?</div><div style="color: #6B6B6B;">En la corrección de categoría cuando la IA acierta «casi»: elegir entre aceptar lo aproximado o abrir la lista es una microdecisión real. Mitigación: las tres categorías más probables aparecen primero en la lista. Se acepta el resto del coste — automatizarlo del todo escondería errores.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">¿Interrupciones innecesarias?</div><div style="color: #6B6B6B;">Ninguna quedó: la validación es a demanda, la IA no anima al reintentar, el offline no avisa con modal, y el upsell se expulsó del flujo por completo.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">¿Qué paso podría desaparecer?</div><div style="color: #6B6B6B;">El paso 5 (chips) ya es opcional; el candidato real era el paso 4. No desaparece porque el concepto es lo que da memoria al dato — pero Enter en el paso 3 lo salta legítimamente. El flujo mínimo es de tres momentos: abrir, cifra, Enter.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">¿Animación trabajando para sí?</div><div style="color: #6B6B6B;">La candidata era el desvanecimiento de la fila nueva (320 ms). Sobrevive porque responde una pregunta real — «¿dónde quedó?» — al volver de la hoja. Si la telemetría muestra que nadie mira la lista tras añadir, se elimina.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">¿Qué genera más calma?</div><div style="color: #6B6B6B;">El cierre sin espera tras Enter, y saber — porque la hoja lo dice — que cerrar nunca pierde nada. La reversibilidad anunciada convierte un formulario de dinero en una nota al margen.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600;">¿Qué fricción queda?</div><div style="color: #6B6B6B;">Editar la fecha a un día no reciente: el popover con flechas es cómodo para ±3 días, torpe para «el 2 del mes pasado». Queda registrado como deuda de diseño para la hoja de detalle; no se resuelve aquí para no engordar el camino de los diez segundos.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 07 IMPLEMENTATION NOTES ============ -->
+  <footer style="max-width: 900px; background: #1A1A1A; border-radius: 12px; padding: 40px 44px;" data-screen-label="Flow 01 · Implementation Notes">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E;">Implementation Notes · puente Diseño → Desarrollo</div>
+    <div style="display: flex; flex-direction: column; margin-top: 20px; border-top: 1px solid #333333;">
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Arquitectura del flujo</div><div style="color: #C4C4C4;">La hoja es un singleton global montado sobre cualquier ruta (no una página): estado propio con máquina de estados explícita — vacía → editando → válida → guardando-local → cerrada. El borrador vive fuera del componente (store) para sobrevivir cierres y restaurarse ≤ 60 s.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Eventos</div><div style="color: #C4C4C4;">sheet_opened(origen) · amount_entered · suggestion_shown/accepted/changed · movement_added(vía: botón|enter|⌘enter) · movement_undone · sheet_dismissed(gesto, con_contenido). El origen de apertura es la métrica clave: valida las cinco entradas.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Estados de dato</div><div style="color: #C4C4C4;">Movimiento: local-only → pendiente-sync → sincronizado → conflicto. Soft-delete con tombstone de 8 s para Deshacer. La sugerencia de IA lleva timeout duro (si no llega antes del fin de escritura, se descarta — nunca aparece tarde).</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Dependencias</div><div style="color: #C4C4C4;">Dashboard y Historial consumen el mismo store (el saldo y la lista se actualizan sin refetch). La palette (⌘K) parsea texto libre a borrador pre-rellenado. Perfil gobierna consentimiento de IA y plan — el flujo solo lee esos flags.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">QA valida</div><div style="color: #C4C4C4;">Las cinco entradas abren la misma hoja con foco correcto; Enter con solo importe guarda; Escape/back/clic-fuera conservan y restauran ≤ 60 s; Deshacer restaura dato y saldo exactos; offline completo (añadir, cerrar app, reabrir, sincronizar); sugerencia nunca aparece tras dejar de escribir; ⌘Enter encadena sin perder foco; VoiceOver recorre el dialog completo; reduced-motion sustituye desplazamientos por fundidos.</div></div>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3E5568&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#3E5568&quot;, &quot;#3D5C4A&quot;, &quot;#4C5270&quot;], &quot;section&quot;: &quot;Identidad&quot; }
+}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.applyVars();
+    this.iconTimer = setInterval(() => {
+      if (window.lucide && window.lucide.createIcons) {
+        window.lucide.createIcons({ attrs: { 'stroke-width': 1.5 } });
+        clearInterval(this.iconTimer);
+      }
+    }, 300);
+    setTimeout(() => clearInterval(this.iconTimer), 10000);
+  }
+  componentDidUpdate() { this.applyVars(); }
+  applyVars() {
+    document.documentElement.style.setProperty('--accent', this.props.accentColor ?? '#3E5568');
+  }
+  componentWillUnmount() { clearInterval(this.iconTimer); }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

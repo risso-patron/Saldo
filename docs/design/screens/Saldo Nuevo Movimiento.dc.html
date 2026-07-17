@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root { --accent: #3E5568; --notes-display: grid; }
+    body { margin: 0; background: #ECECEA; color: #1A1A1A; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: #1A1A1A; }
+    ::selection { background: #E4E9ED; }
+  </style>
+</helmet>
+
+<div style="padding: 64px; display: flex; flex-direction: column; gap: 72px; width: fit-content;" data-screen-label="Pantalla 02 · Nuevo movimiento">
+
+  <!-- CABECERA -->
+  <header style="max-width: 900px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);">Saldo · Pantalla 02</div>
+    <h1 style="font-size: 40px; font-weight: 600; letter-spacing: -0.02em; margin: 12px 0 0;">Nuevo movimiento</h1>
+    <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 16px 0 0; max-width: 640px;">No es una pantalla: es una hoja. Registrar debe sentirse como apuntar en un margen — menos de diez segundos, el importe primero, todo lo demás adivinado y corregible después. Un gasto a medias es un gasto válido; el único campo obligatorio es la cifra.</p>
+  </header>
+
+  <!-- ============ DESKTOP ============ -->
+  <section data-screen-label="Nuevo movimiento · Desktop">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Desktop · 1280 · Hoja sobre la vista, con sugerencia de IA</div>
+
+    <div style="width: 1280px; height: 720px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+      <!-- Fondo: dashboard atenuado -->
+      <div style="position: absolute; inset: 0; display: flex; opacity: 0.5;">
+        <aside style="width: 216px; flex-shrink: 0; border-right: 1px solid #F0F0F0; padding: 28px 20px; box-sizing: border-box;">
+          <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.14em; padding: 0 8px;">SALDO</div>
+        </aside>
+        <div style="flex: 1; padding: 36px 96px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Julio 2026</div>
+          <div style="margin-top: 88px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Saldo disponible</div>
+            <div style="font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 8px;">24.860<span style="font-size: 24px; font-weight: 500; color: #9E9E9E;">,32 €</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.24);"></div>
+
+      <!-- Hoja -->
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 480px; background: #FFFFFF; border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.10); padding: 40px 40px 32px; box-sizing: border-box;">
+        <!-- Tipo -->
+        <div style="display: flex; gap: 24px;">
+          <div style="font-size: 14px; font-weight: 600; color: #1A1A1A; padding-bottom: 8px; border-bottom: 2px solid #1A1A1A;">Gasto</div>
+          <div style="font-size: 14px; color: #9E9E9E; padding-bottom: 8px; border-bottom: 2px solid transparent;">Ingreso</div>
+        </div>
+
+        <!-- Importe protagonista -->
+        <div style="margin-top: 40px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Importe</div>
+          <div style="font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 8px;">42<span style="font-size: 24px; font-weight: 500; color: #9E9E9E;">,50 €</span><span style="display: inline-block; width: 2px; height: 40px; background: var(--accent); margin-left: 6px; vertical-align: -4px;"></span></div>
+        </div>
+
+        <!-- Concepto -->
+        <div style="margin-top: 36px;">
+          <div style="font-size: 13px; font-weight: 500; color: #6B6B6B;">Concepto</div>
+          <div style="height: 36px; background: #F5F5F5; border-radius: 6px; display: flex; align-items: center; padding: 0 12px; margin-top: 8px;"><span style="font-size: 15px; color: #1A1A1A;">Supermercado</span></div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+            <i data-lucide="sparkles" style="width: 14px; height: 14px; color: #9E9E9E;"></i>
+            <span style="font-size: 13px; color: #6B6B6B;">Categoría sugerida:</span>
+            <span style="font-size: 13px; font-weight: 500; color: #1A1A1A; background: #F5F5F5; border-radius: 6px; padding: 3px 10px;">Alimentación</span>
+            <span style="font-size: 13px; color: #9E9E9E;">Cambiar</span>
+          </div>
+        </div>
+
+        <!-- Detalles pre-adivinados -->
+        <div style="display: flex; gap: 8px; margin-top: 28px;">
+          <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px;"><span style="font-size: 13px; color: #444444;">Hoy</span></div>
+          <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px;"><span style="font-size: 13px; color: #444444;">Cuenta corriente</span></div>
+        </div>
+
+        <!-- Acción -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 40px;">
+          <span style="font-size: 13px; color: #9E9E9E;">Esc para cerrar — lo escrito se conserva</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 12px; font-family: ui-monospace, monospace; color: #C4C4C4;">↵</span>
+            <div style="display: flex; align-items: center; height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; color: #FFFFFF;"><span style="font-size: 14px; font-weight: 500;">Añadir</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notas -->
+    <div style="display: var(--notes-display); grid-template-columns: repeat(3, 1fr); gap: 24px; width: 1280px; margin-top: 24px; box-sizing: border-box;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Comportamiento</div>
+        <ul style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Se abre desde «Nuevo movimiento», ⌘K o la tecla N. El foco cae en el importe con teclado numérico activo.</li>
+          <li>Solo el importe es obligatorio. Enter guarda en cualquier momento; los campos vacíos se completan luego, si acaso.</li>
+          <li>La categoría se adivina del concepto mientras se escribe; un toque la corrige y el sistema aprende sin comentarlo.</li>
+          <li>Al guardar: la hoja se cierra (320 ms), toast «Movimiento añadido · Deshacer» (8 s). Sin pantalla de éxito.</li>
+          <li>Escape cierra siempre; lo escrito espera por si se vuelve. Cerrar nunca pierde trabajo.</li>
+          <li>Guardado optimista: el movimiento aparece en la lista al instante; la sincronización ocurre sin testigos.</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Microcopys canónicos</div>
+        <ul style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>«Añadir» — no «Guardar movimiento» ni «¡Listo!». Un verbo.</li>
+          <li>«Categoría sugerida: Alimentación · Cambiar» — la IA propone en indicativo neutro, con salida visible.</li>
+          <li>«Esc para cerrar — lo escrito se conserva» — la reversibilidad se anuncia antes de actuar (E7).</li>
+          <li>Toast: «Movimiento añadido · Deshacer». Constata; no agradece ni celebra.</li>
+          <li>Validación: «El importe necesita un número» — el sistema asume la culpa gramatical, sin rojo dramático.</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Construcción</div>
+        <ul style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Hoja: 480 px, radio 16, sombra modal, velo rgba(0,0,0,0.24). Única superficie que oscurece la página.</li>
+          <li>Importe en Numeric XL 48/700, decimales al 50%. La cifra es protagonista incluso al escribirla.</li>
+          <li>Tabs Gasto/Ingreso: texto con subrayado 2 px — sin píldoras ni cajas.</li>
+          <li>Inputs hundidos #F5F5F5 sin borde; el foco los dibuja con el anillo del acento.</li>
+          <li>Chips de fecha y cuenta: borde 1 px, 32 px, radio 6 — editables en línea, sin abrir capas nuevas.</li>
+          <li>Un primario («Añadir»); el resto, texto. Cero sombras dentro de la hoja.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TABLET + MOBILE ============ -->
+  <section style="display: flex; gap: 56px; align-items: flex-start;" data-screen-label="Nuevo movimiento · Tablet y Mobile">
+    <div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Tablet · 834 · Misma hoja, centrada</div>
+      <div style="width: 834px; height: 620px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; position: relative; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.24);"></div>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 460px; background: #FFFFFF; border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.10); padding: 36px; box-sizing: border-box;">
+          <div style="display: flex; gap: 24px;">
+            <div style="font-size: 14px; font-weight: 600; padding-bottom: 8px; border-bottom: 2px solid #1A1A1A;">Gasto</div>
+            <div style="font-size: 14px; color: #9E9E9E; padding-bottom: 8px;">Ingreso</div>
+          </div>
+          <div style="margin-top: 32px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Importe</div>
+            <div style="font-size: 44px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 8px;">42<span style="font-size: 22px; font-weight: 500; color: #9E9E9E;">,50 €</span></div>
+          </div>
+          <div style="margin-top: 28px;">
+            <div style="height: 36px; background: #F5F5F5; border-radius: 6px; display: flex; align-items: center; padding: 0 12px;"><span style="font-size: 15px;">Supermercado</span></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 20px;">
+            <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 13px; color: #444444;">Alimentación</span></div>
+            <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 13px; color: #444444;">Hoy</span></div>
+            <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 13px; color: #444444;">Cuenta corriente</span></div>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 32px;">
+            <div style="display: flex; align-items: center; height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; color: #FFFFFF;"><span style="font-size: 14px; font-weight: 500;">Añadir</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Mobile · 390 · Hoja inferior, desde el FAB</div>
+      <div style="width: 390px; height: 780px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+        <div style="position: absolute; inset: 0; padding: 32px 24px; opacity: 0.5;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Julio 2026</div>
+          <div style="margin-top: 40px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Saldo disponible</div>
+          <div style="font-size: 44px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 8px;">24.860<span style="font-size: 22px; font-weight: 500; color: #9E9E9E;">,32 €</span></div>
+        </div>
+        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.24);"></div>
+        <div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 16px 16px 0 0; box-shadow: 0 -12px 32px rgba(0,0,0,0.10); padding: 20px 24px 28px; box-sizing: border-box;">
+          <div style="width: 36px; height: 4px; background: #E6E6E6; border-radius: 999px; margin: 0 auto;"></div>
+          <div style="display: flex; gap: 24px; margin-top: 20px;">
+            <div style="font-size: 14px; font-weight: 600; padding-bottom: 8px; border-bottom: 2px solid #1A1A1A;">Gasto</div>
+            <div style="font-size: 14px; color: #9E9E9E; padding-bottom: 8px;">Ingreso</div>
+          </div>
+          <div style="margin-top: 28px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Importe</div>
+            <div style="font-size: 52px; line-height: 60px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 6px;">42<span style="font-size: 26px; font-weight: 500; color: #9E9E9E;">,50 €</span></div>
+          </div>
+          <div style="margin-top: 24px;">
+            <div style="height: 40px; background: #F5F5F5; border-radius: 6px; display: flex; align-items: center; padding: 0 14px;"><span style="font-size: 15px;">Supermercado</span></div>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center; gap: 5px;"><i data-lucide="sparkles" style="width: 13px; height: 13px; color: #9E9E9E;"></i><span style="font-size: 13px; color: #444444;">Alimentación</span></div>
+              <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 13px; color: #444444;">Hoy</span></div>
+            </div>
+          </div>
+          <div style="height: 44px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-top: 24px;"><span style="font-size: 15px; font-weight: 500; color: #FFFFFF;">Añadir</span></div>
+          <div style="height: 120px; margin-top: 16px; background: #F5F5F5; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="font-size: 11px; font-family: ui-monospace, monospace; color: #9E9E9E;">teclado numérico del sistema</span></div>
+        </div>
+      </div>
+      <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; max-width: 390px; margin: 16px 0 0;">El importe crece y se centra: en móvil se escribe con el pulgar y se lee a un brazo de distancia. Cuenta se omite si solo hay una; la hoja nunca tapa la cifra del saldo por completo — el contexto sigue detrás.</p>
+    </div>
+  </section>
+
+  <!-- ============ ESTADOS ============ -->
+  <section data-screen-label="Nuevo movimiento · Estados">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Estados · hoja, desktop</div>
+    <div style="display: grid; grid-template-columns: repeat(2, 620px); gap: 32px;">
+
+      <!-- VACIO / INICIAL -->
+      <div>
+        <div style="width: 620px; height: 380px; background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 16px; padding: 40px 48px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="display: flex; gap: 24px;">
+            <div style="font-size: 14px; font-weight: 600; padding-bottom: 8px; border-bottom: 2px solid #1A1A1A;">Gasto</div>
+            <div style="font-size: 14px; color: #9E9E9E; padding-bottom: 8px;">Ingreso</div>
+          </div>
+          <div style="margin-top: 36px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Importe</div>
+            <div style="font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: #C4C4C4; margin-top: 8px;">0<span style="font-size: 24px; font-weight: 500;">,00 €</span><span style="display: inline-block; width: 2px; height: 40px; background: var(--accent); margin-left: 6px; vertical-align: -4px;"></span></div>
+          </div>
+          <div style="margin-top: 32px;">
+            <div style="height: 36px; background: #F5F5F5; border-radius: 6px; display: flex; align-items: center; padding: 0 12px;"><span style="font-size: 15px; color: #9E9E9E;">Concepto (opcional)</span></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 36px;">
+            <span style="font-size: 13px; color: #9E9E9E;">Esc para cerrar — lo escrito se conserva</span>
+            <div style="height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; opacity: 0.45;"><span style="font-size: 14px; font-weight: 500; color: #FFFFFF;">Añadir</span></div>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Inicial (vacío).</strong> Placeholder en terciario, caret ya activo, primario deshabilitado por opacidad hasta que exista un número. Sin categoría ni chips: aparecen cuando hay algo que adivinar — el vacío no muestra maquinaria.</p>
+      </div>
+
+      <!-- EXITO -->
+      <div>
+        <div style="width: 620px; height: 380px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 56px; box-sizing: border-box; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Julio 2026</div>
+          <div style="margin-top: 40px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Saldo disponible</div>
+            <div style="font-size: 44px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 8px;">24.817<span style="font-size: 22px; font-weight: 500; color: #9E9E9E;">,82 €</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 80px 110px; gap: 16px; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0; margin-top: 40px; background: #EEF1F4; border-radius: 6px; padding: 0 12px;"><span style="font-size: 15px; color: #444444;">Supermercado</span><span style="font-size: 13px; color: #9E9E9E;">Hoy</span><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right;">−42,50 €</span></div>
+          <div style="position: absolute; left: 56px; bottom: 28px; background: #1A1A1A; border-radius: 8px; padding: 12px 18px; display: flex; align-items: center; gap: 16px;"><span style="font-size: 14px; color: #FAFAFA;">Movimiento añadido</span><span style="font-size: 14px; font-weight: 500; color: #FFFFFF; text-decoration: underline; text-underline-offset: 3px;">Deshacer</span></div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Éxito.</strong> La hoja se cierra; la fila nueva aparece con fondo de selección tenue que se desvanece (320 ms) y el saldo ya refleja el gasto. Toast inverso 8 s con Deshacer. Sin celebración: la prueba del éxito es que el dato está donde debe.</p>
+      </div>
+
+      <!-- ERROR VALIDACION -->
+      <div>
+        <div style="width: 620px; height: 380px; background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 16px; padding: 40px 48px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="display: flex; gap: 24px;">
+            <div style="font-size: 14px; font-weight: 600; padding-bottom: 8px; border-bottom: 2px solid #1A1A1A;">Gasto</div>
+            <div style="font-size: 14px; color: #9E9E9E; padding-bottom: 8px;">Ingreso</div>
+          </div>
+          <div style="margin-top: 36px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Importe</div>
+            <div style="font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: #C4C4C4; margin-top: 8px;">0<span style="font-size: 24px; font-weight: 500;">,00 €</span></div>
+            <div style="font-size: 13px; color: #A14D44; margin-top: 8px;">El importe necesita un número para poder añadirse.</div>
+          </div>
+          <div style="margin-top: 28px;">
+            <div style="height: 36px; background: #F5F5F5; border-radius: 6px; display: flex; align-items: center; padding: 0 12px;"><span style="font-size: 15px;">Supermercado</span></div>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 36px;">
+            <div style="height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; opacity: 0.45;"><span style="font-size: 14px; font-weight: 500; color: #FFFFFF;">Añadir</span></div>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Error de validación.</strong> Solo aparece si el usuario intenta añadir sin número (Enter con importe vacío). Una frase en error, junto al campo, sin sacudidas ni bordes rojos gruesos. Es el único uso del rojo en la pantalla.</p>
+      </div>
+
+      <!-- SIN CONEXION / SIN IA -->
+      <div>
+        <div style="width: 620px; height: 380px; background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 16px; padding: 40px 48px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="display: flex; gap: 24px;">
+            <div style="font-size: 14px; font-weight: 600; padding-bottom: 8px; border-bottom: 2px solid #1A1A1A;">Gasto</div>
+            <div style="font-size: 14px; color: #9E9E9E; padding-bottom: 8px;">Ingreso</div>
+          </div>
+          <div style="margin-top: 36px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Importe</div>
+            <div style="font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 8px;">42<span style="font-size: 24px; font-weight: 500; color: #9E9E9E;">,50 €</span></div>
+          </div>
+          <div style="margin-top: 28px;">
+            <div style="height: 36px; background: #F5F5F5; border-radius: 6px; display: flex; align-items: center; padding: 0 12px;"><span style="font-size: 15px;">Supermercado</span></div>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 13px; color: #9E9E9E;">Elegir categoría</span></div>
+              <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 13px; color: #444444;">Hoy</span></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 36px;">
+            <span style="font-size: 13px; color: #9E9E9E;">Sin conexión — se guardará en este dispositivo</span>
+            <div style="height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 14px; font-weight: 500; color: #FFFFFF;">Añadir</span></div>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Sin IA / sin conexión.</strong> Sin sugerencia no hay hueco: el chip pasa a «Elegir categoría» en terciario, opcional. Offline, añadir funciona igual; una caption lo constata sin alarma y la sincronización ocurre al volver (EC: la desconexión es logística, nunca una pérdida).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AUTOAUDITORIA ============ -->
+  <footer style="max-width: 900px; background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 44px;" data-screen-label="Autoauditoría">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Autoauditoría del Director de Diseño</div>
+    <div style="display: flex; flex-direction: column; margin-top: 20px; border-top: 1px solid #F0F0F0;">
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Recorrido del ojo</div><div style="color: #6B6B6B;">Tipo → importe → concepto → «Añadir». Cuatro paradas verticales, sin bifurcaciones; los chips pre-adivinados están fuera del camino crítico y solo se visitan para corregir.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Dónde descansa la vista</div><div style="color: #6B6B6B;">En los 40 px sobre y bajo el importe: la cifra respira sola, igual que en el dashboard. El ritmo es 40–36–28 px descendente — la pantalla se acelera suavemente hacia la acción, sin sensación de prisa.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Protagonista</div><div style="color: #6B6B6B;">El importe, en Numeric XL — la misma dignidad tipográfica que el saldo. Escribir dinero se siente igual que leerlo: firma de la casa.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Qué se eliminó</div><div style="color: #6B6B6B;">Etiqueta de notas, adjuntos, repetición/recurrencia y selector de moneda: casos minoritarios que viven en el detalle del movimiento, no en el camino de los diez segundos. También el título «Nuevo movimiento» dentro de la hoja — los tabs ya dicen qué es esto (Regla 0: no sobrevivió al minuto).</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Competencia por atención</div><div style="color: #6B6B6B;">La sugerencia de IA era el riesgo: se resolvió como caption bajo el concepto — sparkle 14 px, terciario, con «Cambiar» al lado. Opina sin interrumpir la escritura y desaparece si no hay concepto.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">¿Calma o actividad?</div><div style="color: #6B6B6B;">Calma: un primario, cero rojos en el estado normal, validación solo a demanda, y la promesa «lo escrito se conserva» visible antes de actuar. Sin colores y sin logo sigue siendo Saldo: overline + cifra con decimales rebajados, tabs subrayados, inputs hundidos.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Decisión más difícil</div><div style="color: #6B6B6B;">Hoja modal vs. edición en línea sobre la tabla. Ganó la hoja: registrar nace desde cualquier vista (⌘K, FAB, N) y necesita foco total durante diez segundos; la edición en línea queda para corregir en el Historial. Es la única capa que oscurece la página en todo el producto, y ese privilegio comunica su importancia.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Constituciones</div><div style="color: #6B6B6B;">Sin excepciones. Checklist EC: 10 bloqueantes en sí. Registrar &lt; 10 s con solo el importe (compromiso 09); reversible con Deshacer 8 s (E7); una decisión por superficie (E11); IA accionable-material-oportuna y descartable (Sección 05).</div></div>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3E5568&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#3E5568&quot;, &quot;#3D5C4A&quot;, &quot;#4C5270&quot;], &quot;section&quot;: &quot;Identidad&quot; },
+  &quot;showNotes&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Documento&quot; }
+}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.applyVars();
+    this.iconTimer = setInterval(() => {
+      if (window.lucide && window.lucide.createIcons) {
+        window.lucide.createIcons({ attrs: { 'stroke-width': 1.5 } });
+        clearInterval(this.iconTimer);
+      }
+    }, 300);
+    setTimeout(() => clearInterval(this.iconTimer), 10000);
+  }
+  componentDidUpdate() { this.applyVars(); }
+  componentWillUnmount() { clearInterval(this.iconTimer); }
+  applyVars() {
+    const root = document.documentElement;
+    root.style.setProperty('--accent', this.props.accentColor ?? '#3E5568');
+    root.style.setProperty('--notes-display', (this.props.showNotes ?? true) ? 'grid' : 'none');
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

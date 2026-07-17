@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #3E5568; }
+    body { margin: 0; background: #ECECEA; color: #1A1A1A; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: #1A1A1A; }
+    ::selection { background: #E4E9ED; }
+  </style>
+</helmet>
+
+<div style="padding: 64px; display: flex; flex-direction: column; gap: 80px; width: 1180px;" data-screen-label="Design Review Guide">
+
+  <!-- CABECERA -->
+  <header style="max-width: 900px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);">Saldo · Design Governance</div>
+    <h1 style="font-size: 44px; font-weight: 600; letter-spacing: -0.02em; margin: 12px 0 0;">Design Review Guide</h1>
+    <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 16px 0 0; max-width: 660px;">El estándar para revisar cualquier pantalla, pull request o feature durante la vida del producto. No mide gusto: mide pertenencia. Una implementación puede ser correcta, moderna y atractiva — y aun así no ser Saldo. Este documento enseña a detectar esa diferencia y a decidir sin depender de nadie.</p>
+    <div style="display: flex; gap: 24px; margin-top: 20px; font-size: 12px; color: #9E9E9E;">
+      <span>v1.0 — Julio 2026</span>
+      <span>Autoridades: Design Constitution v1.2 · Experience Constitution v1.1 · Product Blueprint v1.0</span>
+    </div>
+  </header>
+
+  <!-- ============ 01 CHECKLIST ============ -->
+  <section data-screen-label="Guide · Checklist">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">01 · Checklist de revisión — 49 preguntas en 8 bloques · toda respuesta es Sí / No</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">A · Visual (8)</div>
+        <ol style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Todos los colores provienen de tokens? (ningún hex nuevo)</li>
+          <li>¿Hay un solo acento en pantalla y aparece ≤ 3 veces?</li>
+          <li>¿Toda cifra usa tabular-nums con decimales al 50%/500/terciario?</li>
+          <li>¿Los espaciados son múltiplos de 4 y siguen la escala de 8?</li>
+          <li>¿Cero sombras en reposo (solo la capa modal las tiene)?</li>
+          <li>¿La jerarquía se sostiene en escala de grises? (prueba sin color)</li>
+          <li>¿Iconos Lucide, trazo 1.5, ≤ 20 px, nunca decorativos?</li>
+          <li>¿Ningún texto bajo 12 px ni gris bajo AA sobre su fondo?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">B · Estructura (6)</div>
+        <ol start="9" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Hay un único protagonista evidente en los primeros 5 segundos?</li>
+          <li>¿Existe un solo primario por vista?</li>
+          <li>¿La pantalla responde su pregunta sin scroll (desktop)?</li>
+          <li>¿Respeta el presupuesto de superficie? (4 destinos, 1 nota, 1 modal)</li>
+          <li>¿Cada elemento pasó la Regla 0? (justificable en un minuto)</li>
+          <li>¿El recorrido del ojo es un camino único, sin bifurcaciones?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">C · Funcional (7)</div>
+        <ol start="15" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Toda acción reversible usa Deshacer en vez de confirmación?</li>
+          <li>¿Solo lo irreversible confirma (una pregunta, dos acciones)?</li>
+          <li>¿Escape/back/clic-fuera cierran conservando lo escrito?</li>
+          <li>¿El guardado es optimista? (éxito local, red invisible)</li>
+          <li>¿Funciona offline con constatación, no con bloqueo?</li>
+          <li>¿Los datos previos permanecen visibles durante recargas?</li>
+          <li>¿Toast único, 4 s (8 s con Deshacer), nunca apilado?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">D · Emocional (6)</div>
+        <ol start="22" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿La pantalla transmite calma y no actividad? (prueba: ¿algo se mueve, cuenta o parpadea sin que el usuario lo haya pedido?)</li>
+          <li>¿Compara al usuario solo contra sí mismo, en tono neutro?</li>
+          <li>¿Cero culpa, cero celebración, cero urgencia fabricada?</li>
+          <li>¿El rojo aparece solo en acciones destructivas confirmándose?</li>
+          <li>¿La sesión puede abandonarse en cualquier punto sin penalidad?</li>
+          <li>¿El usuario sale más tranquilo de lo que entró?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">E · IA (6)</div>
+        <ol start="28" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Toda intervención es accionable, material y oportuna?</li>
+          <li>¿Habla en condicional, sin primera persona emocional?</li>
+          <li>¿Hay máximo una nota, con Descartar visible?</li>
+          <li>¿Su ausencia no deja hueco ni disculpa?</li>
+          <li>¿Nunca interrumpe la escritura ni aparece tarde?</li>
+          <li>¿No vende, no felicita, no se anima para llamar la atención?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">F · Responsive (5)</div>
+        <ol start="34" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Mobile fue rediseñado, no reducido? (la cifra crece, el layout cambia)</li>
+          <li>¿Los tres cortes responden la misma pregunta con la misma jerarquía?</li>
+          <li>¿Áreas táctiles ≥ 44 px (extendidas si el control es menor)?</li>
+          <li>¿El FAB existe solo en mobile y solo para registrar?</li>
+          <li>¿Nada esencial queda bajo el pliegue en ningún corte?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">G · Accesibilidad (5)</div>
+        <ol start="39" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Contrastes AA verificados (4.5:1 texto, 3:1 grande/UI)?</li>
+          <li>¿Todo el flujo es completable solo con teclado, en orden de lectura?</li>
+          <li>¿Focus visible (anillo 2 px) y atrapado en modales?</li>
+          <li>¿El lector de pantalla anuncia cifras como moneda y cambios como live region cortés?</li>
+          <li>¿reduced-motion sustituye desplazamientos por fundidos?</li>
+        </ol>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent);">H · Performance percibida (6)</div>
+        <ol start="44" style="font-size: 13px; line-height: 1.8; color: #6B6B6B; margin: 12px 0 0; padding-left: 20px;">
+          <li>¿Skeleton solo en primera carga, con la geometría real?</li>
+          <li>¿Cero saltos de layout? (alturas reservadas antes de pintar)</li>
+          <li>¿Ningún spinner tras una acción del usuario?</li>
+          <li>¿El foco y el teclado están listos antes que la mano?</li>
+          <li>¿Animaciones ≤ 320 ms, con la curva única, interrumpibles?</li>
+          <li>¿Ningún momento donde la pantalla parezca congelada?</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 ERRORES CRITICOS ============ -->
+  <section data-screen-label="Guide · Errores críticos">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">02 · Errores críticos — rechazo inmediato, sin puntuación ni debate</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 12px 40px;">
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-01</div><div style="color: #6B6B6B;">Un color fuera de tokens, o un segundo acento en la misma vista.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-02</div><div style="color: #6B6B6B;">Rojo permanente sobre importes o estados. Los gastos llevan signo, no color.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-03</div><div style="color: #6B6B6B;">Confirmación modal para una acción reversible, o una acción destructiva sin Deshacer ni confirmación.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-04</div><div style="color: #6B6B6B;">Cerrar destruye trabajo. Escape, back o clic fuera que pierden lo escrito.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-05</div><div style="color: #6B6B6B;">IA con avatar, nombre, chat como interfaz, primera persona emocional, o más de una nota simultánea.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-06</div><div style="color: #6B6B6B;">Upsell, permiso o anuncio dentro de un flujo de registro o edición de dinero.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-07</div><div style="color: #6B6B6B;">Gamificación: rachas, logros, confeti, contadores animados, celebraciones.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-08</div><div style="color: #6B6B6B;">Romper el presupuesto de superficie: 5.º destino de navegación, 2.º FAB, 2.ª capa modal, 2.ª nota.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-09</div><div style="color: #6B6B6B;">Contraste bajo AA, flujo incompletable por teclado, o foco invisible. La accesibilidad no puntúa: bloquea.</div></div>
+      <div style="display: grid; grid-template-columns: 60px 1fr; gap: 24px; padding: 16px 0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #A14D44;">R-10</div><div style="color: #6B6B6B;">Cualquier anti-pattern del catálogo con nombre (El Casino, El Vendedor insistente, El Chatbot protagonista, El Semáforo permanente…). El catálogo existe para terminar discusiones.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 03 PUNTUACION ============ -->
+  <section data-screen-label="Guide · Puntuación">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">03 · Sistema de puntuación — objetivo y reproducible</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 14px; font-weight: 600;">Cálculo</div>
+        <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 12px 0 0;">Primero los errores críticos: <strong style="color: #1A1A1A;">uno solo = rechazo automático</strong>, sin calcular nada. Sin críticos, la nota es el porcentaje de síes sobre las 49 preguntas aplicables (las no aplicables se excluyen del denominador y se anotan). Dos bloques pesan doble: <strong style="color: #1A1A1A;">D · Emocional y E · IA</strong> — son los que definen la identidad y los que ninguna herramienta automática detecta.</p>
+        <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 12px 0 0;">Toda respuesta «No» exige cita: qué regla de qué documento incumple. Un «No» sin cita es una opinión, y las opiniones no puntúan.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px;">
+        <div style="font-size: 14px; font-weight: 600;">Escala</div>
+        <div style="display: flex; flex-direction: column; margin-top: 12px;">
+          <div style="display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;"><div style="font-weight: 600; font-variant-numeric: tabular-nums;">95–100</div><div style="color: #6B6B6B;">Excelente. Referencia para futuras pantallas; se archiva como caso ejemplar.</div></div>
+          <div style="display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;"><div style="font-weight: 600; font-variant-numeric: tabular-nums;">90–94</div><div style="color: #6B6B6B;">Aprobado. Implementable; los noes quedan como deuda con dueño y fecha.</div></div>
+          <div style="display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;"><div style="font-weight: 600; font-variant-numeric: tabular-nums;">80–89</div><div style="color: #6B6B6B;">Requiere mejoras. Vuelve a diseño con la lista de noes; re-revisión completa.</div></div>
+          <div style="display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 10px 0; font-size: 13px;"><div style="font-weight: 600; font-variant-numeric: tabular-nums;">&lt; 80</div><div style="color: #6B6B6B;">No implementable. El problema no es de ejecución sino de concepción: se vuelve a la pregunta de la pantalla, no a sus píxeles.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 CASOS REALES ============ -->
+  <section data-screen-label="Guide · Casos reales">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">04 · Casos reales — el estándar aplicado a lo ya diseñado</div>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px; display: grid; grid-template-columns: 220px 90px 1fr; gap: 28px; align-items: start;">
+        <div><div style="font-size: 15px; font-weight: 600;">Dashboard</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Pantalla 01</div></div>
+        <div style="font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums;">93</div>
+        <div style="font-size: 13px; line-height: 1.7; color: #6B6B6B;">Críticos: ninguno. Noes: <strong style="color: #1A1A1A;">B-11 parcial</strong> — en desktop la lista de movimientos asoma bajo el pliegue; aceptado porque la pregunta de la vista se responde arriba, pero queda anotado. <strong style="color: #1A1A1A;">A-2 al límite</strong> — el acento aparece 3 veces (botón, barra del gráfico, enlaces); una cuarta obligaría a elegir. Y el Product Review ya lo señaló: el gráfico de barras duplica la frase de contexto. <strong style="color: #1A1A1A;">Corrección adoptada:</strong> el gráfico se degrada a candidato a eliminación en la primera iteración con telemetría — si nadie lo mira, sale.</div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px; display: grid; grid-template-columns: 220px 90px 1fr; gap: 28px; align-items: start;">
+        <div><div style="font-size: 15px; font-weight: 600;">Nuevo Movimiento</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Pantalla 02</div></div>
+        <div style="font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums;">96</div>
+        <div style="font-size: 13px; line-height: 1.7; color: #6B6B6B;">Críticos: ninguno. La pantalla más disciplinada: un protagonista, un primario, reversibilidad anunciada, IA como caption. Sin noes en checklist; una deuda declarada fuera de él — el popover de fecha para días lejanos es torpe (registrada en Flow 01, sin pregunta asociada). Caso ejemplar de archivo.</div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px; display: grid; grid-template-columns: 220px 90px 1fr; gap: 28px; align-items: start;">
+        <div><div style="font-size: 15px; font-weight: 600;">Historial</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">Pantalla 03</div></div>
+        <div style="font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums;">92</div>
+        <div style="font-size: 13px; line-height: 1.7; color: #6B6B6B;">Críticos: ninguno. Noes: <strong style="color: #1A1A1A;">B-13</strong> — los chips de filtro visibles sin filtro activo no pasan la Regla 0 en un minuto (el buscador ya los contiene); <strong style="color: #1A1A1A;">contradicción documentada:</strong> la pantalla los defendía como «silenciosos», este estándar los declara redundantes. <strong style="color: #1A1A1A;">Corrección:</strong> los chips aparecen solo con un filtro aplicado o al enfocar la búsqueda. <strong style="color: #1A1A1A;">H-45 pendiente de QA</strong> — la virtualización sin saltos es promesa de diseño hasta que se mida.</div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 28px 32px; display: grid; grid-template-columns: 220px 90px 1fr; gap: 28px; align-items: start;">
+        <div><div style="font-size: 15px; font-weight: 600;">Flow 01 — Registrar</div><div style="font-size: 12px; color: #9E9E9E; margin-top: 4px;">User Flow</div></div>
+        <div style="font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums;">95</div>
+        <div style="font-size: 13px; line-height: 1.7; color: #6B6B6B;">Críticos: ninguno. El flujo cumple sus propias reglas y las cita. Nota: <strong style="color: #1A1A1A;">E-32 con matiz</strong> — «la sugerencia que llega tarde no aparece» depende de un timeout que la implementación debe honrar; si Claude Code lo omite, el flujo entero baja de 90. Es el ejemplo perfecto de identidad que vive en el código, no en el mockup.</div>
+      </div>
+    </div>
+    <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; max-width: 760px; margin: 16px 0 0;">Lectura honesta: ninguna pantalla propia alcanzó 100, y eso es lo esperable — <strong style="color: #1A1A1A;">un estándar que tu propio trabajo aprueba con perfección es un estándar mal calibrado.</strong> Las dos correcciones (gráfico de barras bajo telemetría, chips condicionales) se aplican en la siguiente iteración de sus pantallas.</p>
+  </section>
+
+  <!-- ============ 05 EVOLUCION ============ -->
+  <section data-screen-label="Guide · Evolución">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">05 · Evolución — revisar dentro de dos años sin perder identidad</div>
+    <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 36px 40px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+        <div>
+          <div style="font-size: 14px; font-weight: 600;">Qué puede cambiar</div>
+          <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 12px 0 0;">Los tokens (un acento nuevo, una fuente nueva) son decisiones de mantenimiento: se cambian en un lugar y el producto entero los hereda. El checklist puede ganar preguntas cuando un error nuevo se repita dos veces — toda pregunta nueva cita el incidente que la originó. Las pantallas pueden rediseñarse por completo si su pregunta cambió.</p>
+        </div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600;">Qué no puede cambiar</div>
+          <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 12px 0 0;">Los errores críticos R-01 a R-10 y las 10 reglas inquebrantables de la Design Constitution. Modificarlos exige el proceso constitucional: propuesta escrita, demostración de que la regla actual daña al usuario (no que estorba a una feature), y versión nueva del documento — nunca una excepción puntual. <strong style="color: #1A1A1A;">Las excepciones son la forma en que los productos pierden su identidad: una a la vez, todas razonables.</strong></p>
+        </div>
+      </div>
+      <div style="border-top: 1px solid #F0F0F0; margin-top: 28px; padding-top: 24px;">
+        <div style="font-size: 14px; font-weight: 600;">La prueba de los dos años</div>
+        <p style="font-size: 13px; line-height: 1.75; color: #6B6B6B; margin: 12px 0 0; max-width: 800px;">Cada seis meses, una revisión de deriva: tomar las cinco vistas principales y pasarles este mismo checklist como si fueran un PR externo. Comparar contra los casos del §04. Si la nota media baja, la identidad está goteando por acumulación de excepciones pequeñas. La pregunta final de cada revisión de deriva es siempre la misma: <strong style="color: #1A1A1A;">¿un usuario del año uno reconocería esto sin logo?</strong> — la firma de Saldo (overline + cifra con decimales rebajados, diario, silencio) debe seguir siendo identificable en cualquier pantalla futura.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 PROCESO ============ -->
+  <section data-screen-label="Guide · Design QA Process">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 20px;">06 · Design QA Process — el camino oficial de toda feature</div>
+    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">1</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">Idea</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Pasa los tres frenos anti-ERP del Blueprint. Se define la pregunta que la pantalla responde y su emoción según la arquitectura emocional.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">2</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">Wireframe</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Solo estructura y recorrido del ojo. Se valida el protagonista y el flujo contra los User Flows existentes.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">3</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">Diseño</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Metodología completa: 3 cortes, todos los estados, microcopys, Implementation Notes. Solo tokens.</p>
+      </div>
+      <div style="background: #EEF1F4; border: 1px solid var(--accent); border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums;">4</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">Auditoría</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Este documento: críticos → checklist → nota. ≥ 90 avanza. La autoauditoría del diseñador acompaña, no sustituye.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">5</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">Implementación</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Claude Code construye desde el documento aprobado, sin inventar. Toda desviación vuelve como pregunta, nunca como decisión.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">6</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">QA</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Valida contra las Implementation Notes (la lista «QA valida») + re-pasa los bloques C, G y H del checklist sobre el build real.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 20px;">
+        <div style="font-size: 20px; font-weight: 700; color: #C4C4C4; font-variant-numeric: tabular-nums;">7</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">Release</div>
+        <p style="font-size: 12px; line-height: 1.6; color: #6B6B6B; margin: 8px 0 0;">Sin anuncio dentro del producto (las features no se presentan solas). Telemetría definida antes de lanzar; revisión de deriva al siguiente ciclo.</p>
+      </div>
+    </div>
+    <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; max-width: 760px; margin: 16px 0 0;">La puerta es el paso 4 y es la única: nada llega a implementación sin nota ≥ 90, y nada de lo implementado se libera si QA encuentra un crítico que el mockup no podía mostrar (timeouts, saltos de layout, foco).</p>
+  </section>
+
+  <!-- ============ 07 DEFINITION OF DONE ============ -->
+  <footer style="max-width: 900px; background: #1A1A1A; border-radius: 12px; padding: 44px 48px;" data-screen-label="Guide · Definition of Done">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E;">07 · Definition of Done — cuándo una pantalla está terminada</div>
+    <p style="font-size: 13px; line-height: 1.7; color: #C4C4C4; margin: 20px 0 0;">«Se ve bien» no es un criterio. Una pantalla está terminada cuando las diez afirmaciones son verdaderas:</p>
+    <div style="display: flex; flex-direction: column; margin-top: 20px; border-top: 1px solid #333333;">
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">01</div><div style="color: #C4C4C4;">Responde una pregunta definida, y esa pregunta está escrita en su documento.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">02</div><div style="color: #C4C4C4;">Existe en desktop, tablet y mobile — rediseñada, no reducida.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">03</div><div style="color: #C4C4C4;">Todos sus estados están diseñados: vacío, cargando, error, sin IA, y los propios de su dominio.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">04</div><div style="color: #C4C4C4;">Sus microcopys canónicos están escritos — no «lorem» ni «texto final pendiente».</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">05</div><div style="color: #C4C4C4;">Sus Implementation Notes existen: componentes, tokens, animaciones, dependencias, riesgos, QA.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">06</div><div style="color: #C4C4C4;">Pasó la auditoría con ≥ 90, sin errores críticos, con cada «No» citado y con dueño.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">07</div><div style="color: #C4C4C4;">Su autoauditoría declara la decisión más difícil y la fricción que queda — una pantalla sin deuda declarada no está terminada, está sin examinar.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">08</div><div style="color: #C4C4C4;">Es reconocible como Saldo sin logo y sin color — la firma tipográfica y el silencio bastan.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">09</div><div style="color: #C4C4C4;">Su telemetría mínima está definida: cómo sabremos si sus elementos se ganan su lugar.</div></div>
+      <div style="display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 13px 0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 700; color: #9E9E9E; font-variant-numeric: tabular-nums;">10</div><div style="color: #C4C4C4;">La pregunta rectora tiene un sí sin matices: ¿se siente como una aplicación que reduce ansiedad financiera?</div></div>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3E5568&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#3E5568&quot;, &quot;#3D5C4A&quot;, &quot;#4C5270&quot;], &quot;section&quot;: &quot;Identidad&quot; }
+}">
+class Component extends DCLogic {
+  componentDidMount() { this.applyVars(); }
+  componentDidUpdate() { this.applyVars(); }
+  applyVars() {
+    document.documentElement.style.setProperty('--accent', this.props.accentColor ?? '#3E5568');
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

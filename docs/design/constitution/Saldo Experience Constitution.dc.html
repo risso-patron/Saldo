@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #3E5568; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #FAFAFA; color: #1A1A1A; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: #1A1A1A; }
+    ::selection { background: #E4E9ED; }
+  </style>
+</helmet>
+
+<div style="display: flex; min-height: 100vh;" data-screen-label="Saldo Experience Constitution">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside style="position: sticky; top: 0; height: 100vh; overflow-y: auto; width: 232px; flex-shrink: 0; border-right: 1px solid #F0F0F0; background: #FAFAFA; padding: 48px 0 48px 40px; box-sizing: border-box;">
+    <div style="font-size: 15px; font-weight: 700; letter-spacing: 0.14em; color: #1A1A1A;">SALDO</div>
+    <div style="font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E; margin-top: 6px;">Experience Constitution · v1.1</div>
+
+    <nav style="display: flex; flex-direction: column; gap: 8px; margin-top: 48px; padding-right: 24px;">
+      <a href="#filosofia" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">1 · Filosofía de la experiencia</a>
+      <a href="#principios" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">2 · Principios de la experiencia</a>
+      <a href="#silencio" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">3 · El principio del silencio</a>
+      <a href="#interaccion" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">4 · Filosofía de interacción</a>
+      <a href="#ia" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">5 · Filosofía de la IA</a>
+      <a href="#dashboard" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">6 · Filosofía del dashboard</a>
+      <a href="#vacios" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">7 · Estados vacíos</a>
+      <a href="#movimiento" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">8 · Filosofía del movimiento</a>
+      <a href="#microcopy" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">9 · Microcopys</a>
+      <a href="#antipatterns" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">10 · Anti-Patterns</a>
+      <a href="#prueba" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">11 · La prueba definitiva</a>
+      <a href="#checklist" style="font-size: 13px; color: #6B6B6B;" style-hover="color: #1A1A1A;">12 · Checklist de revisión</a>
+      <div style="height: 1px; background: #F0F0F0; margin: 12px 0;"></div>
+      <a href="Saldo Design Constitution.dc.html" style="font-size: 13px; color: var(--accent);">→ Design Constitution v1.2</a>
+    </nav>
+  </aside>
+
+  <!-- ============ CONTENT ============ -->
+  <main style="flex: 1; min-width: 0;">
+    <div style="max-width: 780px; margin: 0 auto; padding: 0 64px 160px; box-sizing: border-box;">
+
+      <!-- PORTADA -->
+      <header style="padding: 140px 0 96px; border-bottom: 1px solid #F0F0F0;">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);">Experience Constitution</div>
+        <h1 style="font-size: 64px; line-height: 1.05; font-weight: 600; letter-spacing: -0.025em; margin: 24px 0 0;">Cómo se siente Saldo</h1>
+        <p style="font-size: 20px; line-height: 1.6; color: #6B6B6B; max-width: 580px; margin: 32px 0 0;">La <a href="Saldo Design Constitution.dc.html">Design Constitution</a> define cómo se ve Saldo. Este documento define algo anterior: cómo se siente. Quien lo lea debe poder reconocer la aplicación con los ojos cerrados — y quien diseñe, desarrolle o entrene una IA para Saldo, debe tratarlo como la autoridad máxima sobre la experiencia.</p>
+        <div style="display: flex; gap: 32px; margin-top: 48px; font-size: 13px; color: #9E9E9E;">
+          <span>v1.1 — Julio 2026</span>
+          <span>Complementa la Design Constitution v1.2</span>
+        </div>
+      </header>
+
+      <!-- 1 · FILOSOFIA -->
+      <section id="filosofia" style="padding-top: 96px;" data-screen-label="Filosofía de la experiencia">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 01</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Filosofía de la experiencia</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Saldo no compite en funciones. Compite en cómo deja al usuario después de cada uso. El producto es el estado emocional que produce; la aplicación es solo el medio.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 40px;">
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Al abrir Saldo</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">El usuario debe sentir lo que se siente al entrar en una habitación ordenada por alguien de confianza: nada que buscar, nada que temer, nada pendiente que no esté ya señalado. La primera emoción es orientación; la segunda, alivio. Nunca alerta, nunca «¿por dónde empiezo?».</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Emociones que cultivamos</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Serenidad, competencia («entiendo esto»), control («esto depende de mí»), y una forma discreta de dignidad: Saldo trata al usuario como un adulto capaz, con independencia de cuánto dinero tenga o cuántos errores haya cometido.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Emociones que evitamos</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Culpa, urgencia, vergüenza, FOMO, adicción. Ninguna métrica de engagement justifica producirlas. Si una decisión sube la retención bajando la calma, la decisión está mal aunque los números digan lo contrario.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Qué es «calma financiera»</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">No es la ausencia de malas noticias: es la certeza de que ninguna noticia está oculta. Calma financiera es poder mirar el dinero sin prepararse antes emocionalmente. Se construye con previsibilidad (la app siempre reacciona igual), con proporción (los problemas se presentan a su tamaño real) y con compañía (nunca un dato difícil sin un siguiente paso posible).</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Qué es «claridad»</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Claridad no es mostrar todo: es que lo mostrado no admita dos lecturas. Una pantalla de Saldo es clara cuando el usuario puede explicarle a otra persona lo que ve, con sus palabras, a la primera. La claridad se mide en tiempo-hasta-comprensión, no en cantidad de información.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cómo se construye confianza</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Con aburrimiento ejemplar: cifras que siempre cuadran, acciones que siempre son reversibles, promesas pequeñas siempre cumplidas, y ninguna sorpresa — ni mala ni «deliciosa». La confianza no se gana con un gesto brillante; se gana no fallando nunca en los gestos pequeños. Y se pierde entera al primer dato inconsistente.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Saldo vs. una app bancaria</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">El banco custodia dinero y le habla al usuario como institución: formularios, avisos legales, ventas cruzadas. Saldo trabaja para el usuario y le habla como asesor: contexto, criterio, silencio cuando no hay nada que decir. En el banco, el usuario es visitante; en Saldo, está en su propia casa con las cuentas ya ordenadas. Esa inversión de poder — la app rinde cuentas al usuario, no al revés — es la diferencia emocional completa.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 · PRINCIPIOS -->
+      <section id="principios" style="padding-top: 96px;" data-screen-label="Principios de la experiencia">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 02</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Principios de la experiencia</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 56px;">Catorce principios utilizables en revisión: cada uno con su razón de existir, cuándo aplica y — igual de importante — cuándo no. Se citan por nombre.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E1</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">La calma es el producto</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Toda decisión se evalúa por su efecto neto en la ansiedad del usuario, por encima de métricas de uso. <span style="color: #6B6B6B;">Existe porque los productos financieros optimizan engagement de forma natural, y el engagement ansioso es rentable a corto plazo y destructivo a largo.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> al decidir si una notificación existe; al elegir qué dato abre la app; al priorizar el roadmap.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> como excusa para ocultar información incómoda. La calma nace de la verdad bien presentada, no de la censura.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E2</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Cinco segundos para la verdad</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Toda vista responde su pregunta principal en cinco segundos, sin interacción. <span style="color: #6B6B6B;">Existe porque la mayoría de las aperturas son comprobaciones: el usuario viene a saber, no a operar.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> al dashboard, a cada detalle de cuenta, a los informes — la respuesta primero, el desglose después.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a flujos de trabajo profundos (conciliar, categorizar en lote), donde la minuciosidad importa más que la inmediatez.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E3</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Nada ocurre a espaldas del usuario</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Todo cambio automático — categorización, sincronización, sugerencia aplicada — es visible, atribuible y deshacible. <span style="color: #6B6B6B;">Existe porque la automatización sin transparencia se percibe como pérdida de control, exactamente lo contrario de lo que vendemos.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a toda acción del sistema o de la IA que modifique datos del usuario.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a la maquinaria interna sin efecto en los datos (reintentos de red, cachés). Mostrarla sería ruido.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E4</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">El usuario nunca tiene la culpa</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Errores, datos incompletos y meses malos se tratan como hechos, no como faltas. El sistema asume la responsabilidad de los malentendidos. <span style="color: #6B6B6B;">Existe porque la vergüenza es la razón número uno por la que la gente deja de mirar su dinero.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a mensajes de error, validaciones, estados vacíos, y a cómo se presenta un sobregasto.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> hasta el punto de esconder consecuencias. «No pasa nada» ante algo que sí pasa es paternalismo, no amabilidad.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E5</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Salir es un final feliz</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">El éxito de una sesión es cerrarla pronto y tranquilo. Saldo no retiene: resuelve y suelta. <span style="color: #6B6B6B;">Existe porque el tiempo-en-app, la métrica favorita de la industria, es aquí una señal de fracaso: nadie quiere vivir dentro de sus finanzas.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a la arquitectura de flujos (siempre hay un final claro), a las notificaciones (no reenganchan) y a los KPIs del equipo.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a la revisión mensual voluntaria, donde el usuario decide quedarse a explorar. Que se quede porque quiere, no porque lo retuvimos.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E6</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">La app espera; nunca persigue</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Saldo no reclama al usuario ausente. No hay rachas que perder, ni «te echamos de menos», ni urgencias fabricadas. <span style="color: #6B6B6B;">Existe porque perseguir convierte la relación de confianza en una de acoso, y porque volver a Saldo tras un mes fuera debe ser fácil, no un reencuentro con reproches.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a notificaciones, emails, badges de icono y a la pantalla de retorno tras ausencia («esto pasó mientras no estabas», sin drama).</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a avisos con consecuencia material real e inminente (un recibo que dejará la cuenta en descubierto). Callar eso sería negligencia.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E7</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Reversible por defecto</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Toda acción se puede deshacer, y el usuario lo sabe antes de actuar. Deshacer sustituye a confirmar. <span style="color: #6B6B6B;">Existe porque el miedo a romper algo es una fuente enorme de fricción: la reversibilidad compra audacia y velocidad.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a editar, eliminar, categorizar, importar — la acción ocurre ya, con «Deshacer» disponible.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a lo genuinamente irreversible (borrar la cuenta, exportar datos a terceros): ahí sí hay confirmación explícita, y el peso del diálogo comunica la gravedad.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E8</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">El contexto antes que el dato</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Ninguna cifra significativa aparece sin su marco de comparación — y el marco es siempre el propio usuario, nunca «la gente como tú». <span style="color: #6B6B6B;">Existe porque un número desnudo obliga al usuario a hacer el trabajo emocional de interpretarlo, y ahí es donde nace la ansiedad.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a gasto mensual (vs. lo habitual), a categorías (vs. su media), a cualquier cifra que pueda asustar sin contexto.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> al saldo disponible, que se muestra desnudo: es la verdad de base y contextualizarlo parecería justificarlo.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E9</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Sin deberes</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Saldo nunca genera tareas pendientes por iniciativa propia ni acumula «cosas por revisar». La app trabaja para el usuario, no le asigna trabajo. <span style="color: #6B6B6B;">Existe porque una bandeja de pendientes convierte cada apertura en una deuda, y las finanzas ya tienen suficientes.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a la categorización (automática con corrección opcional, nunca «tienes 34 sin categorizar»), a los contadores y a los badges.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a compromisos que el usuario creó voluntariamente (metas, recordatorios propios): esos sí se muestran, porque son suyos.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E10</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Lo predecible es un regalo</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Mismo gesto, mismo resultado, siempre y en todas partes. La sorpresa — incluso la agradable — gasta atención. <span style="color: #6B6B6B;">Existe porque la previsibilidad es la forma más barata y más honesta de calma: un producto que nunca sorprende nunca inquieta.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a patrones de navegación, posiciones de acciones, comportamiento de gestos, y a resistir rediseños cosméticos.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> como argumento para congelar mejoras reales. Cambiar algo roto es respeto; cambiarlo por novedad es vanidad.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E11</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">Una cosa a la vez</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Cada pantalla, diálogo o mensaje pide al usuario exactamente una decisión, o ninguna. <span style="color: #6B6B6B;">Existe porque la carga cognitiva es acumulativa e invisible: tres decisiones pequeñas juntas pesan como una grande.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a onboarding (una pregunta por paso), diálogos (una pregunta, dos salidas) y a la nota única de la IA.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a herramientas de usuario experto (edición en lote), donde fragmentar en pasos sería condescendiente.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E12</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">El experto no presume</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">La sofisticación técnica de Saldo — IA, sincronización, cálculo — es invisible. El usuario ve resultados serenos, nunca el esfuerzo. <span style="color: #6B6B6B;">Existe porque exhibir la maquinaria («¡analizando con IA!») pide admiración en lugar de darla, e introduce duda donde había certeza.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a los textos de producto y marketing dentro de la app, a los estados de carga y a cómo se presentan las sugerencias.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a la trazabilidad: cuando el usuario pregunta «¿de dónde sale esto?», la maquinaria se explica con gusto y en una frase.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E13</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">El error es información, no drama</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Cuando algo falla, Saldo dice qué pasó, qué sigue funcionando y qué puede hacer el usuario — en ese orden y sin teatro. <span style="color: #6B6B6B;">Existe porque en un producto financiero un error mal comunicado no frustra: asusta. El usuario piensa en su dinero, no en nuestro bug.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> a fallos de sincronización, errores de red, datos no disponibles: siempre acotando («tus datos están a salvo; no pudimos actualizar desde el banco»).</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> minimizando fallos graves. Si algo afecta a la integridad de los datos, se dice con esa gravedad exacta.</div>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 32px;">
+            <div style="display: flex; align-items: baseline; gap: 14px;"><span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">E14</span><h3 style="font-size: 18px; font-weight: 600; margin: 0;">La atención se pide una sola vez</h3></div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Cada hecho se comunica por un solo canal, una sola vez. Sin eco: nada aparece como toast y notificación y badge y email. <span style="color: #6B6B6B;">Existe porque la redundancia entrena al usuario a ignorar — y un producto financiero necesita que, cuando habla, se le crea.</span></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #37725A;">Se aplica:</span> al diseño de todo el sistema de avisos: cada tipo de evento tiene un canal asignado y solo uno.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #A14D44;">No se aplica:</span> a lo crítico-material (descubierto inminente), que puede escalar de canal si el primero no fue visto — escalar no es repetir.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 3 · SILENCIO -->
+      <section id="silencio" style="padding-top: 96px;" data-screen-label="El principio del silencio">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 03</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">El principio del silencio</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">El principio rector de toda la experiencia, del que los demás son consecuencia. Saldo nunca compite con los datos: la interfaz es el escenario, jamás el actor. Cuando se cita «esto rompe el Principio del Silencio», se refiere a cualquiera de estas seis dimensiones.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 40px;">
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Jerarquía</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">En cada vista existe un orden de lectura diseñado, y solo uno. El primer elemento que ve el usuario es una decisión, no un accidente. Prueba operativa: entrecerrar los ojos ante la pantalla; lo que aún se distingue debe ser exactamente lo más importante. Si dos cosas empatan en protagonismo, una de las dos está mintiendo.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Ruido</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Ruido es todo lo que el ojo procesa sin ganar comprensión: bordes que duplican lo que el espacio ya separa, iconos junto a palabras que ya se explican, etiquetas que repiten lo obvio, estados decorados. La reducción de ruido no es una pasada final de limpieza: es un criterio activo en cada adición. Cada elemento paga alquiler en atención — y la atención del usuario ansioso es la más cara que existe.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Densidad</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">La densidad correcta es la del contenido, no la del contenedor: una tabla de movimientos puede ser densa porque sus filas son homogéneas y el ojo las barre sin esfuerzo; un dashboard no puede, porque cada bloque exige un cambio de contexto mental. Regla de experiencia: la densidad puede crecer con la homogeneidad, nunca con la importancia. Querer que algo «se note más» añadiéndole vecinos es el camino contrario.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Respiración</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Una pantalla respira cuando el usuario puede descansar la vista dentro de ella sin perder el hilo. Los remansos — zonas sin nada que procesar — no son espacio desaprovechado: son donde ocurre la comprensión. Una interfaz sin pausas se lee como un párrafo sin puntos. La cifra protagonista, en particular, respira sola: nada compite en su radio inmediato.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Espacio negativo</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">El vacío es el material estructural de Saldo: agrupa (proximidad), separa (distancia) y jerarquiza (aislamiento) sin añadir un solo elemento. Antes de dibujar una caja, una línea o un fondo, la pregunta obligatoria es: ¿puede el espacio hacer este trabajo? Casi siempre puede. El espacio negativo es además el elemento más honesto de la interfaz: no puede mentir, no puede vender, no puede distraer.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo NO añadir</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">No se añade un componente cuando: la información ya es alcanzable en un clic con intención · el problema que resuelve es hipotético («alguien podría querer…») · existe para tranquilizar al equipo, no al usuario · su pregunta ya la responde otro bloque · o su mejor justificación es que la competencia lo tiene. El coste de añadir se paga en cada sesión futura de cada usuario; el beneficio suele pagarse una vez. Esa asimetría decide.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 · INTERACCION -->
+      <section id="interaccion" style="padding-top: 96px;" data-screen-label="Filosofía de interacción">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 04</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Filosofía de interacción</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Toda interacción debe sentirse rápida, natural, obvia y sin ansiedad. La receta general: el resultado aparece antes que la burocracia (optimismo), el camino de vuelta es visible antes de actuar (reversibilidad), y el sistema hace el trabajo sucio (memoria, valores probables, formatos). Así se traduce por acción:</p>
+
+        <div style="display: flex; flex-direction: column; border-top: 1px solid #F0F0F0;">
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Registrar un gasto</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Debe sentirse como apuntar algo en un margen: menos de diez segundos, sin ceremonia. El importe primero (es lo que el usuario tiene en la cabeza), todo lo demás pre-adivinado y corregible después. Registrar nunca exige completar; un gasto a medias es un gasto válido.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Editar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Como corregir con lápiz, no como abrir un expediente. Se edita en el sitio, sobre el dato, sin viajar a otra pantalla. El cambio se guarda solo; «guardar» como botón es una confesión de que el sistema no confía en sí mismo.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Eliminar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Ligero de hacer, fácil de deshacer. Sin diálogo de confirmación: la fila se va y un «Deshacer» discreto queda disponible unos segundos. La confirmación previa castiga a los mil que sabían lo que hacían para proteger al uno que no — deshacer protege a ambos.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Importar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Como entregar papeles a un buen gestor: el usuario suelta el archivo y Saldo trabaja — detecta formato, deduplica, categoriza — y presenta un resumen revisable («128 movimientos, 3 dudas»). Las dudas se resuelven al final y en lote, nunca interrumpiendo el proceso una a una.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Exportar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Sin fricción ni retención: los datos son del usuario y salir debe ser tan digno como entrar. Un clic, formato estándar, sin pantallas de «¿seguro que quieres irte?». La facilidad de salida es un argumento de confianza, no una fuga.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Buscar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Como preguntarle a alguien que estaba delante: resultados mientras se escribe, tolerantes a la memoria imperfecta («taxi enero», «eso de 40 y pico euros»). La búsqueda perdona; es el usuario quien recuerda mal, y no debe notarse.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Filtrar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Como enfocar, no como configurar. Cada filtro aplica al instante y muestra su efecto; el estado filtrado es siempre visible y desmontable de un gesto. Un filtro que el usuario olvidó activo es una mentira que la interfaz le está contando.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cerrar un diálogo</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Siempre posible, siempre gratis, desde cualquier sitio (Escape, fuera, ✕). Cerrar nunca pierde trabajo: lo escrito espera por si se vuelve. Un diálogo que atrapa enseña miedo a abrir los siguientes.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Esperar</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">La espera se diseña para que no parezca espera: lo anterior sigue visible mientras llega lo nuevo, lo que ya se sabe se muestra ya, y el sistema nunca bloquea la entrada. Si la espera es real y larga, se dice cuánto y por qué — la incertidumbre pesa más que el tiempo.</div></div>
+        </div>
+      </section>
+
+      <!-- 5 · IA -->
+      <section id="ia" style="padding-top: 96px;" data-screen-label="Filosofía de la IA">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 05</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Filosofía de la IA</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Saldo no es ChatGPT y no quiere conversar: quiere ayudar. Su IA es un asesor senior que lleva años con las cuentas del usuario — habla poco, acierta, y jamás necesita ser el centro de la habitación.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 40px;">
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cómo habla</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">En una o dos frases, con el dato dentro y la fuente en la punta de la lengua. En condicional cuando sugiere («podrías»), en indicativo cuando constata («gastaste»). Nunca en primera persona dramática («¡he encontrado algo!»), nunca con entusiasmo prestado. Su firma es la brevedad: si necesita un párrafo, todavía no entendió lo que quiere decir.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo habla</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Cuando se cumplen las tres condiciones a la vez: es accionable (el usuario puede hacer algo), es material (el impacto justifica la interrupción) y es oportuno (el usuario está mirando el contexto del que trata). Dos de tres no bastan. Y siempre en su nota, nunca invadiendo el espacio de los datos.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo calla</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Por defecto. Calla mientras el usuario escribe o edita; calla cuando solo tendría obviedades («gastas mucho en restaurantes»); calla cuando acaba de hablar; calla cuando el usuario descartó tres notas seguidas de ese tipo — silencio auto-impuesto. El silencio de la IA es información: significa «todo en orden».</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo no sabe</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Lo dice sin rodeos y sin disculpas teatrales: «No tengo datos suficientes de este año para comparar». La incertidumbre se declara con números cuando existe («entre 80 y 120 €») y nunca se disfraza de seguridad. Un asesor que admite sus límites es creíble en todo lo demás; uno que nunca duda no es creíble en nada.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo se abstiene</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Siempre que la decisión sea de vida y no de datos: no opina sobre si el usuario «debería» gastar menos en su familia, sus tratamientos o sus placeres. No hace predicciones que parezcan promesas. No toca el dinero: propone y el usuario dispone, sin excepción ni «modo automático». Y no opina de lo que no ve: sin datos, sin juicio.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cómo construye confianza</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Con trazabilidad (toda conclusión puede explicar su origen en una frase), con memoria (no repite lo descartado), con puntería (prefiere una nota buena al mes que una mediocre al día) y con humildad operativa (sus categorizaciones se corrigen con un toque y aprende de la corrección sin comentarla). La confianza en la IA se acumula en silencio y se pierde con un solo consejo tonto.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Personalidad</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;"><strong>Es:</strong> serena, precisa, discreta, ligeramente cálida — la calidez de quien conoce tu situación, no la de quien quiere caerte bien. <strong>Jamás es:</strong> entusiasta, graciosa, insistente, aduladora, misteriosa sobre sus fuentes, ni «un personaje». No tiene nombre, no tiene avatar, no saluda, no se despide, no usa emojis. Cuanto menos se nota, mejor trabaja.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Contra el chatbot genérico</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">La diferencia estructural: un chatbot espera preguntas y responde; el asesor de Saldo ya hizo el trabajo y presenta la conclusión donde corresponde. No hay burbuja flotante, no hay hilo de conversación como interfaz principal, no hay «¿en qué puedo ayudarte hoy?». Si el usuario quiere preguntar, pregunta desde la búsqueda — y la respuesta llega como dato con contexto, no como charla.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 · DASHBOARD -->
+      <section id="dashboard" style="padding-top: 96px;" data-screen-label="Filosofía del dashboard">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 06</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Filosofía del dashboard</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">El dashboard es un parte de tranquilidad que se lee como una frase: <em>«Tienes esto, el mes va así, y —solo si es verdad— hay una cosa que mirar.»</em> Cada bloque es una palabra de esa frase; lo que no pertenece a la frase, no pertenece al dashboard.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 40px;">
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">El recorrido del ojo</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Un solo camino descendente, sin bifurcaciones: la cifra protagonista (¿cuánto tengo?) → el contexto del mes (¿cómo voy?) → lo reciente (¿está todo registrado?) → lo que atender, si existe. En cada parada el usuario puede irse satisfecho; el dashboard está diseñado para ser abandonado a mitad. Nada al final del recorrido es más urgente que lo del principio — el orden de lectura ES el orden de importancia.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Una pregunta por bloque</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Cada bloque existe porque responde una pregunta que el usuario trae de fuera, formulada en sus palabras. Si la pregunta de un bloque empieza por «¿no sería interesante saber…?», el bloque sobra: las preguntas interesantes viven en las vistas de análisis, donde se llega con intención. El dashboard solo responde preguntas que duelen sin respuesta.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo un widget sobra</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Cuando repite con gráfico lo que otro dice con cifra · cuando su información no cambia la conducta de hoy · cuando existe «para dar sensación de completitud» · cuando su frecuencia de utilidad es mensual pero su coste de atención es diario · cuando nadie puede decir qué pregunta responde sin mirar su título. La prueba definitiva: quitarlo en silencio; si nadie lo busca en dos semanas, ya estaba muerto.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo falta algo</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Solo hay una señal válida: los usuarios abandonan el dashboard hacia el mismo destino, una y otra vez, nada más llegar. Ese camino repetido es una pregunta dolorosa sin respuesta en la portada. Se promociona esa respuesta — y idealmente se degrada otra cosa para mantener el peso total. El dashboard crece por evidencia de uso, jamás por petición de roadmap.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 · VACIOS -->
+      <section id="vacios" style="padding-top: 96px;" data-screen-label="Estados vacíos">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 07</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Filosofía de estados vacíos</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Una pantalla sin datos no está vacía: está esperando información, y debe decirlo con la misma serenidad con que mostraría los datos. El vacío nunca se disculpa, nunca se decora, y siempre ofrece exactamente un siguiente paso.</p>
+
+        <div style="display: flex; flex-direction: column; border-top: 1px solid #F0F0F0;">
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Primer uso</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Debe sentirse como una casa nueva con las llaves en la mano, no como un formulario de mudanza. El usuario debe ver valor antes de dar datos: la estructura ya insinúa cómo se verá su dinero. Un solo camino de entrada (conectar o registrar el primer gasto), sin tour de siete pasos.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Sin movimientos aún</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">«Aquí aparecerán tus movimientos» — futuro, no carencia. El usuario debe sentir expectativa tranquila, no que llegó temprano a una fiesta sin gente. Nunca «no hay nada que mostrar»: ese texto culpa al usuario del vacío.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Sin categorías</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">No se pide construir taxonomías en frío: Saldo propone las suyas cuando llegan los primeros datos y el usuario corrige sobre casos reales. Debe sentir que el orden viene de serie, no que le dieron una estantería vacía por montar.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Sin IA disponible</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">La aplicación funciona entera sin ella y no lo anuncia: sin nota, sin hueco, sin «análisis no disponible». La IA es un extra que aparece cuando tiene algo que decir; su ausencia jamás debe sentirse como una función rota.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Sin conexión</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Lo último conocido sigue visible y utilizable, con su fecha: «Datos del 12 de julio, 18:40». El usuario debe sentir que su dinero no desapareció con el wifi. Se registra en local y se sincroniza al volver — la desconexión es logística, nunca una pérdida.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Sin historial</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Las comparativas que exigen pasado no muestran promesas vacías ni gráficos de un punto: dicen desde cuándo habrá respuesta («En agosto podré comparar tus meses»). El usuario debe sentir que algo se está construyendo, no que llegó incompleto.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Sin resultados</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Una búsqueda sin resultados responde igual de bien que una con ellos: «Nada con “taxi” en junio» es información valiosa dicha con calma, seguida de una salida útil (ampliar fechas, revisar ortografía). Nunca un callejón: siempre una puerta.</div></div>
+        </div>
+      </section>
+
+      <!-- 8 · MOVIMIENTO -->
+      <section id="movimiento" style="padding-top: 96px;" data-screen-label="Filosofía del movimiento">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 08</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Filosofía del movimiento</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">El movimiento en Saldo es lenguaje corporal: comunica causalidad y continuidad, jamás personalidad. La sensación buscada es la de un objeto físico bien fabricado — responde al instante, se asienta sin rebotar, y nunca se mueve solo.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 40px;">
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Una transición</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Debe sentirse como girar la cabeza, no como viajar: el nuevo contexto ya estaba ahí, solo se enfoca. Si el usuario percibe «la animación de cambiar de vista» como un evento, es demasiado. La mejor transición se recuerda como no habiendo ocurrido.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Un modal</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Como alguien que se acerca a la mesa para una consulta breve: entra con suavidad, la página sigue ahí detrás — atenuada, no desaparecida — y al cerrarse todo está exactamente donde estaba. Nunca debe sentirse como un secuestro de la pantalla.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Una carga</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Como un asistente que ya trae los papeles ordenados: lo conocido aparece de inmediato, lo nuevo se incorpora sin empujones y nada salta de sitio cuando llega. La carga ideal no tiene coreografía porque no da tiempo a verla. Un spinner a pantalla completa es el sistema encogiéndose de hombros.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo ayuda</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Cuando responde una pregunta espacial que el usuario tendría de otro modo: ¿de dónde salió este panel? ¿a dónde fue la fila que borré? ¿qué cambió en esta lista? El movimiento útil es el que, si faltara, dejaría al usuario momentáneamente perdido.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 220px 1fr; gap: 24px;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding-top: 2px;">Cuándo sobra</div>
+            <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 0;">Cuando celebra (el confeti es ansiedad con purpurina), cuando llama la atención sobre algo que no la pedía, cuando se repite en cada visita (lo encantador la primera vez es un peaje la número cien), y siempre que exista para que la app «se sienta viva». La app no debe sentirse viva; debe sentirse estable. Lo vivo es el dinero del usuario.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 · MICROCOPY -->
+      <section id="microcopy" style="padding-top: 96px;" data-screen-label="Microcopys">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 09</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Microcopys</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Reglas, no textos finales. La voz general: segunda persona, frases cortas, verbos concretos, cero exclamaciones, cero jerga técnica, cero diminutivos. Saldo escribe como habla un buen asesor: primero el hecho, después la opción.</p>
+
+        <div style="display: flex; flex-direction: column; border-top: 1px solid #F0F0F0;">
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo confirma</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Con el hecho consumado y la salida: «Gasto eliminado · Deshacer». Sin agradecer, sin celebrar, sin «¡Listo!». La confirmación existe para que el usuario no dude, no para que el sistema quede bien.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo advierte</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Con la consecuencia concreta, no con el peligro abstracto: «Esto eliminará también sus 12 movimientos» en vez de «¡Atención! Acción irreversible». La advertencia da información para decidir, nunca miedo para obedecer.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo informa errores</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Tres partes fijas: qué pasó, qué está a salvo, qué se puede hacer. «No pudimos conectar con tu banco. Tus datos siguen intactos. Reintentaremos en una hora, o inténtalo ahora.» El sistema asume la culpa gramatical: «no pudimos», nunca «has fallado». Sin códigos, sin «ups».</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo felicita</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">No felicita: constata logros con respeto de adulto. «Tercer mes por debajo de tu media» — el dato ya es la felicitación. Prohibidos los signos de exclamación, las mayúsculas emocionales y los emojis. El orgullo es del usuario; Saldo no se lo apropia.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo explica</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Del efecto a la causa, en una frase por idea: primero qué significa para el usuario, después de dónde sale. Los términos técnicos se traducen o se omiten; si uno es imprescindible, se define en la misma línea. Explicar nunca es demostrar conocimiento: es transferir tranquilidad.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo pide permiso</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">Con el beneficio primero y la renuncia visible: «Para avisarte antes de un descubierto, Saldo necesita notificaciones. También funciona sin ellas.» Pedir en el momento de uso, nunca en cascada al instalar. Un «no» se acepta a la primera y no se vuelve a preguntar.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo habla la IA</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">En condicional cuando sugiere, en indicativo cuando constata, con el dato dentro de la frase y la fuente disponible. Nunca «he notado que…» (vigilancia), nunca «¡tengo una idea!» (protagonismo). Se distingue del sistema porque opina; el sistema solo informa.</div></div>
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #F0F0F0;"><div style="font-size: 14px; font-weight: 600;">Cómo habla el sistema</div><div style="font-size: 14px; line-height: 1.7; color: #6B6B6B;">En voz neutra y factual, sin opinión y casi sin adjetivos: «Sincronizado hace 2 minutos», «128 movimientos importados». El sistema es notario, la IA es asesora, y el usuario distingue siempre quién de los dos firma cada frase.</div></div>
+        </div>
+      </section>
+
+      <!-- 10 · ANTI-PATTERNS -->
+      <section id="antipatterns" style="padding-top: 96px;" data-screen-label="Anti-Patterns de experiencia">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 10</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Anti-Patterns</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Amplía el catálogo visual de la <a href="Saldo Design Constitution.dc.html#antipatterns">Design Constitution</a> con los anti-patterns de experiencia. Cada uno con su síntoma para detectarlo y su corrección. En revisión se citan por nombre y la discusión termina ahí.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El casino</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">Gamificar el dinero: rachas, niveles, confetti, medallas por ahorrar.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> aparece una mecánica cuyo objetivo es que el usuario vuelva, no que entienda. Palabras clave en la propuesta: «hábito», «racha», «recompensa».</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> sustituir la recompensa por la constatación del dato (E9, Microcopys/felicitar). Si la función no sobrevive sin premio, la función sobraba.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">La niñera</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">Confirmaciones para todo, tooltips que explican lo evidente, miedo institucional a que el usuario se equivoque.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> más de un «¿estás seguro?» por flujo; ayuda contextual sobre acciones de un solo paso.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> reversibilidad en lugar de confirmación (E7). Confirmar solo lo irreversible; explicar solo lo que los datos de uso demuestren confuso.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El acreedor</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">La app genera deuda emocional: pendientes acumulados, «34 movimientos sin categorizar», reproches por ausencia.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> cualquier contador de tareas que el usuario no creó; cualquier mensaje que mencione su inactividad.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> automatizar con corrección opcional (E9); al volver de una ausencia, resumen sereno de lo ocurrido, cero reproche (E6).</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El vendedor insistente</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">Upsells en la portada, badges «PRO» en funciones bloqueadas, notificaciones que fingen urgencia para reactivar.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> elementos cuyo beneficiario es el negocio y no el usuario presente; urgencia sin hecho material detrás.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> la venta vive en ajustes y en momentos de límite real alcanzado, dicha una vez y con la renuncia visible (Microcopys/permiso).</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El chatbot protagonista</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">La IA como personaje: burbuja flotante, avatar, saludo, hilo de conversación como interfaz principal.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> la IA tiene nombre, saluda, o su superficie compite en jerarquía con los datos del usuario.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> devolverla a la nota contextual (Sección 05): sin identidad escénica, integrada junto al dato del que habla.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El semáforo permanente</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">La interfaz reacciona emocionalmente a cada dato: rojos y verdes por doquier, flechas, alarmas de color permanentes.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> una captura en gris pierde «información» — señal de que el color estaba opinando, no informando.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> los datos en neutro con signo y contexto (E8); el color semántico se reserva para lo accionable real.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El eco</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">El mismo hecho comunicado por tres canales: toast + notificación + badge + email.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> mapear un evento a sus superficies; si son más de una sin escalado justificado, hay eco.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> un canal por tipo de evento (E14); escalar solo lo crítico-material, y escalar no es repetir.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El teatro de la máquina</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">Exhibir el esfuerzo técnico: «Analizando con IA…», barras de progreso dramatizadas, spinners como espectáculo.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> textos o animaciones cuyo mensaje real es «mira cuánto trabajo» en lugar de un resultado.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> resultados sin proceso (E12); si la espera es inevitable, decir cuánto y por qué, sin drama (Sección 04/esperar).</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">El laberinto de ajustes</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">Resolver cada debate de diseño añadiendo una preferencia: densidad configurable, widgets opcionales, veinte toggles.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> la frase «que lo elija el usuario» usada para cerrar una discusión que el equipo no quiso tener.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> decidir. Los ajustes se reservan para diferencias reales de necesidad (accesibilidad, moneda, privacidad), no de gusto del equipo.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #F0F0F0; border-radius: 10px; background: #FFFFFF; padding: 28px;">
+            <div style="font-size: 16px; font-weight: 600;">La emboscada</div>
+            <p style="font-size: 14px; line-height: 1.7; color: #444444; margin: 10px 0 0;">Información pesada sin que el usuario la pidiera: proyecciones alarmantes en la portada, resúmenes anuales no solicitados, «insights» que caen por sorpresa.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo detectarlo:</span> el usuario recibe en la portada algo que requiere preparación emocional y no puede posponer ni cerrar.</div>
+              <div style="font-size: 13px; line-height: 1.65; color: #6B6B6B;"><span style="font-weight: 600; color: #1A1A1A;">Cómo corregirlo:</span> lo pesado se anuncia y se ofrece («tu resumen del año está listo»), y se abre con intención. La portada solo responde sus tres preguntas.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11 · PRUEBA DEFINITIVA -->
+      <section id="prueba" style="padding-top: 96px;" data-screen-label="La prueba definitiva">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 11</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">«Si esto desaparece, deja de sentirse como Saldo»</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Catorce decisiones de experiencia que constituyen la identidad. No son componentes ni colores: son compromisos. Eliminar cualquiera de ellos produce otra aplicación, aunque cada píxel siga igual.</p>
+
+        <div style="display: flex; flex-direction: column; border-top: 1px solid #F0F0F0;">
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">01</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">La respuesta a «¿cuánto tengo?» llega antes de que dé tiempo a preguntarla.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">02</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Ningún número recibe carga emocional del sistema: los hechos llegan en neutro y el usuario decide qué sentir.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">03</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Todo se compara contra el propio usuario; nadie es medido contra extraños.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">04</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Deshacer siempre existe, y el usuario actúa sabiendo que existe.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">05</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">La aplicación nunca inicia el contacto sin un hecho material que lo justifique.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">06</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Abrir la app no genera nunca tareas: no hay bandeja de deberes esperando.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">07</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">La IA es una nota al margen que se puede descartar para siempre — no un personaje, no un destino.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">08</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">El silencio es el estado por defecto: cuando Saldo habla, es verdad que había que hablar.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">09</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Registrar un gasto cuesta menos de diez segundos y nunca exige completar nada.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">10</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Los errores hablan en humano, asumen la culpa gramatical y siempre dicen qué está a salvo.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">11</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Nada se mueve, suena ni aparece para llamar la atención sobre sí mismo.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">12</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Salir de la app — y llevarse los datos — es tan fácil y digno como entrar.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">13</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Volver tras un mes de ausencia se siente igual de bien que volver tras una hora.</div></div>
+          <div style="display: grid; grid-template-columns: 56px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid #F0F0F0; align-items: baseline;"><div style="font-size: 15px; font-variant-numeric: tabular-nums; color: #C4C4C4; font-weight: 600;">14</div><div style="font-size: 15px; line-height: 1.65; color: #444444;">Una sesión termina con una exhalación: el usuario cierra sabiendo cuánto tiene, cómo va y si hay algo que atender.</div></div>
+        </div>
+      </section>
+
+      <!-- 12 · CHECKLIST -->
+      <section id="checklist" style="padding-top: 96px;" data-screen-label="Checklist de revisión">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9E9E9E;">Sección 12</div>
+        <h2 style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0;">Checklist de revisión</h2>
+        <p style="font-size: 16px; line-height: 1.65; color: #444444; margin: 24px 0 48px;">Treinta y nueve preguntas de sí o no para aprobar o rechazar cualquier pantalla futura. Un «no» en las marcadas con ● bloquea la aprobación; los demás «no» exigen justificación escrita en la revisión.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 40px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Propósito</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Puede escribirse en una frase la pregunta del usuario que esta pantalla responde?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Se responde esa pregunta en los primeros cinco segundos, sin interacción?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Cada bloque de la pantalla responde una pregunta distinta, sin solaparse?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Se intentó eliminar cada elemento antes de aprobarlo («¿qué se pierde si no está?»)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿La pantalla sirve al usuario presente, y no a una métrica de negocio o a la vanidad del equipo?</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Calma</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Puede verse esta pantalla con malas noticias sin sentirse castigado por la interfaz?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Está la pantalla libre de urgencia fabricada (contadores, rojos permanentes, exclamaciones)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Toda cifra potencialmente inquietante llega acompañada de su contexto (E8)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿La pantalla evita crear tareas o pendientes que el usuario no pidió (E9)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Puede el usuario abandonar la pantalla en cualquier punto sin perder trabajo ni sentirse en falta?</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Silencio y jerarquía</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Hay un único protagonista visual, y es el dato más importante?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Superó la pantalla la prueba de entrecerrar los ojos (lo visible es lo importante)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Cada borde, fondo e icono hace un trabajo que el espacio no podía hacer?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Existen remansos — zonas de descanso visual — dentro de la pantalla?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Se distinguen sin esfuerzo lo interactivo y lo informativo?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Sigue funcionando la pantalla impresa en blanco y negro?</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Interacción</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Es reversible toda acción, o está claramente marcada y confirmada la que no lo es?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Pide la pantalla como máximo una decisión a la vez (E11)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Está pre-rellenado, adivinado o recordado todo lo que el sistema podía saber solo?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Puede cerrarse/cancelarse desde cualquier punto sin castigo?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Se comporta cada patrón (gestos, posiciones, atajos) igual que en el resto de la app (E10)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Sigue visible y utilizable el contenido anterior durante cargas y esperas?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Está libre de saltos de layout cuando llegan los datos?</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">IA</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>Si hay IA: ¿es accionable, material y oportuna a la vez su intervención?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Es descartable para siempre, sin fricción y sin reaparición?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Hay como máximo una nota de IA visible en la pantalla?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Puede explicar la IA el origen de su conclusión en una frase?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Funciona la pantalla exactamente igual de bien si la IA no aparece?</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Voz</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Está el texto libre de culpa, juicio moral y urgencia fabricada?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Está libre de exclamaciones, emojis, diminutivos y entusiasmo prestado?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Comunican los errores qué pasó, qué está a salvo y qué hacer — en ese orden?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Podría leer este texto en voz alta un asesor serio sin sonrojarse?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Queda claro en cada frase si habla el sistema (informa) o la IA (opina)?</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Estados e identidad</div>
+            <div style="display: flex; flex-direction: column;">
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Están diseñados el estado vacío, el de carga, el de error y el sin conexión de esta pantalla?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Ofrece el estado vacío exactamente un siguiente paso, sin disculparse?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Comunica cada hecho un solo canal, sin eco (E14)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Está la pantalla libre de todos los anti-patterns nombrados (Sección 10 y Design Constitution)?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: #C4C4C4;">○</span><span>¿Pasa la prueba del recorte: en gris y sin logo, se reconoce como Saldo?</span></div>
+              <div style="display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px; line-height: 1.6; color: #444444;"><span style="color: var(--accent);">●</span><span>¿Sale el usuario de esta pantalla más tranquilo — o al menos igual — que como entró?</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 56px; padding: 32px 36px; background: #F5F5F5; border-radius: 10px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Autoridad del documento</div>
+          <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 14px 0 0;">Esta Experience Constitution es la autoridad máxima sobre la experiencia de Saldo, al mismo nivel que la Design Constitution lo es sobre lo visual. Ante conflicto entre una función y este documento, gana el documento; ante conflicto entre este documento y la calma del usuario, gana el usuario — y el documento se corrige.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3E5568&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#3E5568&quot;, &quot;#3D5C4A&quot;, &quot;#4C5270&quot;, &quot;#4A443C&quot;], &quot;section&quot;: &quot;Identidad&quot; }
+}">
+class Component extends DCLogic {
+  componentDidMount() { this.applyVars(); }
+  componentDidUpdate() { this.applyVars(); }
+  applyVars() {
+    document.documentElement.style.setProperty('--accent', this.props.accentColor ?? '#3E5568');
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

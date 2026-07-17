@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root { --accent: #3E5568; --notes-display: grid; }
+    body { margin: 0; background: #ECECEA; color: #1A1A1A; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: #1A1A1A; }
+    ::selection { background: #E4E9ED; }
+  </style>
+</helmet>
+
+<div style="padding: 64px; display: flex; flex-direction: column; gap: 72px; width: fit-content;" data-screen-label="Pantalla 03 · Historial">
+
+  <!-- CABECERA -->
+  <header style="max-width: 900px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);">Saldo · Pantalla 03</div>
+    <h1 style="font-size: 40px; font-weight: 600; letter-spacing: -0.02em; margin: 12px 0 0;">Historial de movimientos</h1>
+    <p style="font-size: 15px; line-height: 1.7; color: #444444; margin: 16px 0 0; max-width: 660px;"><strong>Filosofía:</strong> no es una tabla de datos, es un diario financiero — el registro de la vida del usuario contado en dinero, que se hojea como una libreta bien llevada. <strong>Objetivo emocional:</strong> reconocimiento sin auditoría. El usuario no viene a analizar: viene a confirmar que todo está donde debe. Cada visita debe terminar en «sí, esto es lo que pasó».</p>
+  </header>
+
+  <!-- EXPLORACION -->
+  <section style="max-width: 900px;" data-screen-label="Exploración · ¿Tabla o diario?">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Exploración · ¿Sigue siendo una tabla la mejor solución?</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 14px; font-weight: 600;">A · Tabla clásica</div>
+        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px;"><div style="height: 6px; background: #C4C4C4; border-radius: 2px;"></div><div style="height: 6px; background: #C4C4C4; border-radius: 2px;"></div><div style="height: 6px; background: #C4C4C4; border-radius: 2px;"></div><div style="height: 6px; background: #C4C4C4; border-radius: 2px;"></div></div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px;"><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div></div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px;"><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; background: #E6E6E6; border-radius: 2px;"></div></div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 14px 0 0;">Cuatro columnas con cabecera. Eficiente para comparar, pero la fecha repetida en cada fila es ruido (el 80% de las visitas miran los últimos días), y la retícula densa huele a Excel y a banco: exactamente lo que no somos.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid var(--accent); border-radius: 10px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;"><div style="font-size: 14px; font-weight: 600;">B · Diario agrupado por día</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);">Elegida</div></div>
+        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="height: 5px; width: 64px; background: #9E9E9E; border-radius: 2px;"></div>
+          <div style="display: flex; justify-content: space-between;"><div style="height: 6px; width: 45%; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; width: 15%; background: #C4C4C4; border-radius: 2px;"></div></div>
+          <div style="display: flex; justify-content: space-between;"><div style="height: 6px; width: 55%; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; width: 12%; background: #C4C4C4; border-radius: 2px;"></div></div>
+          <div style="height: 5px; width: 48px; background: #9E9E9E; border-radius: 2px; margin-top: 6px;"></div>
+          <div style="display: flex; justify-content: space-between;"><div style="height: 6px; width: 40%; background: #E6E6E6; border-radius: 2px;"></div><div style="height: 6px; width: 14%; background: #C4C4C4; border-radius: 2px;"></div></div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.65; color: #6B6B6B; margin: 14px 0 0;">La fecha se convierte en encabezado de grupo (overline) y desaparece de las filas: menos ruido por fila, ritmo de lectura de libreta, y la cronología — que es como la memoria recuerda el gasto — pasa a ser la estructura. Dos columnas reales: qué y cuánto. Sigue cumpliendo la constitución de Tables (44 px, tabulares a la derecha, separadores sutiles): es la tabla, destilada.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DESKTOP ============ -->
+  <section data-screen-label="Historial · Desktop">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Desktop · 1280 · Estado éxito, fila expandida, con IA</div>
+
+    <div style="width: 1280px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; overflow: hidden; display: flex; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+      <aside style="width: 216px; flex-shrink: 0; border-right: 1px solid #F0F0F0; padding: 28px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px;">
+        <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.14em; padding: 0 8px;">SALDO</div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 32px; background: #F5F5F5; border-radius: 6px; padding: 0 10px;"><i data-lucide="search" style="width: 15px; height: 15px; color: #9E9E9E;"></i><span style="font-size: 13px; color: #9E9E9E; flex: 1;">Buscar</span><span style="font-size: 11px; font-family: ui-monospace, monospace; color: #C4C4C4;">⌘K</span></div>
+        <nav style="display: flex; flex-direction: column; gap: 2px;">
+          <div style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; color: #6B6B6B;"><i data-lucide="home" style="width: 18px; height: 18px;"></i><span style="font-size: 14px;">Inicio</span></div>
+          <div style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; color: #1A1A1A;"><i data-lucide="list" style="width: 18px; height: 18px;"></i><span style="font-size: 14px; font-weight: 600;">Movimientos</span></div>
+          <div style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; color: #6B6B6B;"><i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i><span style="font-size: 14px;">Insights</span></div>
+          <div style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; color: #6B6B6B;"><i data-lucide="settings-2" style="width: 18px; height: 18px;"></i><span style="font-size: 14px;">Ajustes</span></div>
+        </nav>
+        <div style="flex: 1;"></div>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px;"><div style="width: 28px; height: 28px; border-radius: 999px; background: #E6E6E6; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #6B6B6B;">LR</div><span style="font-size: 13px; color: #6B6B6B;">Luis Risso</span></div>
+      </aside>
+
+      <div style="flex: 1; min-width: 0; padding: 36px 96px 56px; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.015em;">Movimientos</div>
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <span style="font-size: 14px; font-weight: 500; color: var(--accent);">Exportar</span>
+            <div style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; color: #FFFFFF;"><i data-lucide="plus" style="width: 16px; height: 16px;"></i><span style="font-size: 14px; font-weight: 500;">Nuevo movimiento</span></div>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div style="display: flex; gap: 8px; margin-top: 28px;">
+          <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: #EEF1F4; border-radius: 6px;"><span style="font-size: 13px; font-weight: 500; color: #1A1A1A;">Julio 2026</span><i data-lucide="x" style="width: 13px; height: 13px; color: #6B6B6B;"></i></div>
+          <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px;"><span style="font-size: 13px; color: #444444;">Categoría</span><i data-lucide="chevron-down" style="width: 13px; height: 13px; color: #9E9E9E;"></i></div>
+          <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px;"><span style="font-size: 13px; color: #444444;">Cuenta</span><i data-lucide="chevron-down" style="width: 13px; height: 13px; color: #9E9E9E;"></i></div>
+        </div>
+
+        <!-- Resumen del mes (pegajoso) -->
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 40px; padding-bottom: 12px; border-bottom: 1px solid #E6E6E6;">
+          <div style="font-size: 17px; font-weight: 600;">Julio 2026</div>
+          <div style="font-size: 13px; color: #6B6B6B; font-variant-numeric: tabular-nums;">Gastado 1.842,10 € · Ingresado 2.400,00 €</div>
+        </div>
+
+        <!-- Nota IA del mes -->
+        <div style="margin-top: 20px; background: #F5F5F5; border-radius: 10px; padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start; max-width: 520px;">
+          <i data-lucide="sparkles" style="width: 15px; height: 15px; color: #9E9E9E; flex-shrink: 0; margin-top: 2px;"></i>
+          <div>
+            <p style="font-size: 13px; line-height: 1.6; color: #6B6B6B; margin: 0;">Tus suscripciones suman <span style="color: #1A1A1A; font-weight: 500; font-variant-numeric: tabular-nums;">34,80 €</span> este mes, 8 € más que en junio.</p>
+            <div style="display: flex; gap: 16px; margin-top: 8px;"><span style="font-size: 13px; font-weight: 500; color: var(--accent);">Ver suscripciones</span><span style="font-size: 13px; color: #9E9E9E;">Descartar</span></div>
+          </div>
+        </div>
+
+        <!-- Grupo: HOY -->
+        <div style="margin-top: 32px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Hoy · martes 14</div>
+          <div style="display: flex; flex-direction: column; margin-top: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Supermercado</span><span style="font-size: 13px; color: #9E9E9E;">Alimentación</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−86,50 €</span></div>
+
+            <!-- Fila seleccionada + expansión -->
+            <div style="background: #EEF1F4; border-radius: 8px; margin: 4px -12px; padding: 0 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; height: 44px;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #1A1A1A; font-weight: 500;">Café con Marta</span><span style="font-size: 13px; color: #9E9E9E;">Restaurantes</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−4,60 €</span></div>
+              <div style="border-top: 1px solid rgba(0,0,0,0.05); padding: 16px 0 18px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div style="display: flex; gap: 40px;">
+                  <div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Cuenta</div><div style="font-size: 14px; color: #444444; margin-top: 4px;">Cuenta corriente</div></div>
+                  <div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Categoría</div><div style="font-size: 14px; color: #444444; margin-top: 4px;">Restaurantes</div></div>
+                  <div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Nota</div><div style="font-size: 14px; color: #9E9E9E; margin-top: 4px;">Añadir una nota</div></div>
+                </div>
+                <div style="display: flex; gap: 20px;"><span style="font-size: 13px; font-weight: 500; color: var(--accent);">Editar</span><span style="font-size: 13px; color: #A14D44;">Eliminar</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grupo: AYER -->
+        <div style="margin-top: 28px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Ayer · lunes 13</div>
+          <div style="display: flex; flex-direction: column; margin-top: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Suscripción música</span><span style="font-size: 13px; color: #9E9E9E;">Suscripciones</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−12,90 €</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Gasolina</span><span style="font-size: 13px; color: #9E9E9E;">Transporte</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−52,30 €</span></div>
+          </div>
+        </div>
+
+        <!-- Grupo: 12 JUL -->
+        <div style="margin-top: 28px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Domingo 12</div>
+          <div style="display: flex; flex-direction: column; margin-top: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Nómina</span><span style="font-size: 13px; color: #9E9E9E;">Ingresos</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">2.400,00 €</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Farmacia</span><span style="font-size: 13px; color: #9E9E9E;">Salud</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−38,20 €</span></div>
+          </div>
+        </div>
+
+        <div style="font-size: 13px; color: #9E9E9E; margin-top: 24px; text-align: center;">Junio se carga al llegar — sin páginas, sin botones</div>
+      </div>
+    </div>
+
+    <!-- Notas -->
+    <div style="display: var(--notes-display); grid-template-columns: repeat(3, 1fr); gap: 24px; width: 1280px; margin-top: 24px; box-sizing: border-box;">
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Comportamiento</div>
+        <ul style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Scroll continuo con carga perezosa; la cabecera del mes queda pegada arriba con su resumen — siempre se sabe dónde se está.</li>
+          <li>Clic en fila: expansión en línea (200 ms). Editar abre la misma hoja de la Pantalla 02 pre-rellenada.</li>
+          <li>Eliminar: sin confirmación — la fila colapsa y toast «Movimiento eliminado · Deshacer» (8 s).</li>
+          <li>Filtros aplican al instante; el activo se vuelve chip tinte acento con ✕. Nunca queda un filtro invisible.</li>
+          <li>Búsqueda tolerante: «taxi enero», «eso de 40 y pico» — resultados mientras se escribe.</li>
+          <li>Teclado: ↑↓ recorren filas, Enter expande, E edita, ⌫ elimina (con Deshacer). Foco visible siempre.</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Microcopys canónicos</div>
+        <ul style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Encabezados de día: «Hoy · martes 14», «Ayer · lunes 13», después solo «Domingo 12».</li>
+          <li>Resumen del mes: «Gastado … · Ingresado …» — dos hechos, sin saldo neto moralizante.</li>
+          <li>«Añadir una nota» en terciario — invitación, no campo vacío que reprocha.</li>
+          <li>Toast: «Movimiento eliminado · Deshacer».</li>
+          <li>Sin resultados: «Nada con “taxi” en junio» + «Buscar en todo el historial».</li>
+          <li>La IA constata en indicativo: «Tus suscripciones suman…» — con salida «Ver suscripciones».</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 10px; padding: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Construcción · AA</div>
+        <ul style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0; padding-left: 16px;">
+          <li>Filas 44 px; encabezados de día en Overline; cifras tabulares a la derecha, 500.</li>
+          <li>Categoría como caption en línea con el concepto — no como badge (máximo silencio por fila).</li>
+          <li>Ingresos sin color: el signo y el contexto bastan; el gris de una captura no pierde información.</li>
+          <li>AA: concepto #444 (9.7:1), caption #9E9E9E solo ≥13 px y nunca para importes; foco anillo acento 2 px; áreas táctiles ≥44.</li>
+          <li>Lector de pantalla: «Café con Marta, restaurantes, 4 euros con 60 en gasto, hoy» — el importe siempre con contexto.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TABLET + MOBILE ============ -->
+  <section style="display: flex; gap: 56px; align-items: flex-start;" data-screen-label="Historial · Tablet y Mobile">
+    <div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Tablet · 834 · El detalle pasa a hoja</div>
+      <div style="width: 834px; height: 640px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; overflow: hidden; display: flex; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+        <aside style="width: 64px; flex-shrink: 0; border-right: 1px solid #F0F0F0; padding: 28px 0; display: flex; flex-direction: column; align-items: center; gap: 24px;">
+          <div style="font-size: 13px; font-weight: 700;">S</div>
+          <i data-lucide="search" style="width: 18px; height: 18px; color: #9E9E9E;"></i>
+          <div style="display: flex; flex-direction: column; gap: 18px; align-items: center;">
+            <i data-lucide="home" style="width: 20px; height: 20px; color: #9E9E9E;"></i>
+            <i data-lucide="list" style="width: 20px; height: 20px; color: #1A1A1A;"></i>
+            <i data-lucide="pie-chart" style="width: 20px; height: 20px; color: #9E9E9E;"></i>
+            <i data-lucide="settings-2" style="width: 20px; height: 20px; color: #9E9E9E;"></i>
+          </div>
+        </aside>
+        <div style="flex: 1; min-width: 0; padding: 32px 56px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em;">Movimientos</div>
+            <div style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; color: #FFFFFF;"><i data-lucide="plus" style="width: 16px; height: 16px;"></i><span style="font-size: 14px; font-weight: 500;">Nuevo</span></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 24px;">
+            <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: #EEF1F4; border-radius: 6px;"><span style="font-size: 13px; font-weight: 500;">Julio 2026</span><i data-lucide="x" style="width: 13px; height: 13px; color: #6B6B6B;"></i></div>
+            <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px;"><span style="font-size: 13px; color: #444444;">Categoría</span><i data-lucide="chevron-down" style="width: 13px; height: 13px; color: #9E9E9E;"></i></div>
+          </div>
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 32px; padding-bottom: 12px; border-bottom: 1px solid #E6E6E6;">
+            <div style="font-size: 17px; font-weight: 600;">Julio 2026</div>
+            <div style="font-size: 13px; color: #6B6B6B; font-variant-numeric: tabular-nums;">Gastado 1.842,10 € · Ingresado 2.400,00 €</div>
+          </div>
+          <div style="margin-top: 20px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Hoy · martes 14</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Supermercado</span><span style="font-size: 13px; color: #9E9E9E;">Alimentación</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−86,50 €</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Café con Marta</span><span style="font-size: 13px; color: #9E9E9E;">Restaurantes</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−4,60 €</span></div>
+          </div>
+          <div style="margin-top: 24px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Ayer · lunes 13</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Suscripción música</span><span style="font-size: 13px; color: #9E9E9E;">Suscripciones</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−12,90 €</span></div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; max-width: 640px; margin: 16px 0 0;">Misma estructura de diario; el detalle de fila se abre como hoja (no en línea) para no fragmentar la lectura vertical. La nota de IA se conserva solo si no empuja el primer grupo bajo el pliegue.</p>
+    </div>
+
+    <div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Mobile · 390 · La libreta pura</div>
+      <div style="width: 390px; height: 780px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+        <div style="flex: 1; overflow: hidden; padding: 32px 24px 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.015em;">Movimientos</div>
+            <i data-lucide="search" style="width: 20px; height: 20px; color: #6B6B6B;"></i>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 20px; overflow: hidden;">
+            <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: #EEF1F4; border-radius: 6px; flex-shrink: 0;"><span style="font-size: 13px; font-weight: 500;">Julio</span><i data-lucide="x" style="width: 13px; height: 13px; color: #6B6B6B;"></i></div>
+            <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center; flex-shrink: 0;"><span style="font-size: 13px; color: #444444;">Categoría</span></div>
+            <div style="height: 32px; padding: 0 12px; border: 1px solid #E6E6E6; border-radius: 6px; display: flex; align-items: center; flex-shrink: 0;"><span style="font-size: 13px; color: #444444;">Cuenta</span></div>
+          </div>
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 28px; padding-bottom: 10px; border-bottom: 1px solid #E6E6E6;">
+            <div style="font-size: 15px; font-weight: 600;">Julio 2026</div>
+            <div style="font-size: 12px; color: #6B6B6B; font-variant-numeric: tabular-nums;">−1.842,10 · +2.400,00</div>
+          </div>
+          <div style="margin-top: 16px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Hoy · martes 14</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 52px; border-bottom: 1px solid #F0F0F0;"><div><div style="font-size: 15px; color: #444444;">Supermercado</div><div style="font-size: 12px; color: #9E9E9E;">Alimentación</div></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−86,50 €</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 52px; border-bottom: 1px solid #F0F0F0;"><div><div style="font-size: 15px; color: #444444;">Café con Marta</div><div style="font-size: 12px; color: #9E9E9E;">Restaurantes</div></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−4,60 €</span></div>
+          </div>
+          <div style="margin-top: 20px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Ayer · lunes 13</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 52px; border-bottom: 1px solid #F0F0F0;"><div><div style="font-size: 15px; color: #444444;">Suscripción música</div><div style="font-size: 12px; color: #9E9E9E;">Suscripciones</div></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−12,90 €</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 52px; border-bottom: 1px solid #F0F0F0;"><div><div style="font-size: 15px; color: #444444;">Gasolina</div><div style="font-size: 12px; color: #9E9E9E;">Transporte</div></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−52,30 €</span></div>
+          </div>
+        </div>
+        <div style="position: absolute; right: 16px; bottom: 80px; width: 56px; height: 56px; border-radius: 999px; background: var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);"><i data-lucide="plus" style="width: 24px; height: 24px; color: #FFFFFF;"></i></div>
+        <div style="height: 64px; border-top: 1px solid #F0F0F0; background: #FAFAFA; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #9E9E9E;"><i data-lucide="home" style="width: 21px; height: 21px;"></i><span style="font-size: 10px;">Inicio</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #1A1A1A;"><i data-lucide="list" style="width: 21px; height: 21px;"></i><span style="font-size: 10px; font-weight: 600;">Movimientos</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #9E9E9E;"><i data-lucide="pie-chart" style="width: 21px; height: 21px;"></i><span style="font-size: 10px;">Insights</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #9E9E9E;"><i data-lucide="settings-2" style="width: 21px; height: 21px;"></i><span style="font-size: 10px;">Ajustes</span></div>
+        </div>
+      </div>
+      <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; max-width: 390px; margin: 16px 0 0;">Filas de 52 px con categoría bajo el concepto. El detalle abre hoja inferior; deslizar una fila revela Editar/Eliminar (con Deshacer). El resumen del mes se compacta a «−gastado · +ingresado».</p>
+    </div>
+  </section>
+
+  <!-- ============ ESTADOS ============ -->
+  <section data-screen-label="Historial · Estados">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E; margin-bottom: 16px;">Estados · columna de contenido, desktop</div>
+    <div style="display: grid; grid-template-columns: repeat(2, 620px); gap: 32px;">
+
+      <div>
+        <div style="width: 620px; height: 360px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 56px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em;">Movimientos</div>
+          <p style="font-size: 15px; line-height: 1.65; color: #444444; margin: 48px 0 0; max-width: 360px;">Aquí aparecerán tus movimientos, agrupados por día.</p>
+          <div style="display: flex; align-items: center; gap: 20px; margin-top: 20px;">
+            <div style="height: 36px; padding: 0 16px; background: var(--accent); border-radius: 6px; display: flex; align-items: center;"><span style="font-size: 14px; font-weight: 500; color: #FFFFFF;">Registrar el primero</span></div>
+            <span style="font-size: 14px; font-weight: 500; color: var(--accent);">Importar un CSV</span>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Vacío.</strong> Futuro, no carencia. Sin filtros ni resumen: la maquinaria aparece cuando hay algo que filtrar.</p>
+      </div>
+
+      <div>
+        <div style="width: 620px; height: 360px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 56px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="width: 180px; height: 22px; background: #F0F0F0; border-radius: 5px;"></div>
+          <div style="width: 96px; height: 10px; background: #F0F0F0; border-radius: 4px; margin-top: 48px;"></div>
+          <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between;"><div style="width: 200px; height: 12px; background: #F0F0F0; border-radius: 4px;"></div><div style="width: 72px; height: 12px; background: #F0F0F0; border-radius: 4px;"></div></div>
+            <div style="display: flex; justify-content: space-between;"><div style="width: 150px; height: 12px; background: #F0F0F0; border-radius: 4px;"></div><div style="width: 88px; height: 12px; background: #F0F0F0; border-radius: 4px;"></div></div>
+            <div style="display: flex; justify-content: space-between;"><div style="width: 230px; height: 12px; background: #F0F0F0; border-radius: 4px;"></div><div style="width: 64px; height: 12px; background: #F0F0F0; border-radius: 4px;"></div></div>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Cargando (primera carga).</strong> Skeleton con la geometría del diario. Al paginar hacia atrás, solo el grupo entrante muestra skeleton; lo visible no parpadea jamás.</p>
+      </div>
+
+      <div>
+        <div style="width: 620px; height: 360px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 56px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em;">Movimientos</div>
+          <div style="display: flex; gap: 8px; margin-top: 24px;">
+            <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: #EEF1F4; border-radius: 6px;"><span style="font-size: 13px; font-weight: 500;">«taxi»</span><i data-lucide="x" style="width: 13px; height: 13px; color: #6B6B6B;"></i></div>
+            <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: #EEF1F4; border-radius: 6px;"><span style="font-size: 13px; font-weight: 500;">Junio</span><i data-lucide="x" style="width: 13px; height: 13px; color: #6B6B6B;"></i></div>
+          </div>
+          <p style="font-size: 15px; line-height: 1.65; color: #444444; margin: 40px 0 0;">Nada con «taxi» en junio.</p>
+          <div style="display: flex; gap: 24px; margin-top: 16px;">
+            <span style="font-size: 14px; font-weight: 500; color: var(--accent);">Buscar en todo el historial</span>
+            <span style="font-size: 14px; color: #9E9E9E;">Quitar filtros</span>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Sin resultados.</strong> La ausencia es información dicha con calma; siempre dos puertas de salida. Los filtros activos permanecen visibles — nunca un resultado vacío inexplicable.</p>
+      </div>
+
+      <div>
+        <div style="width: 620px; height: 360px; background: #FAFAFA; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 56px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em;">Movimientos</div>
+            <span style="font-size: 13px; color: #A97E38;">Datos del 14 jul, 18:40</span>
+          </div>
+          <div style="margin-top: 20px; background: #F8F2E7; border-radius: 10px; padding: 14px 18px; max-width: 460px;">
+            <p style="font-size: 13px; line-height: 1.6; color: #444444; margin: 0;">No pudimos actualizar desde tu banco. Lo que ves está completo hasta ayer. <span style="font-weight: 500; color: var(--accent);">Reintentar ahora</span></p>
+          </div>
+          <div style="margin-top: 28px;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9E9E9E;">Ayer · lunes 13</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; height: 44px; border-bottom: 1px solid #F0F0F0;"><div style="display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 15px; color: #444444;">Suscripción música</span><span style="font-size: 13px; color: #9E9E9E;">Suscripciones</span></div><span style="font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums;">−12,90 €</span></div>
+          </div>
+        </div>
+        <p style="font-size: 13px; line-height: 1.7; color: #6B6B6B; margin: 12px 0 0;"><strong style="color: #1A1A1A;">Error de sincronización.</strong> El diario sigue completo y fechado; ámbar tenue, nunca rojo. <strong style="color: #1A1A1A;">Sin IA:</strong> la nota del mes simplemente no existe — el resumen del mes cierra el hueco. No hay estado Premium/Free en esta pantalla: el historial y la exportación son del usuario, sin puertas (E: salir es digno).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AUTOAUDITORIA ============ -->
+  <section style="max-width: 900px; background: #FFFFFF; border: 1px solid #E6E6E6; border-radius: 12px; padding: 40px 44px;" data-screen-label="Autoauditoría">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">Autoauditoría del Director de Diseño</div>
+    <div style="display: flex; flex-direction: column; margin-top: 20px; border-top: 1px solid #F0F0F0;">
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Recorrido del ojo</div><div style="color: #6B6B6B;">Título → resumen del mes → «Hoy» → filas hacia abajo. El ritmo lo marcan los encabezados de día: pausas regulares cada 2–4 filas, como párrafos. La vista descansa en el aire entre grupos (28 px) — la libreta respira entre días, no entre líneas.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Protagonista</div><div style="color: #6B6B6B;">Ninguna cifra individual: el protagonista es la cronología. Es la única pantalla del producto donde el conjunto manda sobre el dato — decisión deliberada, porque la pregunta que responde es «¿está todo?», no «¿cuánto?».</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Qué se eliminó (Regla 0)</div><div style="color: #6B6B6B;">La columna de fecha (el grupo la absorbe), la columna de cuenta (vive en el detalle), los iconos por categoría (39 categorías = 39 dibujos compitiendo), el saldo acumulado por fila (convierte la libreta en extracto bancario), los totales por día (auditoría no pedida) y la paginación (esconde el propio dinero). Ninguno sobrevivió al minuto de justificación.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Competencia por atención</div><div style="color: #6B6B6B;">El riesgo era el resumen pegajoso del mes: se degradó a caption tabular junto al nombre del mes, sin caja. La nota de IA es una por mes, tras el encabezado — opina del período, jamás de una fila concreta (eso sería vigilancia).</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">¿Calma o actividad? · ¿Sin colores? · ¿Sin logo?</div><div style="color: #6B6B6B;">Calma: dos columnas reales, cero badges, cero zebra, ingresos sin verde. En gris no pierde nada (los importes viven del signo y la posición). Sin logo se reconoce por las firmas: overline + cifra, retícula sin cajas, signo «−» tipográfico, densidad baja con aire regular.</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Decisión más difícil</div><div style="color: #6B6B6B;">Quitar los totales diarios. El argumento a favor era real (contexto inmediato); el argumento en contra ganó: convierten cada día en una evaluación — «ayer gastaste mucho» — y la pantalla dejaría de reducir ansiedad. El total vive en el resumen del mes, que compara sin juzgar. Fue la aplicación más literal del principio E1 sobre un dato «útil».</div></div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; line-height: 1.65;"><div style="font-weight: 600; color: #1A1A1A;">Constituciones</div><div style="color: #6B6B6B;">Tables v1.2 respetada en su esencia (44 px, tabulares, separadores #F0F0F0, sin verticales, scroll perezoso, hover velo, expansión 200 ms) con una reinterpretación declarada: la fecha pasa de columna a estructura. Checklist EC: 10 bloqueantes en sí. Eliminar sin confirmación + Deshacer 8 s (E7); filtros siempre visibles (interacción/filtrar); sin resultados con dos salidas (estados vacíos).</div></div>
+    </div>
+  </section>
+
+  <!-- ============ IMPLEMENTATION NOTES ============ -->
+  <footer style="max-width: 900px; background: #1A1A1A; border-radius: 12px; padding: 40px 44px;" data-screen-label="Implementation Notes">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #9E9E9E;">Implementation Notes · puente Diseño → Desarrollo</div>
+    <div style="display: flex; flex-direction: column; margin-top: 20px; border-top: 1px solid #333333;">
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Reutilizables existentes</div><div style="color: #C4C4C4;">FilaMovimiento (nace en Dashboard: concepto + caption + importe tabular), NotaIA, Toast con Deshacer, BotónPrimario/Terciario, Sidebar, NavInferior, FAB, hoja NuevoMovimiento (la edición la reutiliza pre-rellenada).</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Nacen en esta pantalla</div><div style="color: #C4C4C4;">GrupoDía (overline + lista), CabeceraMes pegajosa (título + resumen tabular), ChipFiltro (reposo borde / activo tinte acento + ✕), ExpansiónDetalle en línea (desktop) y HojaDetalle (tablet/mobile), EstadoSinResultados.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Tokens</div><div style="color: #C4C4C4;">text/primary·secondary·tertiary; border/separator (#F0F0F0) y default (#E6E6E6); action/primary; state/warning + tinte #F8F2E7; selección #EEF1F4; space 4/8/16/24/32; radius/control 6 y surface 10; type: heading 32, title 17, body 15·tnum, caption 13, overline 11; motion/base 200 ms, slow 320 ms, curva única.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Animaciones</div><div style="color: #C4C4C4;">Expansión de fila: altura con contenido, 200 ms. Eliminación: colapso de altura 200 ms + toast. Fila nueva/restaurada: fondo selección que se desvanece en 320 ms. Chips: cambio de estado 120 ms. Nada más; reduced-motion → fundidos 80 ms.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Dependencias</div><div style="color: #C4C4C4;">«Ver todos los movimientos» del Dashboard aterriza aquí con el mes en curso filtrado. Editar depende de la hoja de Pantalla 02. Categorías y cuentas llegan de Ajustes. «Ver suscripciones» (nota IA) enlaza a Insights con filtro aplicado. Importar CSV (vacío) enlaza a Pantalla 04.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">Riesgos</div><div style="color: #C4C4C4;">(1) Scroll infinito + cabeceras pegajosas exige virtualización sin saltos de layout — reservar alturas antes de pintar. (2) Deshacer con guardado optimista: la eliminación debe ser blanda (soft-delete) hasta expirar el toast. (3) Los encabezados relativos («Hoy», «Ayer») deben recalcularse al cruzar medianoche sin recargar. (4) tabular-nums debe verificarse en la fuente del sistema Android.</div></div>
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid #333333; font-size: 13px; line-height: 1.7;"><div style="font-weight: 600; color: #FAFAFA;">QA valida</div><div style="color: #C4C4C4;">Resumen del mes cuadra con la suma de filas visibles y filtradas; Deshacer restaura posición y datos exactos; filtros sobreviven a navegación y vuelta; teclado completo (↑↓, Enter, E, ⌫, Escape); foco visible; lector de pantalla anuncia importes con contexto; sin saltos de layout al paginar; los cinco estados alcanzables y correctos.</div></div>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3E5568&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#3E5568&quot;, &quot;#3D5C4A&quot;, &quot;#4C5270&quot;], &quot;section&quot;: &quot;Identidad&quot; },
+  &quot;showNotes&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Documento&quot; }
+}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.applyVars();
+    this.iconTimer = setInterval(() => {
+      if (window.lucide && window.lucide.createIcons) {
+        window.lucide.createIcons({ attrs: { 'stroke-width': 1.5 } });
+        clearInterval(this.iconTimer);
+      }
+    }, 300);
+    setTimeout(() => clearInterval(this.iconTimer), 10000);
+  }
+  componentDidUpdate() { this.applyVars(); }
+  componentWillUnmount() { clearInterval(this.iconTimer); }
+  applyVars() {
+    const root = document.documentElement;
+    root.style.setProperty('--accent', this.props.accentColor ?? '#3E5568');
+    root.style.setProperty('--notes-display', (this.props.showNotes ?? true) ? 'grid' : 'none');
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
