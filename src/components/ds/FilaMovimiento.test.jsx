@@ -1,0 +1,110 @@
+import { render, screen } from '@testing-library/react';
+import { FilaMovimiento } from './FilaMovimiento';
+
+// Fase II — Integración del Dashboard (Saldo Design Constitution v1.2).
+// Fuente: docs/design/screens/Saldo Dashboard.dc.html.
+// Fila de movimiento reutilizable (Dashboard hoy, Historial en el futuro).
+// Regla Inquebrantable 4: la Constitución prohíbe rojo/verde permanentes en
+// importes — gastos con signo "−" tipográfico (U+2212, NUNCA el guion ASCII),
+// ingresos sin signo, ambos con el mismo color neutro.
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ i18n: { language: 'es' } }),
+}));
+
+describe('FilaMovimiento (ds) — Saldo Design Constitution v1.2', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 17)); // 17 jul 2026
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('gasto: muestra el signo "−" tipográfico (U+2212), nunca el guion ASCII "-"', () => {
+    // formatCurrency() usa locale 'es-419' internamente (igual que
+    // ExpenseList.jsx) independientemente de i18n.language — decimal con
+    // punto en este entorno ICU ("45.50"), no coma.
+    render(<FilaMovimiento description="Supermercado" date="2026-07-17" amount={45.5} type="expense" />);
+    expect(screen.getByText(/−.*45\.50/)).toBeInTheDocument();
+    expect(screen.queryByText(/^-45\.50/)).not.toBeInTheDocument();
+  });
+
+  it('ingreso: sin signo "+", mismo color neutro que los gastos', () => {
+    render(<FilaMovimiento description="Sueldo" date="2026-07-17" amount={45.5} type="income" />);
+    const amountEl = screen.getByText(/45\.50/);
+    expect(amountEl).toBeInTheDocument();
+    expect(screen.queryByText(/\+.*45\.50/)).not.toBeInTheDocument();
+
+    const { container: expenseContainer } = render(
+      <FilaMovimiento description="Supermercado" date="2026-07-17" amount={45.5} type="expense" />
+    );
+    const expenseAmountEl = expenseContainer.querySelector('.text-ds-numeric');
+    expect(amountEl.className).toBe(expenseAmountEl.className);
+  });
+
+  it('muestra la moneda del movimiento vía formatCurrency (consistente con ExpenseList) — hallazgo de verificación, no estaba cubierto', () => {
+    const { container } = render(
+      <FilaMovimiento description="Compra en Europa" date="2026-07-17" amount={10} type="expense" currency="EUR" />
+    );
+    // formatCurrency('es-419') en este entorno ICU renderiza el código de
+    // moneda como texto ("EUR 10.00"), no un símbolo — mismo comportamiento
+    // que ya usa ExpenseList.jsx, no se reinventa el formateo acá.
+    const amountEl = container.querySelector('.text-ds-numeric');
+    expect(amountEl.textContent).toMatch(/EUR/);
+  });
+
+  it('sin prop currency, usa USD por defecto (mismo default que formatCurrency)', () => {
+    const { container } = render(
+      <FilaMovimiento description="Compra" date="2026-07-17" amount={10} type="expense" />
+    );
+    const amountEl = container.querySelector('.text-ds-numeric');
+    expect(amountEl.textContent).toMatch(/USD/);
+  });
+
+  it('fecha de hoy muestra "Hoy"', () => {
+    render(<FilaMovimiento description="Café" date="2026-07-17" amount={5} type="expense" />);
+    expect(screen.getByText('Hoy')).toBeInTheDocument();
+  });
+
+  it('fecha de ayer muestra "Ayer"', () => {
+    render(<FilaMovimiento description="Café" date="2026-07-16" amount={5} type="expense" />);
+    expect(screen.getByText('Ayer')).toBeInTheDocument();
+  });
+
+  it('otra fecha muestra formato "D mmm" vía Intl.DateTimeFormat', () => {
+    render(<FilaMovimiento description="Café" date="2026-07-01" amount={5} type="expense" />);
+    expect(screen.getByText('1 jul')).toBeInTheDocument();
+  });
+
+  it('renderiza la descripción con el token tipográfico body', () => {
+    render(<FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" />);
+    const el = screen.getByText('Alquiler');
+    expect(el.className).toMatch(/text-ds-body\b/);
+    expect(el.className).toMatch(/text-ds-text-primary\b/);
+  });
+
+  it('nunca usa clases de color rojo/verde/esmeralda/rosa para el importe (Regla Inquebrantable 4)', () => {
+    const { container } = render(
+      <FilaMovimiento description="Supermercado" date="2026-07-17" amount={45.5} type="expense" />
+    );
+    expect(container.innerHTML).not.toMatch(/text-red|text-green|text-emerald|text-rose/);
+  });
+
+  it('usa el separador inferior y la altura de fila de la Constitución', () => {
+    const { container } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" />
+    );
+    const row = container.firstChild;
+    expect(row.className).toMatch(/h-11\b/);
+    expect(row.className).toMatch(/border-ds-border-separator\b/);
+  });
+
+  it('aplica el token de hover de interacción (mismo que Button/DSSidebar)', () => {
+    const { container } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" />
+    );
+    expect(container.firstChild.className).toMatch(/hover:bg-ds-interaction-hover\b/);
+  });
+});

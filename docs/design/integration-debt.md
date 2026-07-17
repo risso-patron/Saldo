@@ -22,6 +22,9 @@ y se deja anotada acá.
 | 2026-07-17 | `src/components/Auth/ProfileMenu.jsx` — huérfano | Su único importador era `AppHeader.jsx` (shell viejo, ya desmontado de `App.jsx` desde una fase anterior). El archivo sigue en el repo pero ningún componente montado lo importa. | Fase I-C reemplazó `AppHeader`/`Sidebar` viejos por `DSSidebar`/`DSTopBar`; `ProfileMenu` no tiene equivalente 1:1 en el shell nuevo (ver fila "Footer del Sidebar viejo (`ProfileMenu`)" arriba — su única acción sin cubrir, "Eliminar Datos Locales", ya migró al Omnibar). | Ninguna acción en esta fase (fuera de alcance tocar componentes no montados). Evaluar borrado del archivo en una futura limpieza de código muerto, una vez confirmado que nada más lo referencia. |
 | 2026-07-17 | `src/components/Shared/ThemeToggle.jsx` — huérfano | Su único importador era `AppHeader.jsx` (shell viejo). Ningún componente montado lo importa hoy — **corrección de la nota anterior** ("Notas de implementación relacionadas" más abajo): `ProfilePage.jsx` NO usa el componente `<ThemeToggle/>`; usa el hook `useTheme()` (`ThemeContext`) directamente para armar su propia fila Sun/Moon. La FUNCIÓN (cambiar de tema) está disponible en `cuenta`/Ajustes; el COMPONENTE `ThemeToggle` quedó huérfano. | Igual que `ProfileMenu`: sin equivalente montado tras el reemplazo del shell viejo. | Ninguna acción en esta fase. Evaluar borrado del archivo junto con `ProfileMenu.jsx` en una futura limpieza. |
 | 2026-07-17 | Labels <14px en `tertiary` (DSBottomNav 10px, "Buscar" 13px, "⌘K" 11px) | La Constitución define el color `text/tertiary` (#9E9E9E) como "uso permitido solo en >=14px" (comentario en `tailwind.config.js`), pero los propios mockups de `Saldo Dashboard.dc.html` usan `tertiary` en tamaños menores (10-13px) en los mismos lugares donde este shell lo replica. | **Ambigüedad constitucional real**, no un error de implementación: la regla de contraste ("solo ≥14px") contradice a los mockups que la propia Constitución aporta como fuente de verdad visual. Se priorizó fidelidad al mockup (regla del PO: "el diseño gana") en vez de "corregir" el tamaño o el color por cuenta propia. | Ninguna resolución de código — requiere que el PO/diseño resuelva la contradicción (¿sube el tamaño? ¿define una excepción para labels de nav/metadata? ¿un tono `tertiary` más oscuro solo para <14px?). Queda registrada para no perderla en la próxima revisión de la Constitución. |
+| 2026-07-17 | Tab `resumen` (Dashboard) — Fase II | `HabitDailyCard`, `Summary`, `GlobalBudgetTracker`, el botón "Ver mis tendencias detalladas" y la sección colapsable de logros (`GamificationDashboard`) se desmontaron de `App.jsx` (tab `resumen`) y fueron reemplazados por `DashboardHome`. NO se borraron — siguen intactos y compilables en sus propios archivos (`src/components/Dashboard/HabitDailyCard.jsx`, `src/components/Summary.jsx`, `src/components/Budget/GlobalBudgetTracker.jsx`, `src/features/gamification/`). | El diseño (`Saldo Dashboard.dc.html`) no contempla estos componentes en el Dashboard, y su estética actual (rojo en negativos, "¡Peligro!", etc.) viola las Reglas Inquebrantables 4 y 8 de la Constitución. | Destino permanente pendiente de decisión del PO (¿Insights? ¿Ajustes? ¿pantalla propia?). |
+| 2026-07-17 | Dashboard — región de IA | Implementado el estado constitucional "Sin IA": `DashboardHome` no renderiza ningún nodo en la región de IA (sin nota, sin hueco reservado). | No existe un motor de IA funcional integrado a esta pantalla todavía. `AIInsightCard.jsx` (`src/components/AI/`) sigue siendo el único componente oficial de IA. Se descartó crear un componente "NotaIA" nuevo en `ds/` — regla de gobernanza: el Design System no contiene componentes de dominio. | `AIInsightCard.jsx` es el punto de integración futura cuando exista un motor de IA funcional. |
+| 2026-07-17 | Dashboard — estado Vacío | El estado "Error de sincronización" y la acción "Conectar mi banco" del mockup Vacío no se implementaron. El estado Vacío de `DashboardHome` solo ofrece "Registrar un gasto" (camino manual existente). | No existe integración bancaria real en el producto (misma excepción constitucional documentada arriba, fila "DSTopBar" — "Sincronizado hace X min"). | Agregar cuando exista una integración bancaria real. |
 
 ## Notas de implementación relacionadas (no son deuda, son decisiones tomadas)
 
@@ -48,3 +51,21 @@ y se deja anotada acá.
   de la tabla de arriba). `LanguageSelector` sí es el mismo componente
   reutilizado (`<LanguageSelector />`), no una reimplementación — ese caso no
   tiene huérfano equivalente.
+- **"Saldo disponible" (Dashboard, Fase II) = ingresos totales − gastos
+  totales de TODO el historial, SIN descontar la deuda de tarjetas de
+  crédito.** Decisión de negocio explícita del PO, no una carencia técnica:
+  la deuda de tarjeta es un pasivo y no modifica el dinero que efectivamente
+  ingresó al usuario. Cuando exista una pantalla patrimonial se mostrarán
+  Saldo disponible / Deuda / Patrimonio neto por separado, sin mezclar
+  conceptos financieros. Difiere deliberadamente de `Summary.jsx` (tab
+  `movimientos`), que sí descuenta `creditCardDebt` — ambos componentes
+  conviven con criterios distintos hasta que se unifique el concepto en una
+  pantalla patrimonial.
+- **Regla de organización del proyecto (fijada por el PO en Fase II):**
+  `src/components/ds/` contiene primitivas de UI de propósito general y
+  agnósticas de dominio (Button, Card, Input, FilaMovimiento...). NO contiene
+  componentes de dominio/negocio (AIInsightCard, GlobalBudgetTracker,
+  GoalProgress, GamificationCard, DashboardSummary...), que viven en sus
+  propias carpetas de feature. Un componente nuevo solo entra a `ds/` si es
+  genuinamente reutilizable sin conocer reglas de negocio de una feature
+  específica.

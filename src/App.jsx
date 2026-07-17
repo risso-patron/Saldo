@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, X } from '@phosphor-icons/react';
+import { Plus } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
@@ -12,6 +13,7 @@ import { DSTopBar } from './components/ds/DSTopBar';
 import { DSSidebar } from './components/ds/DSSidebar';
 import { DSBottomNav } from './components/ds/DSBottomNav';
 import { DSFab } from './components/ds/DSFab';
+import { Button } from './components/ds/Button';
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
@@ -20,9 +22,7 @@ import AuthPage from './pages/AuthPage';
 import LandingPage from './pages/LandingPageNew';
 import { hasPendingMigration } from './utils/dataMigration';
 // Siempre visible en tab inicial — carga síncrona
-import { Summary } from './components/Summary';
-import { HabitDailyCard } from './components/Dashboard/HabitDailyCard';
-import { GlobalBudgetTracker } from './components/Budget/GlobalBudgetTracker';
+import { DashboardHome } from './components/Dashboard/DashboardHome';
 import { DailyReminder } from './components/Notifications/DailyReminder';
 import { DailyOnboardingToast } from './components/Notifications/DailyOnboardingToast';
 import { Omnibar } from './components/Shared/Omnibar';
@@ -47,7 +47,6 @@ const RecurringManager = lazy(() => import('./features/recurring/RecurringManage
 const GoalManager = lazy(() => import('./features/goals/GoalManager').then(m => ({ default: m.GoalManager })));
 const ExportManager = lazy(() => import('./features/export/ExportManager').then(m => ({ default: m.ExportManager })));
 const ImportManager = lazy(() => import('./features/import/ImportManager'));
-const GamificationDashboard = lazy(() => import('./features/gamification').then(m => ({ default: m.GamificationDashboard })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 
 const TabLoader = () => (
@@ -125,9 +124,6 @@ function AppContent() {
   // Key para forzar el reinicio de BudgetForm al pulsar el "+" de la Bottom Nav
   const [budgetFormKey, setBudgetFormKey] = useState(0);
 
-  // Sección de logros colapsable en el tab Resumen
-  const [showGamification, setShowGamification] = useState(false);
-
   // Ref del contenedor de scroll para hacer scroll-to-top al cambiar de pestaña
   const scrollContainerRef = useRef(null);
   useEffect(() => {
@@ -137,7 +133,6 @@ function AppContent() {
   const {
     filteredIncomes, filteredExpenses,
     filteredTotalIncome, filteredTotalExpenses, filteredBalance,
-    monthlyComparison,
     // Recuperación transitoria (deuda Fase I-C): el shell DS no tiene filtros
     // de período; estos valores alimentan LegacyPeriodFilters dentro de los
     // tabs Movimientos e Insights — única UI que escribe PeriodContext.
@@ -226,7 +221,23 @@ function AppContent() {
         <div ref={scrollContainerRef} className="flex-1 h-screen overflow-y-auto custom-scrollbar relative px-3 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto py-2 sm:py-10">
 
-            <DSTopBar onOpenOmnibar={() => setIsOmnibarOpen(true)} />
+            <DSTopBar onOpenOmnibar={() => setIsOmnibarOpen(true)}>
+              {/* Oculto en mobile (<768px, mismo corte que el placeholder de
+                  búsqueda de DSTopBar): el mockup mobile NO muestra este botón
+                  en la barra superior — el único punto de entrada táctil ahí
+                  es el DSFab ("círculo 56px... el único FAB del producto").
+                  Verificado visualmente: sin este ocultamiento, el botón se
+                  superpone con el overline de período a 390px. */}
+              <div className="hidden md:block">
+                <Button
+                  variant="primary"
+                  icon={Plus}
+                  onClick={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
+                >
+                  Nuevo movimiento
+                </Button>
+              </div>
+            </DSTopBar>
 
             {welcomeBanner !== null && (
               <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-2.5 mb-6 animate-fade-in-slide">
@@ -241,53 +252,14 @@ function AppContent() {
               <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} />
 
               {activeTab === 'resumen' && (
-                <>
-                  {/* 1. Protagonista: hábito del día */}
-                  <HabitDailyCard
-                    currentStreak={achievements.stats.currentStreak}
-                    longestStreak={achievements.stats.longestStreak}
-                    allTransactions={allTransactions}
-                    categoryAnalysis={categoryAnalysis}
-                    monthlyComparison={{ prevTotalExpenses: monthlyComparison.prevTotalExpenses, filteredTotalExpenses }}
-                    monthIncome={filteredTotalIncome}
-                    monthExpenses={filteredTotalExpenses}
-                    onAddExpense={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
-                    onAddIncome={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
-                  />
-
-                  {/* 2. Números clave */}
-                  <Summary totalIncome={filteredTotalIncome} totalExpenses={filteredTotalExpenses} balance={filteredBalance} creditCardDebt={creditCards.reduce((s, c) => s + c.debt, 0)} prevTotalIncome={monthlyComparison.prevTotalIncome} prevTotalExpenses={monthlyComparison.prevTotalExpenses} prevBalance={monthlyComparison.prevBalance} />
-
-                  {/* 3. Presupuesto global */}
-                  <GlobalBudgetTracker totalExpenses={filteredTotalExpenses} />
-
-                  {/* 4. Acceso a tendencias — sin gráficos inline */}
-                  <button
-                    onClick={() => setActiveTab('graficos')}
-                    className="w-full flex items-center justify-between px-5 py-4 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:border-primary-500/40 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group"
-                  >
-                    <span>Ver mis tendencias detalladas</span>
-                    <span className="text-slate-400 group-hover:text-primary-500 transition-colors">→</span>
-                  </button>
-
-                  {/* 5. Logros — colapsable, secundario */}
-                  <div>
-                    <button
-                      onClick={() => setShowGamification(v => !v)}
-                      className="w-full flex items-center justify-between px-5 py-3 bg-slate-100/60 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-                    >
-                      <span>Mis logros y progreso</span>
-                      <span className="transition-transform duration-200" style={{ display: 'inline-block', transform: showGamification ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
-                    </button>
-                    {showGamification && (
-                      <div className="mt-3">
-                        <Suspense fallback={<TabLoader />}>
-                          <GamificationDashboard currentLevel={achievements.currentLevel} totalPoints={achievements.totalPoints} pointsForNext={achievements.pointsForNext} levelProgress={achievements.levelProgress} currentStreak={achievements.stats.currentStreak} longestStreak={achievements.stats.longestStreak} unlockedAchievements={achievements.unlockedAchievements} isAchievementUnlocked={achievements.isAchievementUnlocked} />
-                        </Suspense>
-                      </div>
-                    )}
-                  </div>
-                </>
+                <DashboardHome
+                  incomes={incomes}
+                  expenses={expenses}
+                  allTransactions={allTransactions}
+                  loading={loading}
+                  onRegisterExpense={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
+                  onViewAllTransactions={() => setActiveTab('movimientos')}
+                />
               )}
               {activeTab === 'graficos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><ChartsTab filteredIncomes={filteredIncomes} filteredExpenses={filteredExpenses} filteredTotalIncome={filteredTotalIncome} filteredTotalExpenses={filteredTotalExpenses} filteredBalance={filteredBalance} categoryAnalysis={categoryAnalysis} onReclassifyOtros={handleReclassifyOtros} /></Suspense>}
               {activeTab === 'movimientos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><BudgetForm key={budgetFormKey} onAddIncome={handleAddIncome} onAddExpense={handleAddExpense} /><ExpenseList incomes={incomes} expenses={expenses} onRemoveIncome={id => openConfirm({title: 'Eliminar ingreso', message: '¿Seguro?', onConfirm: () => {removeIncome(id); closeConfirm()}})} onRemoveExpense={id => openConfirm({title: 'Eliminar gasto', message: '¿Seguro?', onConfirm: () => {removeExpense(id); closeConfirm()}})} onUpdateIncome={updateIncome} onUpdateExpense={updateExpense} onRemoveMultiple={removeMultiple} onCategorizeMultiple={categorizeMultiple} initialCategoryFilter={pendingCategoryFilter} onInitialFilterConsumed={() => setPendingCategoryFilter(null)} /></Suspense>}
