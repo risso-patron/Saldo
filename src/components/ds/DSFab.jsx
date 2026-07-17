@@ -17,7 +17,8 @@ export function DSFab({ onAction }) {
       aria-label="Nuevo movimiento"
       className="md:hidden fixed right-4 bottom-20 z-[110] w-14 h-14 rounded-ds-full
         bg-ds-accent shadow-ds-floating flex items-center justify-center
-        transition-colors duration-ds-fast ease-ds hover:bg-ds-accent-hover"
+        transition-colors duration-ds-fast ease-ds hover:bg-ds-accent-hover
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-2"
     >
       <Plus width={24} height={24} strokeWidth={1.5} className="text-white" aria-hidden="true" />
     </button>

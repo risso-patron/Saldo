@@ -30,7 +30,7 @@ export function LegacyPeriodFilters({
 
   return (
     <div className="flex flex-col gap-2 mb-4">
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar-sidebar">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">{t('header.year')}</span>
         <div className="flex gap-1 whitespace-nowrap">
           <button
@@ -52,7 +52,7 @@ export function LegacyPeriodFilters({
       </div>
 
       {selectedYear && availableMonths.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar-sidebar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
           <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">{t('header.month')}</span>
           <div className="flex gap-1 whitespace-nowrap">
             <button

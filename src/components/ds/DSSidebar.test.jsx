@@ -34,7 +34,7 @@ describe('DSSidebar (ds) — Saldo Design Constitution v1.2', () => {
     const activeItem = screen.getByText('Movimientos').closest('button');
     expect(activeItem.className).toMatch(/font-semibold\b/);
     // "Sidebar sin caja: activo por peso 600, no por relleno" — ningún token
-    // de fondo persistente (se permite el velo hover:bg-black/[0.03]).
+    // de fondo persistente (se permite el velo hover:bg-ds-interaction-hover).
     const classTokens = activeItem.className.split(/\s+/);
     expect(classTokens.some((c) => /^bg-/.test(c))).toBe(false);
   });

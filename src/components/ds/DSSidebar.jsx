@@ -2,6 +2,7 @@ import { Search } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../contexts/AuthContext';
 import { DS_NAV_ITEMS } from './dsNavItems';
+import { cn } from './cn';
 
 // Design System — Saldo Design Constitution v1.2
 // (docs/design/screens/Saldo Dashboard.dc.html)
@@ -15,7 +16,7 @@ import { DS_NAV_ITEMS } from './dsNavItems';
 //
 // Activo = texto primario + peso 600, SIN caja de fondo ni barra ni punto
 // animado (nota del diseño: "Sidebar sin caja: activo por peso 600, no por
-// relleno"). Hover: velo rgba(0,0,0,0.03) — única interacción de fondo.
+// relleno"). Hover: velo ds-interaction-hover — única interacción de fondo.
 
 function getInitials(user) {
   const fullName = user?.user_metadata?.full_name?.trim();
@@ -36,6 +37,17 @@ function getInitials(user) {
 function getDisplayName(user) {
   return user?.user_metadata?.full_name || user?.email || 'Usuario';
 }
+
+// Foco accesible constitucional — compartido por el botón de búsqueda y los
+// 4 destinos de nav.
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-2';
+
+// Área táctil ≥44px (mismo patrón antes: de Button): en la variante tablet
+// el control visual mide 32px (búsqueda: 32x32, nav: 32x36) — se extiende
+// el hit-area con un ::before invisible, sin alterar el tamaño visual.
+const SEARCH_HIT_AREA = "relative before:content-[''] before:absolute before:-inset-x-[6px] before:-inset-y-[6px]";
+const NAV_HIT_AREA = "relative before:content-[''] before:absolute before:-inset-x-[6px] before:-inset-y-[4px]";
 
 export function DSSidebar({ activeTab, onTabSelect, onOpenOmnibar }) {
   const { user } = useAuth();
@@ -63,10 +75,14 @@ export function DSSidebar({ activeTab, onTabSelect, onOpenOmnibar }) {
         type="button"
         onClick={onOpenOmnibar}
         aria-label="Buscar"
-        className="flex items-center gap-2 h-8 rounded-ds-control mx-auto ds-desktop:mx-0
-          w-8 justify-center ds-desktop:w-full ds-desktop:justify-start
-          ds-desktop:bg-ds-surface-sunken ds-desktop:px-2.5
-          transition-colors duration-ds-fast ease-ds hover:bg-black/[0.03]"
+        className={cn(
+          'flex items-center gap-2 h-8 rounded-ds-control mx-auto ds-desktop:mx-0',
+          'w-8 justify-center ds-desktop:w-full ds-desktop:justify-start',
+          'ds-desktop:bg-ds-surface-sunken ds-desktop:px-2.5',
+          'transition-colors duration-ds-fast ease-ds hover:bg-ds-interaction-hover',
+          SEARCH_HIT_AREA,
+          FOCUS_RING
+        )}
       >
         <Search
           strokeWidth={1.5}
@@ -89,10 +105,14 @@ export function DSSidebar({ activeTab, onTabSelect, onOpenOmnibar }) {
               type="button"
               onClick={() => onTabSelect(id)}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex items-center gap-2.5 h-9 rounded-ds-control mx-auto ds-desktop:mx-0
-                w-8 justify-center ds-desktop:w-full ds-desktop:justify-start ds-desktop:px-2
-                transition-colors duration-ds-fast ease-ds hover:bg-black/[0.03]
-                ${isActive ? 'text-ds-text-primary font-semibold' : 'text-ds-text-secondary font-normal'}`}
+              className={cn(
+                'flex items-center gap-2.5 h-9 rounded-ds-control mx-auto ds-desktop:mx-0',
+                'w-8 justify-center ds-desktop:w-full ds-desktop:justify-start ds-desktop:px-2',
+                'transition-colors duration-ds-fast ease-ds hover:bg-ds-interaction-hover',
+                NAV_HIT_AREA,
+                FOCUS_RING,
+                isActive ? 'text-ds-text-primary font-semibold' : 'text-ds-text-secondary font-normal'
+              )}
             >
               <Icon
                 strokeWidth={1.5}

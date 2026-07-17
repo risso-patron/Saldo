@@ -1,5 +1,7 @@
 import { forwardRef, useId } from 'react';
 import PropTypes from 'prop-types';
+import { cva } from 'class-variance-authority';
+import { cn } from './cn';
 
 // Design System — Saldo Design Constitution v1.2
 // (docs/design/constitution/Saldo Design Constitution.dc.html)
@@ -8,11 +10,32 @@ import PropTypes from 'prop-types';
 // compact/standard/prominent, error con state/danger, label opcional.
 // Solo tokens semánticos (regla inquebrantable 07).
 
-const SIZE_CLASSES = {
-  compact: 'h-8 px-3',
-  standard: 'h-9 px-4',
-  prominent: 'h-10 px-5',
-};
+const inputVariants = cva(
+  [
+    'w-full bg-ds-surface-sunken text-ds-text-primary text-ds-body',
+    'placeholder-ds-text-tertiary rounded-ds-control border',
+    'focus:outline-none focus:ring-2 focus:ring-ds-accent focus:ring-offset-2',
+    'disabled:opacity-ds-disabled disabled:cursor-not-allowed',
+    'transition-colors duration-ds-fast ease-ds',
+  ].join(' '),
+  {
+    variants: {
+      size: {
+        compact: 'h-8 px-3',
+        standard: 'h-9 px-4',
+        prominent: 'h-10 px-5',
+      },
+      error: {
+        true: 'border-ds-danger',
+        false: 'border-transparent',
+      },
+    },
+    defaultVariants: {
+      size: 'standard',
+      error: false,
+    },
+  }
+);
 
 export const Input = forwardRef(function Input(
   {
@@ -48,17 +71,7 @@ export const Input = forwardRef(function Input(
           disabled={disabled}
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={errorId}
-          className={`
-            w-full ${SIZE_CLASSES[size]}
-            bg-ds-surface-sunken text-ds-text-primary text-ds-body
-            placeholder-ds-text-tertiary
-            rounded-ds-control border
-            ${error ? 'border-ds-danger' : 'border-transparent'}
-            focus:outline-none focus:ring-2 focus:ring-ds-accent focus:ring-offset-2
-            disabled:opacity-[0.45] disabled:cursor-not-allowed
-            transition-colors duration-ds-fast ease-ds
-            ${className}
-          `.trim()}
+          className={cn(inputVariants({ size, error: Boolean(error) }), className)}
           {...props}
         />
       </div>

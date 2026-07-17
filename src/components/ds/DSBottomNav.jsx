@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { DS_NAV_ITEMS } from './dsNavItems';
+import { cn } from './cn';
 
 // Design System — Saldo Design Constitution v1.2
 // (docs/design/screens/Saldo Dashboard.dc.html)
@@ -24,8 +25,11 @@ export function DSBottomNav({ activeTab, onTabSelect }) {
             type="button"
             onClick={() => onTabSelect(id)}
             aria-current={isActive ? 'page' : undefined}
-            className={`flex flex-col items-center justify-center gap-1 h-full
-              ${isActive ? 'text-ds-text-primary font-semibold' : 'text-ds-text-tertiary font-normal'}`}
+            className={cn(
+              'flex flex-col items-center justify-center gap-1 h-full',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-2',
+              isActive ? 'text-ds-text-primary font-semibold' : 'text-ds-text-tertiary font-normal'
+            )}
           >
             <Icon width={24} height={24} strokeWidth={1.5} aria-hidden="true" />
             <span className="text-[10px] leading-none">{label}</span>

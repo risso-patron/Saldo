@@ -214,19 +214,19 @@ function AppContent() {
   if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="min-h-screen bg-ds-bg-base dark:bg-slate-900 transition-colors duration-500">
+    <div className="min-h-screen bg-ds-bg-base">
       {showMigration && <MigrationDialog onClose={() => setShowMigration(false)} onComplete={(count) => { showAlert('success', `${count} transacciones migradas`); setShowMigration(false); refreshTransactions(); }} />}
       {alert && <Alert type={alert.type} message={alert.message} onClose={() => showAlert(null)} />}
       <ConfirmDialog isOpen={confirmDialog.isOpen} title={confirmDialog.title} message={confirmDialog.message} confirmLabel={confirmDialog.confirmLabel} variant={confirmDialog.variant} onConfirm={() => confirmDialog.onConfirm?.()} onCancel={closeConfirm} />
       <AchievementNotifications achievements={achievements.newAchievements} onRemove={achievements.removeNewAchievement} />
 
-      <div className="flex h-screen overflow-hidden bg-ds-bg-base dark:bg-slate-900 transition-colors duration-500">
+      <div className="flex h-screen overflow-hidden bg-ds-bg-base">
         <DSSidebar activeTab={activeTab} onTabSelect={setActiveTab} onOpenOmnibar={() => setIsOmnibarOpen(true)} />
 
         <div ref={scrollContainerRef} className="flex-1 h-screen overflow-y-auto custom-scrollbar relative px-3 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto py-2 sm:py-10">
 
-            <DSTopBar />
+            <DSTopBar onOpenOmnibar={() => setIsOmnibarOpen(true)} />
 
             {welcomeBanner !== null && (
               <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-2.5 mb-6 animate-fade-in-slide">

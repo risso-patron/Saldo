@@ -83,12 +83,12 @@ describe('Input (ds) — Saldo Design Constitution v1.2', () => {
     expect(screen.queryByRole('paragraph')).not.toBeInTheDocument();
   });
 
-  it('estado disabled: opacity 0.45 y bloquea la escritura', async () => {
+  it('estado disabled: aplica el token de opacidad disabled y bloquea la escritura', async () => {
     const user = userEvent.setup();
     render(<Input placeholder="x" disabled />);
     const input = screen.getByPlaceholderText('x');
     expect(input).toBeDisabled();
-    expect(input.className).toMatch(/opacity-\[0\.45\]/);
+    expect(input.className).toMatch(/disabled:opacity-ds-disabled\b/);
     await user.type(input, 'hola');
     expect(input).toHaveValue('');
   });

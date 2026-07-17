@@ -62,6 +62,16 @@ export default {
           danger: {
             DEFAULT: '#A14D44', // sin tenue definido en la Constitución — no inventar uno
           },
+          // Velos de interacción — Constitución: "Hover: velo neutro rgba(0,0,0,0.03)…
+          // Pressed: el doble del hover" (rgba(0,0,0,0.06)). Únicos tokens de
+          // interacción del sistema — reemplazan cualquier hover:bg-black/[...] a mano.
+          interaction: {
+            hover: 'rgba(0,0,0,0.03)',
+            pressed: 'rgba(0,0,0,0.06)',
+          },
+          // Velo de modal (Constitución, Nivel 2 — Modal: "sobre velo rgba(0,0,0,0.24)").
+          // Sin consumidor en Fase I — lo usará el Sheet en Fase II.
+          scrim: 'rgba(0,0,0,0.24)',
         },
         // Paleta Celeste Cielo Pastel (Nuevo Color Maestro)
         primary: {
@@ -141,6 +151,10 @@ export default {
       },
       scale: {
         '102': '1.02',
+      },
+      opacity: {
+        // Design System — opacidad única de estado disabled (Constitución).
+        'ds-disabled': '0.45',
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',

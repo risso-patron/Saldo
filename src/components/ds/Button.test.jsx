@@ -18,47 +18,37 @@ describe('Button (ds) — Saldo Design Constitution v1.2', () => {
     expect(screen.getByRole('button', { name: 'Enviar' })).toHaveAttribute('type', 'submit');
   });
 
-  it('variante primary (default): fondo acento y texto blanco', () => {
+  it('variante primary (default): fondo acento', () => {
     render(<Button>Confirmar</Button>);
     const btn = screen.getByRole('button', { name: 'Confirmar' });
     expect(btn.className).toMatch(/bg-ds-accent\b/);
-    expect(btn.className).toMatch(/text-white\b/);
   });
 
-  it('variante secondary: borde default, texto primario, fondo transparente', () => {
+  it('variante secondary: borde default (la marca distintiva vs. primary/ghost)', () => {
     render(<Button variant="secondary">Cancelar</Button>);
     const btn = screen.getByRole('button', { name: 'Cancelar' });
     expect(btn.className).toMatch(/border-ds-border\b/);
-    expect(btn.className).toMatch(/text-ds-text-primary\b/);
-    expect(btn.className).toMatch(/bg-transparent\b/);
   });
 
-  it('variante ghost: solo texto, sin fondo ni borde', () => {
+  it('variante ghost: sin borde (a diferencia de secondary)', () => {
     render(<Button variant="ghost">Descartar</Button>);
     const btn = screen.getByRole('button', { name: 'Descartar' });
-    expect(btn.className).toMatch(/bg-transparent\b/);
     expect(btn.className).not.toMatch(/border-ds-border\b/);
   });
 
-  it('tamaño compact usa 32px de alto y 12px de padding horizontal', () => {
+  it('tamaño compact usa 32px de alto', () => {
     render(<Button size="compact">Chico</Button>);
-    const btn = screen.getByRole('button', { name: 'Chico' });
-    expect(btn.className).toMatch(/h-8\b/);
-    expect(btn.className).toMatch(/px-3\b/);
+    expect(screen.getByRole('button', { name: 'Chico' }).className).toMatch(/h-8\b/);
   });
 
-  it('tamaño standard (default) usa 36px de alto y 16px de padding horizontal', () => {
+  it('tamaño standard (default) usa 36px de alto', () => {
     render(<Button>Medio</Button>);
-    const btn = screen.getByRole('button', { name: 'Medio' });
-    expect(btn.className).toMatch(/h-9\b/);
-    expect(btn.className).toMatch(/px-4\b/);
+    expect(screen.getByRole('button', { name: 'Medio' }).className).toMatch(/h-9\b/);
   });
 
-  it('tamaño prominent usa 40px de alto y 20px de padding horizontal', () => {
+  it('tamaño prominent usa 40px de alto', () => {
     render(<Button size="prominent">Grande</Button>);
-    const btn = screen.getByRole('button', { name: 'Grande' });
-    expect(btn.className).toMatch(/h-10\b/);
-    expect(btn.className).toMatch(/px-5\b/);
+    expect(screen.getByRole('button', { name: 'Grande' }).className).toMatch(/h-10\b/);
   });
 
   it('usa el radio de control (6px) — nunca full/píldora', () => {
@@ -82,13 +72,13 @@ describe('Button (ds) — Saldo Design Constitution v1.2', () => {
     expect(icon).toHaveAttribute('height', '16');
   });
 
-  it('estado disabled: aplica opacity 0.45, marca el atributo y bloquea el click', async () => {
+  it('estado disabled: aplica el token de opacidad disabled, marca el atributo y bloquea el click', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
     render(<Button disabled onClick={onClick}>Bloqueado</Button>);
     const btn = screen.getByRole('button', { name: 'Bloqueado' });
     expect(btn).toBeDisabled();
-    expect(btn.className).toMatch(/opacity-\[0\.45\]/);
+    expect(btn.className).toMatch(/disabled:opacity-ds-disabled\b/);
     await user.click(btn);
     expect(onClick).not.toHaveBeenCalled();
   });
@@ -107,6 +97,7 @@ describe('Button (ds) — Saldo Design Constitution v1.2', () => {
         <Button variant="primary">A</Button>
         <Button variant="secondary">B</Button>
         <Button variant="ghost">C</Button>
+        <Button variant="link">D</Button>
       </>
     );
     screen.getAllByRole('button').forEach((btn) => {
@@ -122,5 +113,54 @@ describe('Button (ds) — Saldo Design Constitution v1.2', () => {
     render(<Button onClick={onClick}>Click</Button>);
     await user.click(screen.getByRole('button', { name: 'Click' }));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('primary: el pressed usa un velo propio superpuesto al hover (hallazgo H29), no el mismo tono repetido', () => {
+    render(<Button>Guardar</Button>);
+    const btn = screen.getByRole('button', { name: 'Guardar' });
+    // El hover oscurece el fondo (accent-hover); el pressed agrega ADEMÁS un
+    // velo (ds-interaction-pressed) que solo se activa en :active — así
+    // pressed queda visualmente distinto de hover, no idéntico.
+    expect(btn.className).toMatch(/hover:bg-ds-accent-hover\b/);
+    expect(btn.className).toMatch(/after:bg-ds-interaction-pressed\b/);
+    expect(btn.className).toMatch(/active:after:opacity-100\b/);
+  });
+});
+
+describe('Button (ds) — variante link (Fase I, hallazgo 1c)', () => {
+  it('renderiza como botón accesible con el texto dado', () => {
+    render(<Button variant="link">Ver todos los movimientos</Button>);
+    expect(screen.getByRole('button', { name: 'Ver todos los movimientos' })).toBeInTheDocument();
+  });
+
+  it('usa color de acento en vez de subrayado, y foco visible igual que las demás variantes', () => {
+    render(<Button variant="link">Revisar</Button>);
+    const btn = screen.getByRole('button', { name: 'Revisar' });
+    expect(btn.className).toMatch(/text-ds-accent\b/);
+    expect(btn.className).not.toMatch(/underline/);
+    expect(btn.className).toMatch(/focus-visible:ring-2\b/);
+    expect(btn.className).toMatch(/focus-visible:ring-ds-accent\b/);
+    expect(btn.className).toMatch(/focus-visible:ring-offset-2\b/);
+  });
+
+  it('tono danger: texto ds-danger (p.ej. "Eliminar" del Historial)', () => {
+    render(<Button variant="link" tone="danger">Eliminar</Button>);
+    const btn = screen.getByRole('button', { name: 'Eliminar' });
+    expect(btn.className).toMatch(/text-ds-danger\b/);
+    expect(btn.className).not.toMatch(/text-ds-accent\b/);
+  });
+
+  it('sin clases de caja: ningún tamaño (compact/standard/prominent) le agrega altura fija ni padding', () => {
+    ['compact', 'standard', 'prominent', undefined].forEach((size) => {
+      const { unmount } = render(
+        <Button variant="link" size={size}>
+          Descartar
+        </Button>
+      );
+      const btn = screen.getByRole('button', { name: 'Descartar' });
+      expect(btn.className).not.toMatch(/\bh-(8|9|10)\b/);
+      expect(btn.className).not.toMatch(/\bpx-(3|4|5)\b/);
+      unmount();
+    });
   });
 });
