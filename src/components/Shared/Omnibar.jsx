@@ -1,17 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  MagnifyingGlass, 
-  Keyboard, 
-  Target, 
-  Robot, 
+import {
+  MagnifyingGlass,
+  Keyboard,
+  Target,
+  ChartPieSlice,
+  Wrench,
+  Database,
   Receipt,
   ArrowUp,
-  ArrowDown,
-  X
+  ArrowDown
 } from '@phosphor-icons/react';
 import { formatCurrency, formatDate } from '../../utils/formatters';
+import { CurrencySelector } from '../../features/currency/CurrencySelector';
 
-export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate }) => {
+// Fase I-C (Integración de Diseño): el shell nuevo (DSSidebar/DSBottomNav)
+// solo contempla 4 destinos de navegación (regla R-08 del diseño). Los tabs
+// `planificacion` y `herramientas`, y controles sin superficie propia en el
+// shell nuevo (moneda, "vaciar datos locales"), quedan accesibles acá como
+// quick actions/utilidades — ver docs/design/integration-debt.md (filas c,
+// f, g).
+export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onClearAll, transactionCount = 0 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
@@ -37,11 +45,13 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate }) =
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Atajos maestros a la nube
+  // Atajos maestros a la nube — `planificacion` y `herramientas` no tienen
+  // destino en el shell nuevo (solo 4 ítems fijos); quedan disponibles acá.
   const quickActions = [
     { id: 'movimientos', label: 'Ver Movimientos', icon: Receipt, query: 'movimientos' },
     { id: 'planificacion', label: 'Mis Metas', icon: Target, query: 'metas' },
-    { id: 'resumen', label: 'Consultar IA', icon: Robot, query: 'ia, chat' },
+    { id: 'graficos', label: 'Insights', icon: ChartPieSlice, query: 'insights, tendencias, graficos' },
+    { id: 'herramientas', label: 'Herramientas', icon: Wrench, query: 'herramientas, exportar, importar' },
   ];
 
   // Motor de Búsqueda Fuzz (Básico)
@@ -204,6 +214,29 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate }) =
               </p>
             </div>
           )}
+
+          {/* Utilidades — moneda y borrado de datos locales no tienen
+              superficie propia en el shell nuevo (Fase I-C); quedan acá como
+              resolución provisional (deuda registrada). No participan del
+              índice de navegación por teclado (flechas/Enter). */}
+          <div className="mt-6">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-3 mb-2 block">
+              Utilidades
+            </span>
+            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800">
+              <span className="font-bold text-sm text-slate-700 dark:text-slate-300">Moneda</span>
+              <CurrencySelector />
+            </div>
+            {onClearAll && transactionCount > 0 && (
+              <button
+                onClick={() => { onClearAll(); onClose(); }}
+                className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-colors text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+              >
+                <Database size={20} weight="fill" />
+                <span className="font-bold">Vaciar datos locales</span>
+              </button>
+            )}
+          </div>
 
         </div>
         

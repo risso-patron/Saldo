@@ -5,15 +5,16 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { STORAGE_KEYS, STRATEGIC_MESSAGES } from './constants/categories';
+import { STORAGE_KEYS } from './constants/categories';
 import { useFilters } from './hooks/useFilters';
 import { useConfirmDialog } from './hooks/useConfirmDialog';
-import { AppHeader } from './components/AppHeader';
+import { DSTopBar } from './components/ds/DSTopBar';
+import { DSSidebar } from './components/ds/DSSidebar';
+import { DSBottomNav } from './components/ds/DSBottomNav';
+import { DSFab } from './components/ds/DSFab';
 import { Alert } from './components/Shared/Alert';
 import { ConfirmDialog } from './components/Shared/ConfirmDialog';
-import { ThemeToggle } from './components/Shared/ThemeToggle';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
-import { ProfileMenu } from './components/Auth/ProfileMenu';
 import MigrationDialog from './components/MigrationDialog';
 import AuthPage from './pages/AuthPage';
 import LandingPage from './pages/LandingPageNew';
@@ -25,9 +26,8 @@ import { GlobalBudgetTracker } from './components/Budget/GlobalBudgetTracker';
 import { DailyReminder } from './components/Notifications/DailyReminder';
 import { DailyOnboardingToast } from './components/Notifications/DailyOnboardingToast';
 import { Omnibar } from './components/Shared/Omnibar';
-import { Sidebar } from './components/Shared/Sidebar';
+import { LegacyPeriodFilters } from './components/Shared/LegacyPeriodFilters';
 import { InstallPWA } from './components/InstallPWA';
-import { BottomNav } from './components/Shared/BottomNav';
 import { useAchievements } from './hooks/gamification/useAchievements';
 import { AchievementNotifications } from './features/gamification/AchievementNotification';
 import { useRecurring } from './hooks/useRecurring';
@@ -35,7 +35,6 @@ import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PeriodProvider } from './contexts/PeriodContext';
 import { AIProvider } from './contexts/AIContext';
 import { groqProvider } from './lib/groqProvider';
-import { CurrencySelector } from './features/currency/CurrencySelector';
 import { filterByMonth } from './utils/calculations';
 
 // Tabs lazy — solo se cargan cuando el usuario navega a esa sección
@@ -59,7 +58,7 @@ const TabLoader = () => (
 
 function AppContent() {
   const { user, loading: authLoading } = useAuth();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [showAuth, setShowAuth] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
@@ -78,13 +77,6 @@ function AppContent() {
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
   const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
-
-  const [quote, setQuote] = useState('');
-  useEffect(() => {
-    const quotes = t('quotes', { returnObjects: true });
-    const list = Array.isArray(quotes) ? quotes : STRATEGIC_MESSAGES.QUOTES;
-    setQuote(list[Math.floor(Math.random() * list.length)]);
-  }, [i18n.language, t]);
 
   const {
     incomes, expenses, alert, addIncome, addExpense, addBulkTransactions, updateIncome, updateExpense,
@@ -143,12 +135,14 @@ function AppContent() {
   }, [activeTab]);
 
   const {
-    selectedYear, setSelectedYear,
-    selectedMonth, setSelectedMonth,
     filteredIncomes, filteredExpenses,
     filteredTotalIncome, filteredTotalExpenses, filteredBalance,
-    availableYears, availableMonths,
     monthlyComparison,
+    // Recuperación transitoria (deuda Fase I-C): el shell DS no tiene filtros
+    // de período; estos valores alimentan LegacyPeriodFilters dentro de los
+    // tabs Movimientos e Insights — única UI que escribe PeriodContext.
+    availableYears, selectedYear, setSelectedYear,
+    availableMonths, selectedMonth, setSelectedMonth,
   } = useFilters(incomes, expenses);
 
   const handleAddCard = (card) => { setCreditCards([...creditCards, card]); showAlert('success', `Tarjeta "${card.name}" agregada`); return true; };
@@ -220,32 +214,19 @@ function AppContent() {
   if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
+    <div className="min-h-screen bg-ds-bg-base dark:bg-slate-900 transition-colors duration-500">
       {showMigration && <MigrationDialog onClose={() => setShowMigration(false)} onComplete={(count) => { showAlert('success', `${count} transacciones migradas`); setShowMigration(false); refreshTransactions(); }} />}
       {alert && <Alert type={alert.type} message={alert.message} onClose={() => showAlert(null)} />}
       <ConfirmDialog isOpen={confirmDialog.isOpen} title={confirmDialog.title} message={confirmDialog.message} confirmLabel={confirmDialog.confirmLabel} variant={confirmDialog.variant} onConfirm={() => confirmDialog.onConfirm?.()} onCancel={closeConfirm} />
       <AchievementNotifications achievements={achievements.newAchievements} onRemove={achievements.removeNewAchievement} />
 
-      <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onOpenOmnibar={() => setIsOmnibarOpen(true)} ProfileMenuComponent={<ProfileMenu onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} onNavigate={setActiveTab} />} ThemeToggleComponent={<ThemeToggle />} CurrencySelectorComponent={<CurrencySelector />} />
+      <div className="flex h-screen overflow-hidden bg-ds-bg-base dark:bg-slate-900 transition-colors duration-500">
+        <DSSidebar activeTab={activeTab} onTabSelect={setActiveTab} onOpenOmnibar={() => setIsOmnibarOpen(true)} />
 
         <div ref={scrollContainerRef} className="flex-1 h-screen overflow-y-auto custom-scrollbar relative px-3 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto py-2 sm:py-10">
-            
-            <AppHeader
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              onOpenOmnibar={() => setIsOmnibarOpen(true)}
-              quote={quote}
-              availableYears={availableYears}
-              selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
-              availableMonths={availableMonths}
-              selectedMonth={selectedMonth}
-              setSelectedMonth={setSelectedMonth}
-              onClearAll={handleClearAllTransactions}
-              transactionCount={incomes.length + expenses.length}
-            />
+
+            <DSTopBar />
 
             {welcomeBanner !== null && (
               <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-2.5 mb-6 animate-fade-in-slide">
@@ -257,7 +238,7 @@ function AppContent() {
 
             <main className="space-y-4 sm:space-y-10 pb-32">
               <DailyOnboardingToast /> <DailyReminder />
-              <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} />
+              <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} />
 
               {activeTab === 'resumen' && (
                 <>
@@ -308,8 +289,8 @@ function AppContent() {
                   </div>
                 </>
               )}
-              {activeTab === 'graficos' && <Suspense fallback={<TabLoader />}><ChartsTab filteredIncomes={filteredIncomes} filteredExpenses={filteredExpenses} filteredTotalIncome={filteredTotalIncome} filteredTotalExpenses={filteredTotalExpenses} filteredBalance={filteredBalance} categoryAnalysis={categoryAnalysis} onReclassifyOtros={handleReclassifyOtros} /></Suspense>}
-              {activeTab === 'movimientos' && <Suspense fallback={<TabLoader />}><BudgetForm key={budgetFormKey} onAddIncome={handleAddIncome} onAddExpense={handleAddExpense} /><ExpenseList incomes={incomes} expenses={expenses} onRemoveIncome={id => openConfirm({title: 'Eliminar ingreso', message: '¿Seguro?', onConfirm: () => {removeIncome(id); closeConfirm()}})} onRemoveExpense={id => openConfirm({title: 'Eliminar gasto', message: '¿Seguro?', onConfirm: () => {removeExpense(id); closeConfirm()}})} onUpdateIncome={updateIncome} onUpdateExpense={updateExpense} onRemoveMultiple={removeMultiple} onCategorizeMultiple={categorizeMultiple} initialCategoryFilter={pendingCategoryFilter} onInitialFilterConsumed={() => setPendingCategoryFilter(null)} /></Suspense>}
+              {activeTab === 'graficos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><ChartsTab filteredIncomes={filteredIncomes} filteredExpenses={filteredExpenses} filteredTotalIncome={filteredTotalIncome} filteredTotalExpenses={filteredTotalExpenses} filteredBalance={filteredBalance} categoryAnalysis={categoryAnalysis} onReclassifyOtros={handleReclassifyOtros} /></Suspense>}
+              {activeTab === 'movimientos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><BudgetForm key={budgetFormKey} onAddIncome={handleAddIncome} onAddExpense={handleAddExpense} /><ExpenseList incomes={incomes} expenses={expenses} onRemoveIncome={id => openConfirm({title: 'Eliminar ingreso', message: '¿Seguro?', onConfirm: () => {removeIncome(id); closeConfirm()}})} onRemoveExpense={id => openConfirm({title: 'Eliminar gasto', message: '¿Seguro?', onConfirm: () => {removeExpense(id); closeConfirm()}})} onUpdateIncome={updateIncome} onUpdateExpense={updateExpense} onRemoveMultiple={removeMultiple} onCategorizeMultiple={categorizeMultiple} initialCategoryFilter={pendingCategoryFilter} onInitialFilterConsumed={() => setPendingCategoryFilter(null)} /></Suspense>}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}
               {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} onExport={() => achievements.updateStats({ dataExported: true })} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></Suspense>}
               {activeTab === 'cuenta' && <Suspense fallback={<TabLoader />}><ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} currentStreak={achievements.stats.currentStreak} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} /></Suspense>}
@@ -318,7 +299,8 @@ function AppContent() {
           </div>
         </div>
 
-        <BottomNav activeTab={activeTab} onTabSelect={setActiveTab} onQuickAction={handleQuickAddAction} />
+        <DSBottomNav activeTab={activeTab} onTabSelect={setActiveTab} />
+        <DSFab onAction={handleQuickAddAction} />
       </div>
     </div>
   );

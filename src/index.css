@@ -107,3 +107,107 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===================================================================
+   Design System — Saldo Design Constitution v1.2
+   (docs/design/constitution/Saldo Design Constitution.dc.html)
+   Escala tipográfica y reduced-motion para los componentes de
+   src/components/ds/. No modifica clases ni comportamiento legacy —
+   convive con lo de arriba hasta que las pantallas migren.
+   =================================================================== */
+
+@layer utilities {
+  /* Escala tipográfica (nombre → size/line-height · weight · tracking).
+     Tracking negativo SOLO en >=22px (display/heading/title). tabular-nums
+     obligatorio en toda cifra (numeric / numeric-xl) vía font-variant-numeric
+     — Tailwind también expone esto nativamente como utilidad `tabular-nums`. */
+
+  .text-ds-display {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 56px;
+    line-height: 64px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .text-ds-heading {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .text-ds-title {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .text-ds-subtitle {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 26px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .text-ds-body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .text-ds-caption {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: #6B6B6B; /* text/secondary */
+  }
+
+  .text-ds-overline {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9E9E9E; /* text/tertiary — valor tal cual transcripción verificada de la Constitución */
+  }
+
+  /* 700 reservado exclusivamente a la cifra protagonista */
+  .text-ds-numeric-xl {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 48px;
+    line-height: 56px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .text-ds-numeric {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right; /* toda cifra siempre alineada a la derecha */
+  }
+}
+
+/* Reduced motion — componentes ds/ (identificados por sus utilidades
+   duration-ds-*) se reducen a fundidos de 80ms en vez del corte a 0.01ms
+   del bloque legacy de arriba; no afecta a las vistas existentes. */
+@media (prefers-reduced-motion: reduce) {
+  [class*="duration-ds-"] {
+    transition-duration: 80ms !important;
+    transition-timing-function: cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+}

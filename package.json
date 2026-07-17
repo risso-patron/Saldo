@@ -33,6 +33,7 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.2",
     "lottie-react": "^2.4.1",
+    "lucide-react": "^1.25.0",
     "papaparse": "^5.5.3",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",

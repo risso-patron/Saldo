@@ -11,11 +11,58 @@ export default {
       'sm': '640px',
       'md': '768px',
       'lg': '1024px',
+      // Breakpoint custom del shell de navegación (Fase I-C, Sidebar/DSSidebar):
+      // la Constitución define el corte desktop/tablet en 1200px, distinto del
+      // `lg` nativo de Tailwind (1024). Se documenta acá en vez de reutilizar
+      // `lg` para no generar ambigüedad con el resto de la app.
+      'ds-desktop': '1200px',
       'xl': '1280px',
       '2xl': '1536px',
     },
     extend: {
       colors: {
+        // ---------------------------------------------------------------
+        // Design System — Saldo Design Constitution v1.2 (docs/design/constitution)
+        // Tokens semánticos "ds-*". Conviven con la paleta legacy de abajo
+        // (primary-*, pastel-*, etc.) hasta que las pantallas migren — no
+        // se tocan ni se borran los tokens viejos en esta fase.
+        // ---------------------------------------------------------------
+        ds: {
+          bg: {
+            base: '#FAFAFA',
+          },
+          surface: {
+            raised: '#FFFFFF',
+            sunken: '#F5F5F5',
+            inverse: '#1A1A1A',
+          },
+          text: {
+            primary: '#1A1A1A',
+            secondary: '#6B6B6B',
+            tertiary: '#9E9E9E', // uso permitido solo en >=14px
+            disabled: '#C4C4C4',
+          },
+          border: {
+            DEFAULT: '#E6E6E6',
+            separator: '#F0F0F0',
+          },
+          accent: {
+            DEFAULT: '#3E5568', // action/primary — acento ÚNICO del sistema
+            hover: '#384d5f', // brightness 92% de #3E5568
+            tint: '#EEF1F4', // tenue / selección
+          },
+          success: {
+            DEFAULT: '#37725A',
+            tint: '#EDF4F0',
+          },
+          warning: {
+            DEFAULT: '#A97E38',
+            tint: '#F8F2E7',
+          },
+          danger: {
+            DEFAULT: '#A14D44', // sin tenue definido en la Constitución — no inventar uno
+          },
+        },
         // Paleta Celeste Cielo Pastel (Nuevo Color Maestro)
         primary: {
           50: '#f0f9ff',
@@ -56,10 +103,41 @@ export default {
         'premium': '0 10px 40px -10px rgba(0, 0, 0, 0.05)',
         'premium-hover': '0 20px 50px -12px rgba(0, 0, 0, 0.1)',
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        // Design System — reposo es SIN sombra (usar border/default en su lugar).
+        // Prohibido: glassmorphism, sombras de color, sombras hover decorativas.
+        'ds-floating': '0 4px 12px rgba(0, 0, 0, 0.06)',
+        'ds-modal': '0 12px 32px rgba(0, 0, 0, 0.10)',
       },
       borderRadius: {
         '3xl': '1.5rem',
         '4xl': '2rem',
+        // Design System — control 6px · surface 10px · modal 16px · full 999px (nunca en botones)
+        'ds-control': '6px',
+        'ds-surface': '10px',
+        'ds-modal': '16px',
+        'ds-full': '999px',
+      },
+      fontFamily: {
+        // Design System — Inter cargada vía Google Fonts en index.html (400/500/600/700).
+        // La familia legacy 'Outfit' (src/index.css) sigue siendo el default de <html>
+        // hasta que las pantallas migren; los componentes ds/ usan font-ds explícitamente.
+        ds: ['Inter', '-apple-system', 'sans-serif'],
+      },
+      transitionDuration: {
+        // Design System — motion: fast 120ms · base 200ms · slow 320ms (máximo absoluto)
+        'ds-fast': '120ms',
+        'ds-base': '200ms',
+        'ds-slow': '320ms',
+      },
+      transitionTimingFunction: {
+        // Design System — curva única
+        'ds': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+      spacing: {
+        // Design System — escala de espaciado 4·8·16·24·32·48·64·96.
+        // Mapeo a la escala numérica de Tailwind (unidad = 4px): ya cubierta
+        // por los tokens nativos 1(4) 2(8) 4(16) 6(24) 8(32) 12(48) 16(64) 24(96).
+        // No se redefine la escala completa — solo se documenta el mapeo acá.
       },
       scale: {
         '102': '1.02',
