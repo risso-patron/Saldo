@@ -173,7 +173,7 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
   };
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose}>
+    <Sheet isOpen={isOpen} onClose={onClose} initialFocusRef={amountInputRef}>
       <form onSubmit={handleSubmit} onKeyDown={handleFormKeyDown}>
         <Tabs options={TYPE_OPTIONS} value={activeType} onChange={setActiveType} />
 

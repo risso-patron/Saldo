@@ -69,4 +69,72 @@ describe('Tabs (ds) — Saldo Design Constitution v1.2', () => {
     render(<Tabs options={OPTIONS} value="expense" onChange={vi.fn()} />);
     expect(screen.getByRole('tablist').className).toMatch(/gap-6\b/);
   });
+
+  describe('Checkpoint III-C.4 — patrón WAI-ARIA de tabs (activación automática)', () => {
+    it('roving tabindex: el tab activo tiene tabIndex=0 y el inactivo tabIndex=-1', () => {
+      render(<Tabs options={OPTIONS} value="expense" onChange={vi.fn()} />);
+      expect(screen.getByRole('tab', { name: 'Gasto' })).toHaveAttribute('tabIndex', '0');
+      expect(screen.getByRole('tab', { name: 'Ingreso' })).toHaveAttribute('tabIndex', '-1');
+    });
+
+    it('ArrowRight desde el primer tab mueve el foco Y la selección al segundo', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Tabs options={OPTIONS} value="expense" onChange={onChange} />);
+
+      screen.getByRole('tab', { name: 'Gasto' }).focus();
+      await user.keyboard('{ArrowRight}');
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith('income');
+      expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Ingreso' }));
+    });
+
+    it('ArrowRight desde el último tab hace wrap-around al primero', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Tabs options={OPTIONS} value="income" onChange={onChange} />);
+
+      screen.getByRole('tab', { name: 'Ingreso' }).focus();
+      await user.keyboard('{ArrowRight}');
+
+      expect(onChange).toHaveBeenCalledWith('expense');
+      expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Gasto' }));
+    });
+
+    it('ArrowLeft desde el primer tab hace wrap-around al último', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Tabs options={OPTIONS} value="expense" onChange={onChange} />);
+
+      screen.getByRole('tab', { name: 'Gasto' }).focus();
+      await user.keyboard('{ArrowLeft}');
+
+      expect(onChange).toHaveBeenCalledWith('income');
+      expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Ingreso' }));
+    });
+
+    it('ArrowLeft desde un tab no-primero mueve el foco Y la selección al anterior', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Tabs options={OPTIONS} value="income" onChange={onChange} />);
+
+      screen.getByRole('tab', { name: 'Ingreso' }).focus();
+      await user.keyboard('{ArrowLeft}');
+
+      expect(onChange).toHaveBeenCalledWith('expense');
+      expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Gasto' }));
+    });
+
+    it('Tab (no flecha) no cambia la selección dentro del tablist', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<Tabs options={OPTIONS} value="expense" onChange={onChange} />);
+
+      screen.getByRole('tab', { name: 'Gasto' }).focus();
+      await user.keyboard('{Tab}');
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
 });

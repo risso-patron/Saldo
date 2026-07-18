@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { useRef } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Sheet } from './Sheet';
 
@@ -119,5 +120,136 @@ describe('Sheet (ds) — Saldo Design Constitution v1.2', () => {
     const panel = screen.getByRole('dialog');
     expect(panel.className).not.toMatch(/scale-/);
     expect(panel.className).not.toMatch(/bounce/);
+  });
+
+  describe('Checkpoint III-C.4 — accesibilidad: foco inicial, trampa de Tab, retorno de foco', () => {
+    it('sin initialFocusRef, el foco inicial cae en el primer elemento enfocable del contenedor', async () => {
+      render(
+        <Sheet isOpen onClose={vi.fn()}>
+          <button type="button">Primero</button>
+          <button type="button">Segundo</button>
+        </Sheet>
+      );
+      await waitFor(() => {
+        expect(document.activeElement).toBe(screen.getByText('Primero'));
+      });
+    });
+
+    it('con initialFocusRef, el foco inicial cae en ESE elemento y no en el primero del DOM', async () => {
+      function Wrapper() {
+        const ref = useRef(null);
+        return (
+          <Sheet isOpen onClose={vi.fn()} initialFocusRef={ref}>
+            <button type="button">Primero</button>
+            <button type="button" ref={ref}>Segundo</button>
+          </Sheet>
+        );
+      }
+      render(<Wrapper />);
+      await waitFor(() => {
+        expect(document.activeElement).toBe(screen.getByText('Segundo'));
+      });
+    });
+
+    it('Tab desde el último elemento enfocable vuelve al primero (preventDefault, ciclo cerrado)', async () => {
+      const user = userEvent.setup();
+      render(
+        <Sheet isOpen onClose={vi.fn()}>
+          <button type="button">Primero</button>
+          <button type="button">Segundo</button>
+          <button type="button">Ultimo</button>
+        </Sheet>
+      );
+      await waitFor(() => {
+        expect(document.activeElement).toBe(screen.getByText('Primero'));
+      });
+
+      screen.getByText('Ultimo').focus();
+      await user.tab();
+
+      expect(document.activeElement).toBe(screen.getByText('Primero'));
+    });
+
+    it('Shift+Tab desde el primer elemento enfocable va al último (preventDefault, ciclo cerrado)', async () => {
+      const user = userEvent.setup();
+      render(
+        <Sheet isOpen onClose={vi.fn()}>
+          <button type="button">Primero</button>
+          <button type="button">Segundo</button>
+          <button type="button">Ultimo</button>
+        </Sheet>
+      );
+      await waitFor(() => {
+        expect(document.activeElement).toBe(screen.getByText('Primero'));
+      });
+
+      await user.tab({ shift: true });
+
+      expect(document.activeElement).toBe(screen.getByText('Ultimo'));
+    });
+
+    it('al cerrar, el foco vuelve al elemento que lo tenía antes de abrir', async () => {
+      const outsideButton = document.createElement('button');
+      outsideButton.textContent = 'Afuera';
+      document.body.appendChild(outsideButton);
+      outsideButton.focus();
+      expect(document.activeElement).toBe(outsideButton);
+
+      const { rerender } = render(
+        <Sheet isOpen={false} onClose={vi.fn()}>
+          <button type="button">Dentro</button>
+        </Sheet>
+      );
+
+      rerender(
+        <Sheet isOpen onClose={vi.fn()}>
+          <button type="button">Dentro</button>
+        </Sheet>
+      );
+      await waitFor(() => {
+        expect(document.activeElement).toBe(screen.getByText('Dentro'));
+      });
+
+      rerender(
+        <Sheet isOpen={false} onClose={vi.fn()}>
+          <button type="button">Dentro</button>
+        </Sheet>
+      );
+
+      expect(document.activeElement).toBe(outsideButton);
+      document.body.removeChild(outsideButton);
+    });
+
+    it('si el elemento que tenía el foco ya no existe en el DOM al cerrar, el foco cae en document.body sin tirar error', async () => {
+      const outsideButton = document.createElement('button');
+      document.body.appendChild(outsideButton);
+      outsideButton.focus();
+
+      const { rerender } = render(
+        <Sheet isOpen={false} onClose={vi.fn()}>
+          <button type="button">Dentro</button>
+        </Sheet>
+      );
+      rerender(
+        <Sheet isOpen onClose={vi.fn()}>
+          <button type="button">Dentro</button>
+        </Sheet>
+      );
+      await waitFor(() => {
+        expect(document.activeElement).toBe(screen.getByText('Dentro'));
+      });
+
+      document.body.removeChild(outsideButton);
+
+      expect(() => {
+        rerender(
+          <Sheet isOpen={false} onClose={vi.fn()}>
+            <button type="button">Dentro</button>
+          </Sheet>
+        );
+      }).not.toThrow();
+
+      expect(document.activeElement).toBe(document.body);
+    });
   });
 });

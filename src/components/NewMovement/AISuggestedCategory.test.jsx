@@ -10,22 +10,33 @@ import { AISuggestedCategory } from './AISuggestedCategory';
 // "Concepto" desktop, línea sparkle + "Categoría sugerida: Alimentación · Cambiar").
 
 describe('AISuggestedCategory — presentación pura (Checkpoint III-A)', () => {
-  it('no renderiza nada si category es null/undefined/vacío ("sin sugerencia no hay hueco")', () => {
+  it('sin category (null/undefined/vacío), el contenedor aria-live persiste en el DOM pero sin contenido visible ("sin sugerencia no hay hueco")', () => {
     const { container: c1 } = render(<AISuggestedCategory category={null} onChangeClick={vi.fn()} />);
-    expect(c1).toBeEmptyDOMElement();
+    const wrapper1 = c1.querySelector('[aria-live="polite"]');
+    expect(wrapper1).toBeInTheDocument();
+    expect(wrapper1).toBeEmptyDOMElement();
 
     const { container: c2 } = render(<AISuggestedCategory category={undefined} onChangeClick={vi.fn()} />);
-    expect(c2).toBeEmptyDOMElement();
+    expect(c2.querySelector('[aria-live="polite"]')).toBeEmptyDOMElement();
 
     const { container: c3 } = render(<AISuggestedCategory category="" onChangeClick={vi.fn()} />);
-    expect(c3).toBeEmptyDOMElement();
+    expect(c3.querySelector('[aria-live="polite"]')).toBeEmptyDOMElement();
   });
 
-  it('con category presente, renderiza ícono Sparkles + texto + chip con el nombre + "Cambiar"', () => {
-    render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
+  it('el contenedor con aria-live="polite" está SIEMPRE presente, con category o sin ella', () => {
+    const { container: withoutCategory } = render(<AISuggestedCategory category={null} onChangeClick={vi.fn()} />);
+    expect(withoutCategory.querySelector('[aria-live="polite"]')).toBeInTheDocument();
+
+    const { container: withCategory } = render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
+    expect(withCategory.querySelector('[aria-live="polite"]')).toBeInTheDocument();
+  });
+
+  it('con category presente, renderiza ícono Sparkles + texto + chip con el nombre + "Cambiar" dentro del contenedor aria-live', () => {
+    const { container } = render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
     expect(screen.getByText('Categoría sugerida:')).toBeInTheDocument();
     expect(screen.getByText('Alimentación')).toBeInTheDocument();
     expect(screen.getByText('Cambiar')).toBeInTheDocument();
+    expect(container.querySelector('[aria-live="polite"]')).not.toBeEmptyDOMElement();
   });
 
   it('el ícono Sparkles mide 14px y usa text-ds-text-tertiary', () => {

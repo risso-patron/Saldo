@@ -78,10 +78,21 @@ function AppContent() {
   const [undoToast, setUndoToast] = useState(null);
   const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
+  // Checkpoint III-C.4 — autoridad única de overlay: ningún overlay puede
+  // abrirse si otro ya está abierto. Constante derivada única, usada
+  // simétricamente por los dos triggers globales de teclado (N y ⌘K) para
+  // que ninguno pueda abrir un overlay por encima de otro ya abierto.
+  const isAnyOverlayOpen = isOmnibarOpen || isNewMovementOpen || confirmDialog.isOpen || showMigration;
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
+        // Checkpoint III-C.4 — el Omnibar puede seguir cerrándose con ⌘K
+        // aunque sea "el" overlay abierto (isAnyOverlayOpen también es true
+        // en ese caso); solo se bloquea si el overlay abierto es OTRO
+        // distinto del propio Omnibar.
+        if (isAnyOverlayOpen && !isOmnibarOpen) return;
         setIsOmnibarOpen(prev => !prev);
         return;
       }
@@ -105,13 +116,7 @@ function AppContent() {
             active.tagName === 'SELECT' ||
             active.isContentEditable === true);
 
-        if (
-          !isEditableFocus &&
-          !isNewMovementOpen &&
-          !isOmnibarOpen &&
-          !confirmDialog.isOpen &&
-          !showMigration
-        ) {
+        if (!isEditableFocus && !isAnyOverlayOpen) {
           e.preventDefault();
           setIsNewMovementOpen(true);
         }
@@ -119,7 +124,7 @@ function AppContent() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isNewMovementOpen, isOmnibarOpen, confirmDialog.isOpen, showMigration]);
+  }, [isAnyOverlayOpen, isOmnibarOpen]);
 
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
