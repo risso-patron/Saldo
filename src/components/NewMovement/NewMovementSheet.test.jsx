@@ -282,4 +282,109 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
       expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Importe' }));
     });
   });
+
+  describe('Checkpoint III-C.2 — persistencia y restauración del borrador (localStorage, TTL 60s)', () => {
+    const STORAGE_KEY = 'budgetrp_new_movement_draft';
+
+    // setupTests.js reemplaza global.localStorage por vi.fn() puros. Estos
+    // tests necesitan comportamiento de storage real (seed antes de montar,
+    // verificar que quede vacío tras guardar/vencer), así que respaldamos
+    // los mocks con un store en memoria — mismo patrón que
+    // newMovementDraft.test.js y GlobalBudgetTracker.test.jsx.
+    let store;
+
+    beforeEach(() => {
+      store = {};
+      localStorage.getItem.mockImplementation((key) => (key in store ? store[key] : null));
+      localStorage.setItem.mockImplementation((key, value) => {
+        store[key] = String(value);
+      });
+      localStorage.removeItem.mockImplementation((key) => {
+        delete store[key];
+      });
+      localStorage.clear.mockImplementation(() => {
+        store = {};
+      });
+    });
+
+    afterEach(() => {
+      store = {};
+    });
+
+    it('con un borrador fresco en localStorage, al renderizar restaura Importe/Concepto/tab activo', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          activeType: 'income',
+          description: 'Freelance',
+          amount: 250,
+          category: EXPENSE_CATEGORIES[1].value,
+          savedAt: Date.now() - 1000,
+        })
+      );
+
+      renderSheet();
+
+      expect(screen.getByRole('tab', { name: 'Ingreso' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('Freelance');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('250');
+    });
+
+    it('con un borrador vencido (>60s) en localStorage, al renderizar los campos quedan vacíos y el storage se limpia', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          activeType: 'income',
+          description: 'Viejo',
+          amount: 999,
+          category: EXPENSE_CATEGORIES[0].value,
+          savedAt: Date.now() - 70000,
+        })
+      );
+
+      renderSheet();
+
+      expect(screen.getByRole('tab', { name: 'Gasto' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    });
+
+    it('escribir en el formulario persiste un borrador en localStorage', async () => {
+      const user = userEvent.setup();
+      renderSheet();
+
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+
+      await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+
+      expect(localStorage.getItem(STORAGE_KEY)).not.toBeNull();
+      const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      expect(persisted.description).toBe('Supermercado');
+    });
+
+    it('guardar exitosamente (Enter) deja el borrador en localStorage en null', async () => {
+      const user = userEvent.setup();
+      renderSheet();
+
+      await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+      await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+
+      expect(localStorage.getItem(STORAGE_KEY)).not.toBeNull();
+
+      await user.keyboard('{Enter}');
+
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    });
+
+    it('con JSON corrupto en localStorage, el componente se monta sin tirar excepción, los campos quedan vacíos, y el storage se limpia', () => {
+      localStorage.setItem(STORAGE_KEY, 'esto no es json {');
+
+      expect(() => renderSheet()).not.toThrow();
+
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    });
+  });
 });

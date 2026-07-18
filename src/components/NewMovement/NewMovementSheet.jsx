@@ -10,6 +10,7 @@ import { useAI } from '../../contexts/AIContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
 import { validateAmount } from '../../utils/validators';
+import { readDraft, writeDraft, clearDraft } from '../../utils/newMovementDraft';
 
 // Checkpoint III-A (Saldo Design Constitution v1.2) — orquestación del flujo
 // mínimo de "Nuevo Movimiento". Fuente: docs/design/screens/Saldo Nuevo
@@ -39,10 +40,20 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
   const ai = useAI();
   const { getSmartDefaultCurrency } = useCurrency();
 
-  const [activeType, setActiveType] = useState('expense');
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState(INITIAL_CATEGORY);
+  // Checkpoint III-C.2 — lectura del borrador persistido en localStorage UNA
+  // sola vez, síncrona, antes del primer render (ref con guarda en vez de
+  // useEffect: un useEffect dispararía un re-render extra con parpadeo
+  // vacío→lleno). El resultado siembra los useState de abajo.
+  const draftRef = useRef(undefined);
+  if (draftRef.current === undefined) {
+    draftRef.current = readDraft();
+  }
+  const initialDraft = draftRef.current;
+
+  const [activeType, setActiveType] = useState(initialDraft?.activeType ?? 'expense');
+  const [description, setDescription] = useState(initialDraft?.description ?? '');
+  const [amount, setAmount] = useState(initialDraft?.amount ?? '');
+  const [category, setCategory] = useState(initialDraft?.category ?? INITIAL_CATEGORY);
   const [suggestedCategory, setSuggestedCategory] = useState(null);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [amountError, setAmountError] = useState(null);
@@ -72,6 +83,16 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
 
     return () => clearTimeout(timer);
   }, [description, activeType, ai]);
+
+  // Checkpoint III-C.2 — escritura continua del borrador en localStorage
+  // (sobrevive recarga de página / cierre de pestaña, ventana de 60s). Sin
+  // debounce: campos chicos, escribir en cada cambio es aceptable. No
+  // persiste un borrador vacío/intocado (description y amount ambos sin
+  // contenido) para no ensuciar el storage con nada útil que restaurar.
+  useEffect(() => {
+    if (description.trim() === '' && amount === '') return;
+    writeDraft({ activeType, description, amount, category });
+  }, [activeType, description, amount, category]);
 
   const resetForm = () => {
     setActiveType('expense');
@@ -117,6 +138,11 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
 
     if (success) {
       resetForm();
+      // Checkpoint III-C.2 — limpieza explícita del borrador persistido tras
+      // un guardado exitoso, separada de resetForm() (responsabilidades
+      // distintas: una resetea UI, la otra limpia storage). Cubre tanto el
+      // camino normal como el modo ráfaga (ambos pasan por este bloque).
+      clearDraft();
       if (burst) {
         // Checkpoint III-C.1 — modo ráfaga: la hoja se queda abierta y el
         // foco vuelve al importe para encadenar el siguiente movimiento sin
