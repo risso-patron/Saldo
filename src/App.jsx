@@ -27,6 +27,7 @@ import { DailyReminder } from './components/Notifications/DailyReminder';
 import { DailyOnboardingToast } from './components/Notifications/DailyOnboardingToast';
 import { Omnibar } from './components/Shared/Omnibar';
 import { NewMovementSheet } from './components/NewMovement/NewMovementSheet';
+import { Toast } from './components/ds/Toast';
 import { LegacyPeriodFilters } from './components/Shared/LegacyPeriodFilters';
 import { InstallPWA } from './components/InstallPWA';
 import { useAchievements } from './hooks/gamification/useAchievements';
@@ -63,6 +64,9 @@ function AppContent() {
   const [showMigration, setShowMigration] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isNewMovementOpen, setIsNewMovementOpen] = useState(false);
+  // Checkpoint III-B: toast de "Deshacer" tras crear un movimiento desde
+  // NewMovementSheet. Forma: { movement } | null — null significa "cerrado".
+  const [undoToast, setUndoToast] = useState(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -81,7 +85,7 @@ function AppContent() {
 
   const {
     incomes, expenses, alert, addIncome, addExpense, addBulkTransactions, updateIncome, updateExpense,
-    removeIncome, removeExpense, removeMultiple, categorizeMultiple, showAlert,
+    removeIncome, removeExpense, undoAddMovement, removeMultiple, categorizeMultiple, showAlert,
     balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
   } = useTransactions();
 
@@ -149,16 +153,43 @@ function AppContent() {
   const handleUpdateGoalProgress = (goalId, newAmount) => setGoals(goals.map(goal => goal.id === goalId ? { ...goal, currentAmount: newAmount } : goal));
   const handleDeleteGoal = (goalId) => openConfirm({ title: t('app.delete_goal_title'), message: t('app.delete_goal_confirm'), onConfirm: () => { setGoals(goals.filter(goal => goal.id !== goalId)); showAlert('success', t('app.goal_deleted')); closeConfirm(); }});
 
+  // addIncome/addExpense ahora devuelven { success, movement } (Checkpoint
+  // III-B) — estos wrappers preservan el contrato booleano plano que ya
+  // consume BudgetForm.jsx (no se toca).
   const handleAddIncome = (description, amount, date, currency) => {
     const result = addIncome(description, amount, date, currency);
-    if (result) achievements.recordTransaction('income');
-    return result;
+    if (result.success) achievements.recordTransaction('income');
+    return result.success;
   };
 
   const handleAddExpense = (description, category, amount, date, currency) => {
     const result = addExpense(description, category, amount, date, currency);
-    if (result) achievements.recordTransaction('expense');
-    return result;
+    if (result.success) achievements.recordTransaction('expense');
+    return result.success;
+  };
+
+  // Wrappers distintos de handleAddIncome/handleAddExpense (mismo par de
+  // operaciones de dominio, dos consumidores con necesidades de notificación
+  // distintas — Checkpoint III-B): BudgetForm.jsx sigue disparando el
+  // showAlert legacy vía handleAddIncome/handleAddExpense; NewMovementSheet
+  // usa estos handleCreate* con { notification: 'none' } y en su lugar
+  // muestra el Toast de "Deshacer" propio de este flujo.
+  const handleCreateIncome = (description, amount, date, currency) => {
+    const result = addIncome(description, amount, date, currency, { notification: 'none' });
+    if (result.success) {
+      achievements.recordTransaction('income');
+      setUndoToast({ movement: result.movement });
+    }
+    return result.success;
+  };
+
+  const handleCreateExpense = (description, category, amount, date, currency) => {
+    const result = addExpense(description, category, amount, date, currency, { notification: 'none' });
+    if (result.success) {
+      achievements.recordTransaction('expense');
+      setUndoToast({ movement: result.movement });
+    }
+    return result.success;
   };
 
   const handleImportTransaction = async (type, data) => {
@@ -259,8 +290,15 @@ function AppContent() {
               <NewMovementSheet
                 isOpen={isNewMovementOpen}
                 onClose={() => setIsNewMovementOpen(false)}
-                onAddIncome={handleAddIncome}
-                onAddExpense={handleAddExpense}
+                onAddIncome={handleCreateIncome}
+                onAddExpense={handleCreateExpense}
+              />
+              <Toast
+                isOpen={undoToast !== null}
+                message="Movimiento añadido"
+                actionLabel="Deshacer"
+                onAction={() => { undoAddMovement(undoToast.movement); setUndoToast(null); }}
+                onDismiss={() => setUndoToast(null)}
               />
 
               {activeTab === 'resumen' && (

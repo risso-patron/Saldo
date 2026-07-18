@@ -135,11 +135,19 @@ export const useTransactions = () => {
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
-  const addIncome = useCallback((description, amount, date = null, currency = 'USD') => {
+  // `options.notification`: 'legacy' (default, preserva el showAlert interno
+  // ya existente) | 'none' (suprime showAlert de éxito y de error — usado por
+  // el flujo de Toast+Deshacer de Checkpoint III-B, que muestra su propia
+  // notificación en App.jsx en vez de la de Alert.jsx). Cualquier valor que
+  // no sea 'none' se trata como 'legacy' — el valor futuro 'toast' está
+  // documentado pero NO implementado todavía (Checkpoint III-B, alcance
+  // cerrado por el PO).
+  const addIncome = useCallback((description, amount, date = null, currency = 'USD', options = {}) => {
+    const { notification = 'legacy' } = options;
     const validation = validateTransaction({ description, amount, date });
     if (!validation.isValid) {
-      showAlert('error', Object.values(validation.errors)[0]);
-      return false;
+      if (notification === 'legacy') showAlert('error', Object.values(validation.errors)[0]);
+      return { success: false, movement: null };
     }
 
     const newIncome = {
@@ -153,21 +161,22 @@ export const useTransactions = () => {
     };
 
     setIncomes(prev => [...prev, newIncome]);
-    showAlert('success', 'Ingreso agregado exitosamente');
+    if (notification === 'legacy') showAlert('success', 'Ingreso agregado exitosamente');
     syncInsert(newIncome);
     markSaved();
-    return true;
+    return { success: true, movement: newIncome };
   }, [showAlert, syncInsert, markSaved]);
 
-  const addExpense = useCallback((description, category, amount, date = null, currency = 'USD') => {
+  const addExpense = useCallback((description, category, amount, date = null, currency = 'USD', options = {}) => {
+    const { notification = 'legacy' } = options;
     const validation = validateTransaction(
       { description, category, amount, date },
       true,
       EXPENSE_CATEGORIES
     );
     if (!validation.isValid) {
-      showAlert('error', Object.values(validation.errors)[0]);
-      return false;
+      if (notification === 'legacy') showAlert('error', Object.values(validation.errors)[0]);
+      return { success: false, movement: null };
     }
 
     const newExpense = {
@@ -182,10 +191,10 @@ export const useTransactions = () => {
     };
 
     setExpenses(prev => [...prev, newExpense]);
-    showAlert('success', 'Gasto agregado exitosamente');
+    if (notification === 'legacy') showAlert('success', 'Gasto agregado exitosamente');
     syncInsert(newExpense);
     markSaved();
-    return true;
+    return { success: true, movement: newExpense };
   }, [showAlert, syncInsert, markSaved]);
 
   const updateIncome = useCallback((id, updates) => {
@@ -239,6 +248,16 @@ export const useTransactions = () => {
     markSaved();
     showAlert('success', 'Gasto eliminado con éxito.');
   }, [syncDelete, markSaved, showAlert]);
+
+  // Única función pública para "deshacer una creación reciente" (Checkpoint
+  // III-B, Toast + Deshacer de "Nuevo Movimiento"). Recibe el `movement`
+  // completo (no solo el id) porque necesita su `.type` para decidir a qué
+  // remove* delegar — nadie fuera del hook debe llamar removeIncome/
+  // removeExpense directamente con este propósito.
+  const undoAddMovement = useCallback((movement) => {
+    if (movement.type === 'income') return removeIncome(movement.id);
+    return removeExpense(movement.id);
+  }, [removeIncome, removeExpense]);
 
   // --- CRM BULK ACTIONS ---
   const removeMultiple = useCallback((ids) => {
@@ -402,6 +421,7 @@ export const useTransactions = () => {
     updateExpense,
     removeIncome,
     removeExpense,
+    undoAddMovement,
     removeMultiple,
     categorizeMultiple,
     clearAll,
