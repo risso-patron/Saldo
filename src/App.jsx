@@ -29,6 +29,7 @@ import { Omnibar } from './components/Shared/Omnibar';
 import { NewMovementSheet } from './components/NewMovement/NewMovementSheet';
 import { Toast } from './components/ds/Toast';
 import { LegacyPeriodFilters } from './components/Shared/LegacyPeriodFilters';
+import { Historial } from './components/Historial/Historial';
 import { InstallPWA } from './components/InstallPWA';
 import { useAchievements } from './hooks/gamification/useAchievements';
 import { AchievementNotifications } from './features/gamification/AchievementNotification';
@@ -41,8 +42,12 @@ import { filterByMonth } from './utils/calculations';
 import { writeDraft } from './utils/newMovementDraft';
 
 // Tabs lazy — solo se cargan cuando el usuario navega a esa sección
-const BudgetForm = lazy(() => import('./components/BudgetForm').then(m => ({ default: m.BudgetForm })));
-const ExpenseList = lazy(() => import('./components/ExpenseList').then(m => ({ default: m.ExpenseList })));
+// Checkpoint IV-A: BudgetForm y ExpenseList dejan de montarse en "Movimientos"
+// (reemplazados por Historial, importado arriba como carga síncrona porque
+// Historial es una capa liviana de consulta/agrupación, no un tab completo
+// con sus propias dependencias pesadas) — los archivos permanecen en el
+// repo (edición/auditoría de código muerto es IV-G), solo se retira el
+// import no usado acá.
 const ChartsTab = lazy(() => import('./components/Charts/ChartsTab').then(m => ({ default: m.ChartsTab })));
 const CreditCardManager = lazy(() => import('./components/CreditCard/CreditCardManager').then(m => ({ default: m.CreditCardManager })));
 const BudgetManager = lazy(() => import('./features/budgets/BudgetManager').then(m => ({ default: m.BudgetManager })));
@@ -129,9 +134,15 @@ function AppContent() {
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
 
+  // Checkpoint IV-A: updateIncome/updateExpense/removeIncome/removeExpense/
+  // removeMultiple/categorizeMultiple dejaban de tener consumidor en App.jsx
+  // al retirar ExpenseList de "Movimientos" (Historial es de solo lectura —
+  // editar/eliminar es IV-B/IV-C) — se dejan de desestructurar acá para no
+  // arrastrar bindings sin uso; useTransactions.js no se toca, las sigue
+  // exponiendo para quien las necesite.
   const {
-    incomes, expenses, alert, addIncome, addExpense, addBulkTransactions, updateIncome, updateExpense,
-    removeIncome, removeExpense, undoAddMovement, removeMultiple, categorizeMultiple, showAlert,
+    incomes, expenses, alert, addIncome, addExpense, addBulkTransactions,
+    undoAddMovement, showAlert,
     balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
   } = useTransactions();
 
@@ -172,9 +183,6 @@ function AppContent() {
     setPendingCategoryFilter('Otros');
     setActiveTab('movimientos');
   };
-
-  // Key para forzar el reinicio de BudgetForm al pulsar el "+" de la Bottom Nav
-  const [budgetFormKey, setBudgetFormKey] = useState(0);
 
   // Ref del contenedor de scroll para hacer scroll-to-top al cambiar de pestaña
   const scrollContainerRef = useRef(null);
@@ -368,12 +376,23 @@ function AppContent() {
                   expenses={expenses}
                   allTransactions={allTransactions}
                   loading={loading}
-                  onRegisterExpense={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
+                  onRegisterExpense={handleQuickAddAction}
                   onViewAllTransactions={() => setActiveTab('movimientos')}
                 />
               )}
               {activeTab === 'graficos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><ChartsTab filteredIncomes={filteredIncomes} filteredExpenses={filteredExpenses} filteredTotalIncome={filteredTotalIncome} filteredTotalExpenses={filteredTotalExpenses} filteredBalance={filteredBalance} categoryAnalysis={categoryAnalysis} onReclassifyOtros={handleReclassifyOtros} /></Suspense>}
-              {activeTab === 'movimientos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><BudgetForm key={budgetFormKey} onAddIncome={handleAddIncome} onAddExpense={handleAddExpense} /><ExpenseList incomes={incomes} expenses={expenses} onRemoveIncome={id => openConfirm({title: 'Eliminar ingreso', message: '¿Seguro?', onConfirm: () => {removeIncome(id); closeConfirm()}})} onRemoveExpense={id => openConfirm({title: 'Eliminar gasto', message: '¿Seguro?', onConfirm: () => {removeExpense(id); closeConfirm()}})} onUpdateIncome={updateIncome} onUpdateExpense={updateExpense} onRemoveMultiple={removeMultiple} onCategorizeMultiple={categorizeMultiple} initialCategoryFilter={pendingCategoryFilter} onInitialFilterConsumed={() => setPendingCategoryFilter(null)} /></Suspense>}
+              {activeTab === 'movimientos' && (
+                <Historial
+                  incomes={filteredIncomes}
+                  expenses={filteredExpenses}
+                  selectedYear={selectedYear}
+                  setSelectedYear={setSelectedYear}
+                  selectedMonth={selectedMonth}
+                  setSelectedMonth={setSelectedMonth}
+                  initialCategoryFilter={pendingCategoryFilter}
+                  onInitialFilterConsumed={() => setPendingCategoryFilter(null)}
+                />
+              )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}
               {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} onExport={() => achievements.updateStats({ dataExported: true })} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></Suspense>}
               {activeTab === 'cuenta' && <Suspense fallback={<TabLoader />}><ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} currentStreak={achievements.stats.currentStreak} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} /></Suspense>}

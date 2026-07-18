@@ -1,41 +1,49 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../utils/formatters';
+import { formatRelativeDate } from '../../utils/movementGrouping';
 import { cn } from './cn';
 
 // Design System — Saldo Design Constitution v1.2
 // (docs/design/screens/Saldo Dashboard.dc.html)
 //
-// Fila de movimiento reutilizable (Dashboard hoy, Historial en el futuro).
-// Grid concepto/fecha/importe (1fr 80px 120px), 44px de alto, separador
-// inferior. El importe es SIEMPRE neutro — Regla Inquebrantable 4: la
-// Constitución prohíbe rojo/verde permanentes en cifras. Gastos: signo "−"
+// Fila de movimiento reutilizable (Dashboard hoy, Historial desde Checkpoint
+// IV-A). Grid concepto/columna-media/importe (1fr 80px 120px), 44px de alto,
+// separador inferior. El importe es SIEMPRE neutro — Regla Inquebrantable 4:
+// la Constitución prohíbe rojo/verde permanentes en cifras. Gastos: signo "−"
 // tipográfico (U+2212, NUNCA el guion ASCII "-"). Ingresos: sin signo "+",
 // mismo color que los gastos.
 //
 // Nota de organización (regla del PO): esto es una primitiva de UI de
 // propósito general (agnóstica de dominio) — vive en src/components/ds/
 // junto a Button/Card/Input.
+//
+// Checkpoint IV-A — la fecha relativa ("Hoy"/"Ayer"/"D mmm") ya NO vive acá
+// como función privada: se extrajo a src/utils/movementGrouping.js (misma
+// fuente de verdad que usa la cabecera de GrupoDía en Historial, para que
+// ambas pantallas nunca puedan discrepar sobre qué cuenta como "hoy").
+//
+// Props aditivas para Historial (ambas con default que preserva el
+// comportamiento exacto de Dashboard, que no las pasa):
+//   - `category`: si se provee, reemplaza la fecha relativa en la columna
+//     media (dentro de un GrupoDía la fecha ya está en la cabecera del
+//     grupo — repetirla por fila sería ruido redundante).
+//   - `showRelativeDate` (default true): permite ocultar la fecha relativa
+//     sin necesidad de pasar `category` (p.ej. una fila de ingreso dentro de
+//     un grupo, sin categoría propia en el modelo de datos).
 
 const MINUS_SIGN = '−';
-const DAY_MS = 24 * 60 * 60 * 1000;
 
-const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-
-// Fecha relativa: "Hoy" / "Ayer" / "D mmm" — mismo patrón que DSTopBar
-// (Intl.DateTimeFormat con i18n.language, no un locale fijo a mano).
-function formatRelativeDate(dateStr, locale, referenceDate) {
-  const date = new Date(String(dateStr).substring(0, 10) + 'T12:00:00');
-  if (isNaN(date)) return '';
-
-  const dayDiff = Math.round((startOfDay(date) - startOfDay(referenceDate)) / DAY_MS);
-  if (dayDiff === 0) return 'Hoy';
-  if (dayDiff === -1) return 'Ayer';
-
-  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(date);
-}
-
-export function FilaMovimiento({ description, date, amount, type, currency = 'USD', className = '' }) {
+export function FilaMovimiento({
+  description,
+  date,
+  amount,
+  type,
+  currency = 'USD',
+  category = null,
+  showRelativeDate = true,
+  className = '',
+}) {
   const { i18n } = useTranslation();
   const isExpense = type === 'expense';
 
@@ -43,6 +51,9 @@ export function FilaMovimiento({ description, date, amount, type, currency = 'US
   // || 'USD')) — consistencia de moneda en toda la app. Math.abs() porque el
   // signo lo controla esta fila (regla del "−" tipográfico), no formatCurrency.
   const formattedAmount = formatCurrency(Math.abs(Number(amount) || 0), currency);
+
+  const middleColumnContent = category
+    ?? (showRelativeDate ? formatRelativeDate(date, i18n.language, new Date()) : null);
 
   return (
     <div
@@ -54,9 +65,9 @@ export function FilaMovimiento({ description, date, amount, type, currency = 'US
       style={{ gridTemplateColumns: '1fr 80px 120px' }}
     >
       <span className="text-ds-body text-ds-text-primary truncate">{description}</span>
-      <span className="text-ds-caption text-ds-text-tertiary">
-        {formatRelativeDate(date, i18n.language, new Date())}
-      </span>
+      {middleColumnContent && (
+        <span className="text-ds-caption text-ds-text-tertiary truncate">{middleColumnContent}</span>
+      )}
       <span className="text-ds-numeric text-ds-text-primary tabular-nums">
         {isExpense ? MINUS_SIGN : ''}
         {formattedAmount}
@@ -71,5 +82,7 @@ FilaMovimiento.propTypes = {
   amount: PropTypes.number.isRequired,
   type: PropTypes.oneOf(['income', 'expense']).isRequired,
   currency: PropTypes.string,
+  category: PropTypes.string,
+  showRelativeDate: PropTypes.bool,
   className: PropTypes.string,
 };

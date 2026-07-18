@@ -108,3 +108,50 @@ describe('FilaMovimiento (ds) — Saldo Design Constitution v1.2', () => {
     expect(container.firstChild.className).toMatch(/hover:bg-ds-interaction-hover\b/);
   });
 });
+
+// Checkpoint IV-A — props aditivas para encajar en un GrupoDía de Historial
+// (la fecha relativa ya vive en la cabecera del grupo, no hace falta
+// repetirla por fila). Ambas con default que preserva el comportamiento
+// existente de Dashboard — ningún test de arriba se modificó.
+describe('FilaMovimiento (ds) — props aditivas Checkpoint IV-A (Historial)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 17)); // 17 jul 2026
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('sin showRelativeDate, el comportamiento por defecto no cambia: sigue mostrando "Hoy"', () => {
+    render(<FilaMovimiento description="Café" date="2026-07-17" amount={5} type="expense" />);
+    expect(screen.getByText('Hoy')).toBeInTheDocument();
+  });
+
+  it('con showRelativeDate=false, no muestra la fecha relativa', () => {
+    render(<FilaMovimiento description="Café" date="2026-07-17" amount={5} type="expense" showRelativeDate={false} />);
+    expect(screen.queryByText('Hoy')).not.toBeInTheDocument();
+  });
+
+  it('con category, muestra la categoría en vez de la fecha relativa', () => {
+    render(
+      <FilaMovimiento
+        description="Supermercado"
+        date="2026-07-17"
+        amount={45.5}
+        type="expense"
+        category="Alimentación"
+        showRelativeDate={false}
+      />
+    );
+    expect(screen.getByText('Alimentación')).toBeInTheDocument();
+    expect(screen.queryByText('Hoy')).not.toBeInTheDocument();
+  });
+
+  it('sin category y sin showRelativeDate, no rompe: la columna media queda vacía', () => {
+    const { container } = render(
+      <FilaMovimiento description="Café" date="2026-07-17" amount={5} type="expense" showRelativeDate={false} />
+    );
+    expect(container.querySelector('.text-ds-caption')).toBeNull();
+  });
+});
