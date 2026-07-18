@@ -1,0 +1,224 @@
+import { render, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { NewMovementSheet } from './NewMovementSheet';
+import { EXPENSE_CATEGORIES } from '../../constants/categories';
+
+// Checkpoint III-A (Saldo Design Constitution v1.2) — orquestación del flujo
+// mínimo de "Nuevo Movimiento". Fuente: docs/design/screens/Saldo Nuevo
+// Movimiento.dc.html + docs/design/flows/Saldo Flow 01 - Registrar
+// Movimiento.dc.html. Mismas firmas que BudgetForm.jsx:
+// onAddIncome(description, amount, date, currency),
+// onAddExpense(description, category, amount, date, currency).
+
+const { useAIMock, useCurrencyMock } = vi.hoisted(() => ({
+  useAIMock: vi.fn(),
+  useCurrencyMock: vi.fn(),
+}));
+
+vi.mock('../../contexts/AIContext', () => ({
+  useAI: () => useAIMock(),
+}));
+
+vi.mock('../../contexts/CurrencyContext', () => ({
+  useCurrency: () => useCurrencyMock(),
+}));
+
+const waitOutDebounce = async () => {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 850));
+  });
+};
+
+const renderSheet = (props = {}) => {
+  const onClose = vi.fn();
+  const onAddIncome = vi.fn(() => true);
+  const onAddExpense = vi.fn(() => true);
+  const utils = render(
+    <NewMovementSheet
+      isOpen
+      onClose={onClose}
+      onAddIncome={onAddIncome}
+      onAddExpense={onAddExpense}
+      {...props}
+    />
+  );
+  return { ...utils, onClose, onAddIncome, onAddExpense };
+};
+
+describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useAIMock.mockReturnValue({ canUseAI: false, hasConsent: false, suggestCategory: vi.fn() });
+    useCurrencyMock.mockReturnValue({ getSmartDefaultCurrency: () => 'USD' });
+  });
+
+  it('los tabs cambian el tipo activo (Gasto/Ingreso)', async () => {
+    const user = userEvent.setup();
+    renderSheet();
+
+    expect(screen.getByRole('tab', { name: 'Gasto' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByPlaceholderText('¿En qué se usó el dinero?')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: 'Ingreso' }));
+
+    expect(screen.getByRole('tab', { name: 'Ingreso' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByPlaceholderText('¿De donde viene el dinero?')).toBeInTheDocument();
+  });
+
+  it('el importe protagonista actualiza el estado al escribir', async () => {
+    const user = userEvent.setup();
+    renderSheet();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Importe' });
+    await user.type(amountInput, '42,50');
+
+    expect(amountInput).toHaveValue('42,50');
+  });
+
+  it('"Añadir" está deshabilitado sin importe válido y habilitado con uno válido', async () => {
+    const user = userEvent.setup();
+    renderSheet();
+
+    const addButton = screen.getByRole('button', { name: 'Añadir' });
+    expect(addButton).toBeDisabled();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+
+    expect(addButton).not.toBeDisabled();
+  });
+
+  it('Enter con importe válido llama a onAddExpense con los argumentos correctos y luego onClose', async () => {
+    const user = userEvent.setup();
+    const { onAddExpense, onClose } = renderSheet();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+    await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+    await user.keyboard('{Enter}');
+
+    expect(onAddExpense).toHaveBeenCalledTimes(1);
+    const [description, category, amount, date, currency] = onAddExpense.mock.calls[0];
+    expect(description).toBe('Supermercado');
+    expect(category).toBe(EXPENSE_CATEGORIES[0].value);
+    expect(amount).toBe(42.5);
+    // Formato 'YYYY-MM-DD' — igual que BudgetForm.jsx y useTransactions.js.
+    // Un objeto Date crudo rompe parseLocalDate() río abajo (Dashboard,
+    // Movimientos recientes) — hallazgo de verificación del orquestador.
+    expect(date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(currency).toBe('USD');
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('Enter con importe válido y tipo Ingreso llama a onAddIncome (no onAddExpense)', async () => {
+    const user = userEvent.setup();
+    const { onAddIncome, onAddExpense } = renderSheet();
+
+    await user.click(screen.getByRole('tab', { name: 'Ingreso' }));
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '100');
+    await user.type(screen.getByLabelText(/concepto/i), 'Salario');
+    await user.keyboard('{Enter}');
+
+    expect(onAddIncome).toHaveBeenCalledTimes(1);
+    expect(onAddExpense).not.toHaveBeenCalled();
+    const [description, amount, date, currency] = onAddIncome.mock.calls[0];
+    expect(description).toBe('Salario');
+    expect(amount).toBe(100);
+    expect(date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(currency).toBe('USD');
+  });
+
+  it('Enter con importe vacío NO llama a onAddExpense/onAddIncome y muestra el mensaje de error', async () => {
+    const user = userEvent.setup();
+    const { onAddExpense, onAddIncome, onClose } = renderSheet();
+
+    await user.type(screen.getByLabelText(/concepto/i), 'Algo');
+    await user.keyboard('{Enter}');
+
+    expect(onAddExpense).not.toHaveBeenCalled();
+    expect(onAddIncome).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByText('El importe necesita un número para poder añadirse.')).toBeInTheDocument();
+  });
+
+  it('gate de IA: con canUseAI && hasConsent, muestra AISuggestedCategory tras sugerencia (no el chip "Elegir categoría")', async () => {
+    useAIMock.mockReturnValue({
+      canUseAI: true,
+      hasConsent: true,
+      suggestCategory: vi.fn().mockResolvedValue({ category: 'Alimentación', confidence: 'alta' }),
+    });
+    const user = userEvent.setup();
+    renderSheet();
+
+    expect(screen.queryByText('Elegir categoría')).not.toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+    await waitOutDebounce();
+
+    expect(screen.getByText('Categoría sugerida:')).toBeInTheDocument();
+    expect(screen.getByText('Alimentación')).toBeInTheDocument();
+  });
+
+  it('gate de IA: sin canUseAI o sin hasConsent, muestra el chip "Elegir categoría" (no AISuggestedCategory)', async () => {
+    useAIMock.mockReturnValue({ canUseAI: false, hasConsent: false, suggestCategory: vi.fn() });
+    const user = userEvent.setup();
+    renderSheet();
+
+    await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+
+    expect(screen.getByText('Elegir categoría')).toBeInTheDocument();
+    expect(screen.queryByText('Categoría sugerida:')).not.toBeInTheDocument();
+  });
+
+  it('seleccionar una categoría del <select> nativo la fija (se usa al guardar)', async () => {
+    useAIMock.mockReturnValue({ canUseAI: false, hasConsent: false, suggestCategory: vi.fn() });
+    const user = userEvent.setup();
+    const { onAddExpense } = renderSheet();
+
+    await user.click(screen.getByText('Elegir categoría'));
+    const select = screen.getByLabelText(/categoría/i);
+    const targetCategory = EXPENSE_CATEGORIES[2];
+    await user.selectOptions(select, targetCategory.value);
+
+    // Vuelve al chip: el select se oculta tras elegir.
+    expect(screen.queryByLabelText(/categoría/i)).not.toBeInTheDocument();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '10');
+    await user.click(screen.getByRole('button', { name: 'Añadir' }));
+
+    expect(onAddExpense).toHaveBeenCalledTimes(1);
+    expect(onAddExpense.mock.calls[0][1]).toBe(targetCategory.value);
+  });
+
+  it('cerrar y reabrir (sin re-montar, solo cambiando isOpen) conserva lo escrito', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const onAddIncome = vi.fn(() => true);
+    const onAddExpense = vi.fn(() => true);
+    const { rerender } = render(
+      <NewMovementSheet isOpen onClose={onClose} onAddIncome={onAddIncome} onAddExpense={onAddExpense} />
+    );
+
+    await user.type(screen.getByLabelText(/concepto/i), 'Café');
+
+    rerender(
+      <NewMovementSheet isOpen={false} onClose={onClose} onAddIncome={onAddIncome} onAddExpense={onAddExpense} />
+    );
+    rerender(
+      <NewMovementSheet isOpen onClose={onClose} onAddIncome={onAddIncome} onAddExpense={onAddExpense} />
+    );
+
+    expect(screen.getByLabelText(/concepto/i)).toHaveValue('Café');
+  });
+
+  it('tras un "Añadir" exitoso, el formulario se resetea', async () => {
+    const user = userEvent.setup();
+    renderSheet();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+    await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+    await user.click(screen.getByRole('button', { name: 'Añadir' }));
+
+    expect(screen.getByLabelText(/concepto/i)).toHaveValue('');
+    expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
+    expect(screen.getByRole('tab', { name: 'Gasto' })).toHaveAttribute('aria-selected', 'true');
+  });
+});

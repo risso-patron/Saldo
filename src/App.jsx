@@ -26,6 +26,7 @@ import { DashboardHome } from './components/Dashboard/DashboardHome';
 import { DailyReminder } from './components/Notifications/DailyReminder';
 import { DailyOnboardingToast } from './components/Notifications/DailyOnboardingToast';
 import { Omnibar } from './components/Shared/Omnibar';
+import { NewMovementSheet } from './components/NewMovement/NewMovementSheet';
 import { LegacyPeriodFilters } from './components/Shared/LegacyPeriodFilters';
 import { InstallPWA } from './components/InstallPWA';
 import { useAchievements } from './hooks/gamification/useAchievements';
@@ -61,6 +62,7 @@ function AppContent() {
   const [showAuth, setShowAuth] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
+  const [isNewMovementOpen, setIsNewMovementOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -170,9 +172,10 @@ function AppContent() {
     title: t('app.clear_all_title'), message: t('app.clear_all_message', { count: incomes.length + expenses.length }), confirmLabel: t('app.clear_all_confirm'), onConfirm: () => { clearAll(); closeConfirm(); }
   });
 
+  // Único consumidor: el FAB (Checkpoint III-A). Abre la hoja nueva de
+  // "Nuevo movimiento" — ya no reinicia BudgetForm ni navega a "movimientos".
   const handleQuickAddAction = () => {
-    setActiveTab('movimientos');
-    setBudgetFormKey(prev => prev + 1); // Reinicia BudgetForm para mostrar el selector (Escribir/Escanear)
+    setIsNewMovementOpen(true);
   };
 
   useEffect(() => { if (user && hasPendingMigration()) setShowMigration(true); }, [user]);
@@ -232,7 +235,7 @@ function AppContent() {
                 <Button
                   variant="primary"
                   icon={Plus}
-                  onClick={() => { setActiveTab('movimientos'); setBudgetFormKey(prev => prev + 1); }}
+                  onClick={() => setIsNewMovementOpen(true)}
                 >
                   Nuevo movimiento
                 </Button>
@@ -250,6 +253,15 @@ function AppContent() {
             <main className="space-y-4 sm:space-y-10 pb-32">
               <DailyOnboardingToast /> <DailyReminder />
               <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} />
+              {/* Checkpoint III-A: SIEMPRE montado (no condicionado por tab) —
+                  solo `isOpen` controla si Sheet renderiza algo, así el borrador
+                  sobrevive a cambios de tab y a cerrar con Escape/clic-fuera. */}
+              <NewMovementSheet
+                isOpen={isNewMovementOpen}
+                onClose={() => setIsNewMovementOpen(false)}
+                onAddIncome={handleAddIncome}
+                onAddExpense={handleAddExpense}
+              />
 
               {activeTab === 'resumen' && (
                 <DashboardHome

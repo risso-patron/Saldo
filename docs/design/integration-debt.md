@@ -25,6 +25,9 @@ y se deja anotada acá.
 | 2026-07-17 | Tab `resumen` (Dashboard) — Fase II | `HabitDailyCard`, `Summary`, `GlobalBudgetTracker`, el botón "Ver mis tendencias detalladas" y la sección colapsable de logros (`GamificationDashboard`) se desmontaron de `App.jsx` (tab `resumen`) y fueron reemplazados por `DashboardHome`. NO se borraron — siguen intactos y compilables en sus propios archivos (`src/components/Dashboard/HabitDailyCard.jsx`, `src/components/Summary.jsx`, `src/components/Budget/GlobalBudgetTracker.jsx`, `src/features/gamification/`). | El diseño (`Saldo Dashboard.dc.html`) no contempla estos componentes en el Dashboard, y su estética actual (rojo en negativos, "¡Peligro!", etc.) viola las Reglas Inquebrantables 4 y 8 de la Constitución. | Destino permanente pendiente de decisión del PO (¿Insights? ¿Ajustes? ¿pantalla propia?). |
 | 2026-07-17 | Dashboard — región de IA | Implementado el estado constitucional "Sin IA": `DashboardHome` no renderiza ningún nodo en la región de IA (sin nota, sin hueco reservado). | No existe un motor de IA funcional integrado a esta pantalla todavía. `AIInsightCard.jsx` (`src/components/AI/`) sigue siendo el único componente oficial de IA. Se descartó crear un componente "NotaIA" nuevo en `ds/` — regla de gobernanza: el Design System no contiene componentes de dominio. | `AIInsightCard.jsx` es el punto de integración futura cuando exista un motor de IA funcional. |
 | 2026-07-17 | Dashboard — estado Vacío | El estado "Error de sincronización" y la acción "Conectar mi banco" del mockup Vacío no se implementaron. El estado Vacío de `DashboardHome` solo ofrece "Registrar un gasto" (camino manual existente). | No existe integración bancaria real en el producto (misma excepción constitucional documentada arriba, fila "DSTopBar" — "Sincronizado hace X min"). | Agregar cuando exista una integración bancaria real. |
+| 2026-07-17 | Checkpoint III-A — Importe protagonista (mobile) | El mockup mobile centra el importe (`text-align: center`); la implementación actual lo deja alineado a la izquierda en todos los breakpoints. | Simplificación no crítica del flujo mínimo — no afecta la funcionalidad ni la legibilidad. | Pulido menor pendiente, no bloqueante para el checkpoint. |
+| 2026-07-17 | Checkpoint III-A — Fecha del movimiento | El chip "Hoy" es de solo lectura; no se puede editar a otra fecha en III-A. | El mockup muestra un chip editable con popover — excede el "flujo mínimo" aprobado para este checkpoint. | Editable en un checkpoint posterior de Fase III (fuera de III-B/III-C ya planificadas — a definir). |
+| 2026-07-17 | Checkpoint III-A — Campo "Cuenta" | No se implementó (no existe el concepto de cuentas en el modelo de datos de SALDO). | Excepción constitucional ya documentada (misma naturaleza que la sincronización bancaria). | Requiere decisión de arquitectura antes de construirse; no es exclusiva de esta pantalla. |
 
 ## Notas de implementación relacionadas (no son deuda, son decisiones tomadas)
 
@@ -69,3 +72,10 @@ y se deja anotada acá.
   propias carpetas de feature. Un componente nuevo solo entra a `ds/` si es
   genuinamente reutilizable sin conocer reglas de negocio de una feature
   específica.
+- **Regla de organización (Checkpoint III-A, "Nuevo Movimiento"): reutilizar
+  lógica, nunca UI legacy.** Cadena correcta: Motor existente → Contratos
+  existentes → Nueva presentación DS. `AISuggestedCategory.jsx`
+  (`components/NewMovement/`) reusa `useAI().suggestCategory` (mismo patrón
+  de invocación/debounce que ya usaba `SmartCategorySelector.jsx`) pero es
+  una presentación nueva, fiel a la Constitución — `SmartCategorySelector.jsx`
+  queda sin montar (tarjeta púrpura/badges/botones/select legacy no encajan).
