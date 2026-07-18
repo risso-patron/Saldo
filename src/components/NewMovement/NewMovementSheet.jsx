@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NumericFormat } from 'react-number-format';
 import { Sheet } from '../ds/Sheet';
@@ -47,6 +47,12 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [amountError, setAmountError] = useState(null);
 
+  // Checkpoint III-C.1 — modo ráfaga (Ctrl/Cmd+Enter): ref al <input> real
+  // detrás de NumericFormat (react-number-format expone el nodo DOM vía
+  // `getInputRef`, no vía forwardRef directo) para poder devolverle el foco
+  // tras guardar-y-reabrir vacío, o tras un intento fallido de guardado.
+  const amountInputRef = useRef(null);
+
   // Sugerencia de IA — mismo patrón de invocación que BudgetForm.jsx
   // (handleGetCategorySuggestion) con el debounce de 800ms que ya usa
   // SmartCategorySelector.jsx internamente (lógica de timing reutilizada
@@ -86,11 +92,12 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
 
   const isAmountValid = validateAmount(amount).isValid;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e, { burst = false } = {}) => {
     e?.preventDefault?.();
 
     if (!isAmountValid) {
       setAmountError(AMOUNT_ERROR_MESSAGE);
+      amountInputRef.current?.focus();
       return;
     }
     setAmountError(null);
@@ -110,7 +117,15 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
 
     if (success) {
       resetForm();
-      onClose();
+      if (burst) {
+        // Checkpoint III-C.1 — modo ráfaga: la hoja se queda abierta y el
+        // foco vuelve al importe para encadenar el siguiente movimiento sin
+        // tocar el mouse (docs/design/flows/Saldo Flow 01 - Registrar
+        // Movimiento.dc.html: "⌘Enter añade y reabre vacía").
+        amountInputRef.current?.focus();
+      } else {
+        onClose();
+      }
     }
   };
 
@@ -124,7 +139,11 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
   const handleFormKeyDown = (e) => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
-    handleSubmit(e);
+    // Checkpoint III-C.1 — Ctrl/Cmd+Enter es modo ráfaga: guarda y mantiene
+    // la hoja abierta con el foco listo para el siguiente movimiento. Enter
+    // simple (sin modificador) conserva el comportamiento de siempre.
+    const burst = e.ctrlKey || e.metaKey;
+    handleSubmit(e, { burst });
   };
 
   return (
@@ -142,6 +161,7 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
             decimalScale={2}
             placeholder="0,00"
             aria-label="Importe"
+            getInputRef={amountInputRef}
             className="mt-2 block w-full bg-transparent border-none outline-none text-ds-numeric-xl text-left placeholder:text-ds-text-disabled focus:outline-none focus:ring-0"
           />
           {amountError && <p className="mt-2 text-ds-caption text-ds-danger">{amountError}</p>}

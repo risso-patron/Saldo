@@ -221,4 +221,65 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
     expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
     expect(screen.getByRole('tab', { name: 'Gasto' })).toHaveAttribute('aria-selected', 'true');
   });
+
+  describe('Checkpoint III-C.1 — modo ráfaga (Ctrl/Cmd+Enter)', () => {
+    it('Ctrl+Enter con importe y concepto válidos guarda, resetea el formulario, NO cierra la hoja y devuelve el foco al importe', async () => {
+      const user = userEvent.setup();
+      const { onAddExpense, onClose } = renderSheet();
+
+      const amountInput = screen.getByRole('textbox', { name: 'Importe' });
+      await user.type(amountInput, '42,50');
+      await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+      await user.keyboard('{Control>}{Enter}{/Control}');
+
+      expect(onAddExpense).toHaveBeenCalledTimes(1);
+      expect(onClose).not.toHaveBeenCalled();
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
+      expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Importe' }));
+    });
+
+    it('Cmd+Enter (metaKey) se comporta igual que Ctrl+Enter', async () => {
+      const user = userEvent.setup();
+      const { onAddExpense, onClose } = renderSheet();
+
+      const amountInput = screen.getByRole('textbox', { name: 'Importe' });
+      await user.type(amountInput, '42,50');
+      await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+      await user.keyboard('{Meta>}{Enter}{/Meta}');
+
+      expect(onAddExpense).toHaveBeenCalledTimes(1);
+      expect(onClose).not.toHaveBeenCalled();
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
+      expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Importe' }));
+    });
+
+    it('Enter simple (sin modificador) sigue cerrando la hoja como antes (regresión)', async () => {
+      const user = userEvent.setup();
+      const { onAddExpense, onClose } = renderSheet();
+
+      await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+      await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+      await user.keyboard('{Enter}');
+
+      expect(onAddExpense).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('Ctrl/Cmd+Enter con importe vacío/inválido NO guarda, NO resetea el formulario, muestra el error y el foco queda en Importe', async () => {
+      const user = userEvent.setup();
+      const { onAddExpense, onAddIncome, onClose } = renderSheet();
+
+      await user.type(screen.getByLabelText(/concepto/i), 'Algo');
+      await user.keyboard('{Control>}{Enter}{/Control}');
+
+      expect(onAddExpense).not.toHaveBeenCalled();
+      expect(onAddIncome).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+      expect(screen.getByText('El importe necesita un número para poder añadirse.')).toBeInTheDocument();
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('Algo');
+      expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Importe' }));
+    });
+  });
 });

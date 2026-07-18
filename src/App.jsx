@@ -67,21 +67,53 @@ function AppContent() {
   // Checkpoint III-B: toast de "Deshacer" tras crear un movimiento desde
   // NewMovementSheet. Forma: { movement } | null — null significa "cerrado".
   const [undoToast, setUndoToast] = useState(null);
+  const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setIsOmnibarOpen(prev => !prev);
+        return;
+      }
+
+      // Checkpoint III-C.1 — atajo "N" abre NewMovementSheet (docs/design/
+      // flows/Saldo Flow 01 - Registrar Movimiento.dc.html: "N abre").
+      // Sin Ctrl/Cmd/Alt (con modificadores sería un atajo distinto, no este
+      // — y chocaría con atajos nativos del navegador/OS). Reutiliza este
+      // mismo listener global en vez de sumar un segundo addEventListener,
+      // por pedido explícito del PO (evita listeners duplicados al
+      // desmontar/remontar).
+      if (
+        (e.key === 'n' || e.key === 'N') &&
+        !e.ctrlKey && !e.metaKey && !e.altKey
+      ) {
+        const active = document.activeElement;
+        const isEditableFocus =
+          active &&
+          (active.tagName === 'INPUT' ||
+            active.tagName === 'TEXTAREA' ||
+            active.tagName === 'SELECT' ||
+            active.isContentEditable === true);
+
+        if (
+          !isEditableFocus &&
+          !isNewMovementOpen &&
+          !isOmnibarOpen &&
+          !confirmDialog.isOpen &&
+          !showMigration
+        ) {
+          e.preventDefault();
+          setIsNewMovementOpen(true);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isNewMovementOpen, isOmnibarOpen, confirmDialog.isOpen, showMigration]);
 
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
-  const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
   const {
     incomes, expenses, alert, addIncome, addExpense, addBulkTransactions, updateIncome, updateExpense,
