@@ -38,6 +38,7 @@ import { PeriodProvider } from './contexts/PeriodContext';
 import { AIProvider } from './contexts/AIContext';
 import { groqProvider } from './lib/groqProvider';
 import { filterByMonth } from './utils/calculations';
+import { writeDraft } from './utils/newMovementDraft';
 
 // Tabs lazy — solo se cargan cuando el usuario navega a esa sección
 const BudgetForm = lazy(() => import('./components/BudgetForm').then(m => ({ default: m.BudgetForm })));
@@ -64,6 +65,14 @@ function AppContent() {
   const [showMigration, setShowMigration] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isNewMovementOpen, setIsNewMovementOpen] = useState(false);
+  // Checkpoint III-C.3 — key de remontaje forzado de NewMovementSheet. El
+  // componente lee su borrador UNA sola vez al montar (III-C.2, patrón
+  // useRef con guarda) y queda SIEMPRE montado (III-A), así que la única
+  // forma de que recoja un borrador escrito después del montaje inicial
+  // (ej. desde el Omnibar) sin tocar NewMovementSheet.jsx es forzar un
+  // desmontaje/remontaje real cambiándole el prop `key` — metadata de React
+  // para el reconciler, no parte del contrato del componente en sí.
+  const [newMovementRemountKey, setNewMovementRemountKey] = useState(0);
   // Checkpoint III-B: toast de "Deshacer" tras crear un movimiento desde
   // NewMovementSheet. Forma: { movement } | null — null significa "cerrado".
   const [undoToast, setUndoToast] = useState(null);
@@ -241,6 +250,18 @@ function AppContent() {
     setIsNewMovementOpen(true);
   };
 
+  // Checkpoint III-C.3 — único consumidor: el Omnibar, cuando el usuario
+  // escribió texto que el parser determinista interpretó con éxito como un
+  // movimiento. Escribe el borrador (writeDraft ya pone savedAt: Date.now()
+  // por defecto — timestamp fresco, dentro del TTL de lectura) y fuerza el
+  // remontaje de NewMovementSheet para que su lectura síncrona de arranque
+  // recoja este borrador recién escrito en lugar del que tenía en memoria.
+  const handleOpenNewMovementWithDraft = (movementDraft) => {
+    writeDraft(movementDraft);
+    setNewMovementRemountKey((k) => k + 1);
+    setIsNewMovementOpen(true);
+  };
+
   useEffect(() => { if (user && hasPendingMigration()) setShowMigration(true); }, [user]);
   useEffect(() => {
     achievements.updateStats({
@@ -315,11 +336,14 @@ function AppContent() {
 
             <main className="space-y-4 sm:space-y-10 pb-32">
               <DailyOnboardingToast /> <DailyReminder />
-              <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} />
+              <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} onOpenNewMovementWithDraft={handleOpenNewMovementWithDraft} />
               {/* Checkpoint III-A: SIEMPRE montado (no condicionado por tab) —
                   solo `isOpen` controla si Sheet renderiza algo, así el borrador
-                  sobrevive a cambios de tab y a cerrar con Escape/clic-fuera. */}
+                  sobrevive a cambios de tab y a cerrar con Escape/clic-fuera.
+                  Checkpoint III-C.3: `key` fuerza remontaje real cuando el
+                  Omnibar precarga un borrador — ver handleOpenNewMovementWithDraft. */}
               <NewMovementSheet
+                key={newMovementRemountKey}
                 isOpen={isNewMovementOpen}
                 onClose={() => setIsNewMovementOpen(false)}
                 onAddIncome={handleCreateIncome}

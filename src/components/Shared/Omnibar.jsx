@@ -12,6 +12,7 @@ import {
 } from '@phosphor-icons/react';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { CurrencySelector } from '../../features/currency/CurrencySelector';
+import { parseMovementText } from '../../utils/newMovementParser';
 
 // Fase I-C (Integración de Diseño): el shell nuevo (DSSidebar/DSBottomNav)
 // solo contempla 4 destinos de navegación (regla R-08 del diseño). Los tabs
@@ -19,7 +20,7 @@ import { CurrencySelector } from '../../features/currency/CurrencySelector';
 // shell nuevo (moneda, "vaciar datos locales"), quedan accesibles acá como
 // quick actions/utilidades — ver docs/design/integration-debt.md (filas c,
 // f, g).
-export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onClearAll, transactionCount = 0 }) => {
+export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onClearAll, transactionCount = 0, onOpenNewMovementWithDraft }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
@@ -56,8 +57,12 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
 
   // Motor de Búsqueda Fuzz (Básico)
   const isQuerying = searchTerm.trim().length > 0;
-  
-  const searchResults = isQuerying ? allTransactions.filter(tx => 
+
+  // Checkpoint III-C.3 — parser determinista de texto → borrador de
+  // movimiento. Solo se evalúa mientras hay texto; función pura, nunca tira.
+  const parsedMovement = isQuerying ? parseMovementText(searchTerm) : null;
+
+  const searchResults = isQuerying ? allTransactions.filter(tx =>
     tx.description.toLowerCase().includes(searchTerm.toLowerCase()) || 
     (tx.category && tx.category.toLowerCase().includes(searchTerm.toLowerCase()))
   ).slice(0, 5) : []; // Max 5 matches
@@ -126,7 +131,31 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
 
         {/* Results Area */}
         <div className="overflow-y-auto px-4 pb-6 pt-2 custom-scrollbar">
-          
+
+          {/* Section: Nuevo Movimiento (Checkpoint III-C.3) — solo cuando el
+              parser determinista interpretó el texto con éxito. Al margen
+              del índice de navegación por flechas/Enter (mismo tratamiento
+              que la sección "Utilidades" más abajo) — simplificación
+              deliberada para no tocar la lógica de índices existente. */}
+          {parsedMovement?.success && (
+            <div className="mt-4">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-3 mb-2 block">
+                Nuevo Movimiento
+              </span>
+              <ul className="space-y-1">
+                <li
+                  className="flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+                  onClick={() => { onOpenNewMovementWithDraft(parsedMovement.movementDraft); onClose(); }}
+                >
+                  <Receipt size={20} />
+                  <span className="font-bold">
+                    Nuevo movimiento: {parsedMovement.movementDraft.description} — {formatCurrency(parsedMovement.movementDraft.amount)}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
+
           {/* Section: Atajos Nav */}
           {actionResults.length > 0 && (
             <div className="mt-4">
@@ -202,8 +231,11 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
             </div>
           )}
 
-          {/* Empty State */}
-          {isQuerying && searchResults.length === 0 && actionResults.length === 0 && (
+          {/* Empty State — se suprime cuando hay un match de "Nuevo
+              Movimiento" (Checkpoint III-C.3): decisión no especificada en
+              detalle por el PO, tomada para evitar mostrar "Sin resultados"
+              al mismo tiempo que un resultado válido y accionable. */}
+          {isQuerying && !parsedMovement?.success && searchResults.length === 0 && actionResults.length === 0 && (
             <div className="text-center py-12 px-4 animate-fade-in">
               <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
                 <MagnifyingGlass size={32} className="text-slate-400" />
