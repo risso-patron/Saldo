@@ -427,6 +427,23 @@ function AppContent() {
                   onInitialFilterConsumed={() => setPendingCategoryFilter(null)}
                   onEditMovement={setEditingMovement}
                   onDeleteMovement={deleteMovement}
+                  loading={loading}
+                  // Checkpoint IV-F.1 — hasMovements se computa acá desde
+                  // allTransactions (el dominio SIN recortar), nunca desde
+                  // filteredIncomes/filteredExpenses (las que se le pasan
+                  // arriba, ya recortadas por mes vía useFilters). Motivo:
+                  // Historial usa hasMovements para decidir "¿existe algo en
+                  // absoluto?" (estado vacío real, sin filtros ni resumen) —
+                  // si se calculara desde los props ya filtrados por
+                  // período, un usuario con movimientos en OTROS meses pero
+                  // ninguno en el mes actualmente seleccionado vería
+                  // incorrectamente el estado "vacío real" en vez de "sin
+                  // resultados". NO reemplazar por
+                  // filteredIncomes.length + filteredExpenses.length > 0 —
+                  // sería exactamente esa regresión.
+                  hasMovements={allTransactions.length > 0}
+                  onRegisterExpense={handleQuickAddAction}
+                  onNavigateToImport={() => setActiveTab('herramientas')}
                 />
               )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}

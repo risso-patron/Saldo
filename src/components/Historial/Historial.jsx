@@ -9,6 +9,9 @@ import { EXPENSE_CATEGORIES } from '../../constants/categories';
 import { FilaMovimiento } from '../ds/FilaMovimiento';
 import { ExpansionDetalle } from './ExpansionDetalle';
 import { FilaDeslizable } from './FilaDeslizable';
+import { HistorialSkeleton } from './HistorialSkeleton';
+import { EstadoVacio } from './EstadoVacio';
+import { EstadoSinResultados } from './EstadoSinResultados';
 import { Sheet } from '../ds/Sheet';
 import { rowInteractionReducer, ROW_INTERACTION_INITIAL } from './rowInteractionReducer';
 import { useIsDesktop, useIsMobileRow } from '../../hooks/useMediaQuery';
@@ -26,8 +29,19 @@ import { cn } from '../ds/cn';
 //
 // Alcance CERRADO (negociado con el PO, ver checkpoint): SIN selección
 // múltiple/acciones en lote, SIN sugerencia heurística de categoría, SIN
-// estados ilustrados completos (IV-F: vacío ilustrado, sin-resultados con
-// dos salidas, error de sync), SIN nota IA.
+// nota IA.
+//
+// Checkpoint IV-F.1 — estados de carga/vacío/sin-resultados. `hasMovements`
+// es un booleano AGREGADO que App.jsx computa desde el dominio sin filtrar
+// (allTransactions) — Historial NUNCA inspecciona incomes/expenses.length
+// para decidir "¿hay algo en absoluto?": esos props ya vienen recortados
+// por mes desde App.jsx, así que un usuario con movimientos en OTROS meses
+// vería incorrectamente el estado vacío si Historial derivara la pregunta
+// de sus propios props. "Sin resultados" (groups.length===0 con
+// hasMovements=true) es un caso distinto — ahí sí hay datos, el filtro
+// actual no encuentra nada, y los filtros permanecen visibles (al revés
+// que "vacío real", que los oculta por completo). Error de sincronización
+// queda en IV-F.2 — toca useTransactions.js, fuera de este checkpoint.
 //
 // Checkpoint IV-E.3 — swipe-to-reveal (mobile, `useIsMobileRow`, el mismo
 // corte `md` que ya usa el layout apilado de FilaMovimiento en IV-E.1;
@@ -80,8 +94,6 @@ const TYPE_OPTIONS = [
   { value: 'expense', label: 'Gasto' },
 ];
 
-const EMPTY_MESSAGE = 'Sin movimientos';
-
 export function Historial({
   incomes = [],
   expenses = [],
@@ -93,6 +105,10 @@ export function Historial({
   onInitialFilterConsumed,
   onEditMovement,
   onDeleteMovement,
+  loading = false,
+  hasMovements = true,
+  onRegisterExpense,
+  onNavigateToImport,
 }) {
   const { i18n } = useTranslation();
 
@@ -294,6 +310,24 @@ export function Historial({
     setSelectedMonth(null);
   };
 
+  // Checkpoint IV-F.1 — "dos salidas" del estado sin-resultados: buscar en
+  // todo el historial reutiliza clearPeriodFilter tal cual (App.jsx ya
+  // recorta por mes antes de que Historial vea los datos, así que quitar
+  // el mes es exactamente "buscar en todo"); quitar filtros hace lo mismo
+  // y además resetea búsqueda/categoría/tipo.
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('all');
+    setTypeFilter('all');
+    clearPeriodFilter();
+  };
+
+  if (loading) return <HistorialSkeleton />;
+
+  if (!hasMovements) {
+    return <EstadoVacio onRegisterExpense={onRegisterExpense} onNavigateToImport={onNavigateToImport} />;
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Filtros — mes (chip), categoría, tipo, búsqueda. Aplican al instante. */}
@@ -367,7 +401,12 @@ export function Historial({
       </div>
 
       {groups.length === 0 ? (
-        <p className="text-ds-caption text-ds-text-tertiary">{EMPTY_MESSAGE}</p>
+        <EstadoSinResultados
+          searchTerm={searchTerm}
+          monthLabel={monthChipLabel}
+          onSearchEverywhere={clearPeriodFilter}
+          onClearAllFilters={clearAllFilters}
+        />
       ) : (
         <div className="flex flex-col gap-7">
           {groups.map((group) => (
@@ -453,4 +492,8 @@ Historial.propTypes = {
   onInitialFilterConsumed: PropTypes.func,
   onEditMovement: PropTypes.func,
   onDeleteMovement: PropTypes.func,
+  loading: PropTypes.bool,
+  hasMovements: PropTypes.bool,
+  onRegisterExpense: PropTypes.func,
+  onNavigateToImport: PropTypes.func,
 };

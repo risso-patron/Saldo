@@ -247,7 +247,13 @@ describe('Historial — chip de mes (reusa selectedYear/selectedMonth de useFilt
 
   it('con año y mes seleccionados, muestra un chip con el nombre del mes y el año', () => {
     render(<Historial {...baseProps} selectedYear={2026} selectedMonth={6} />);
-    expect(screen.getByText(/Julio 2026/i)).toBeInTheDocument();
+    // Checkpoint IV-F.1 — con baseProps (sin movimientos) y un mes
+    // seleccionado, también aparece "Julio 2026" dentro del mensaje de
+    // EstadoSinResultados ("Nada en Julio 2026.") — se ancla al chip
+    // específicamente (identificado por su botón "Quitar filtro de
+    // período"), no a cualquier texto que contenga el mes.
+    const chip = screen.getByRole('button', { name: /quitar filtro de período/i }).closest('span');
+    expect(chip).toHaveTextContent('Julio 2026');
   });
 
   it('al pulsar la "✕" del chip, limpia año y mes vía los setters recibidos (no un estado propio)', () => {
@@ -268,10 +274,106 @@ describe('Historial — chip de mes (reusa selectedYear/selectedMonth de useFilt
   });
 });
 
-describe('Historial — estado vacío mínimo', () => {
-  it('sin movimientos, muestra un placeholder simple de una línea', () => {
+describe('Historial — Checkpoint IV-F.1: cargando / vacío real / sin resultados', () => {
+  it('loading=true muestra el skeleton y nada más (ni filtros, ni resumen, ni lista)', () => {
+    render(<Historial {...baseProps} loading />);
+
+    expect(screen.getByTestId('historial-skeleton')).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('Buscar…')).not.toBeInTheDocument();
+  });
+
+  it('hasMovements=false (agregado sin filtrar, calculado por App.jsx) muestra EstadoVacio, SIN filtros ni resumen', () => {
+    render(
+      <Historial
+        {...baseProps}
+        hasMovements={false}
+        onRegisterExpense={noop}
+        onNavigateToImport={noop}
+      />
+    );
+
+    expect(screen.getByText(/aquí aparecerán tus movimientos/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Registrar el primero' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Importar un CSV' })).toBeInTheDocument();
+    // Sin filtros ni resumen — "la maquinaria aparece cuando hay algo que filtrar".
+    expect(screen.queryByPlaceholderText('Buscar…')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Gastado/)).not.toBeInTheDocument();
+  });
+
+  it('"Registrar el primero" e "Importar un CSV" disparan los callbacks recibidos', () => {
+    const onRegisterExpense = vi.fn();
+    const onNavigateToImport = vi.fn();
+    render(
+      <Historial
+        {...baseProps}
+        hasMovements={false}
+        onRegisterExpense={onRegisterExpense}
+        onNavigateToImport={onNavigateToImport}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar el primero' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Importar un CSV' }));
+
+    expect(onRegisterExpense).toHaveBeenCalledTimes(1);
+    expect(onNavigateToImport).toHaveBeenCalledTimes(1);
+  });
+
+  it('hasMovements=true (default) pero el filtro/búsqueda no encuentra nada: EstadoSinResultados, filtros y resumen SIGUEN visibles', () => {
     render(<Historial {...baseProps} />);
-    expect(screen.getByText(/sin movimientos/i)).toBeInTheDocument();
+
+    expect(screen.getByText('Nada coincide con los filtros actuales.')).toBeInTheDocument();
+    // A diferencia de EstadoVacio, acá los filtros y el resumen quedan.
+    expect(screen.getByPlaceholderText('Buscar…')).toBeInTheDocument();
+    expect(screen.getByText(/Gastado/)).toBeInTheDocument();
+  });
+
+  it('el mensaje de sin-resultados incluye el término de búsqueda y el mes activos', () => {
+    render(<Historial {...baseProps} selectedYear={2026} selectedMonth={6} />);
+
+    fireEvent.change(screen.getByPlaceholderText('Buscar…'), { target: { value: 'taxi' } });
+
+    expect(screen.getByText('Nada con «taxi» en Julio 2026.')).toBeInTheDocument();
+  });
+
+  it('"Buscar en todo el historial" limpia el período (mismo setter que la "✕" del chip) y conserva la búsqueda', () => {
+    const setSelectedYear = vi.fn();
+    const setSelectedMonth = vi.fn();
+    render(
+      <Historial
+        {...baseProps}
+        selectedYear={2026}
+        selectedMonth={6}
+        setSelectedYear={setSelectedYear}
+        setSelectedMonth={setSelectedMonth}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Buscar en todo el historial' }));
+
+    expect(setSelectedYear).toHaveBeenCalledWith(null);
+    expect(setSelectedMonth).toHaveBeenCalledWith(null);
+  });
+
+  it('"Quitar filtros" limpia búsqueda, categoría, tipo Y período', () => {
+    const setSelectedYear = vi.fn();
+    const setSelectedMonth = vi.fn();
+    render(
+      <Historial
+        {...baseProps}
+        selectedYear={2026}
+        selectedMonth={6}
+        setSelectedYear={setSelectedYear}
+        setSelectedMonth={setSelectedMonth}
+      />
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Buscar…'), { target: { value: 'taxi' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Quitar filtros' }));
+
+    expect(setSelectedYear).toHaveBeenCalledWith(null);
+    expect(setSelectedMonth).toHaveBeenCalledWith(null);
+    expect(screen.getByPlaceholderText('Buscar…')).toHaveValue('');
   });
 });
 
