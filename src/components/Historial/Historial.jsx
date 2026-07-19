@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X, MagnifyingGlass } from '@phosphor-icons/react';
@@ -22,10 +22,21 @@ import { cn } from '../ds/cn';
 //
 // Alcance CERRADO (negociado con el PO, ver checkpoint): SIN selección
 // múltiple/acciones en lote, SIN sugerencia heurística de categoría, SIN
-// editar/eliminar movimientos (filas de solo lectura, igual que Dashboard
-// hoy — clic/expansión/editar es IV-B), SIN navegación por teclado especial
-// (IV-D), SIN swipe (IV-E), SIN estados ilustrados completos (IV-F: vacío
-// ilustrado, sin-resultados con dos salidas, error de sync), SIN nota IA.
+// swipe (IV-E), SIN estados ilustrados completos (IV-F: vacío ilustrado,
+// sin-resultados con dos salidas, error de sync), SIN nota IA.
+//
+// Checkpoint IV-D — navegación completa por teclado (↑↓/Enter/E/⌫/Escape),
+// roving tabindex: Historial es la ÚNICA autoridad de cuál fila es
+// alcanzable por Tab.
+//
+// LIMITACIÓN CONOCIDA DE IV-D (decisión consciente de arquitectura, no un
+// descuido ni un workaround pendiente): si durante la edición un movimiento
+// cambia de fecha y, por lo tanto, migra a otro GrupoDía, React desmonta el
+// nodo original antes de que Sheet.jsx pueda restaurar el foco por
+// referencia. Resolver correctamente este caso requiere redefinir el
+// contrato de restauración de foco de Sheet.jsx. Esa decisión quedó
+// explícitamente fuera del alcance de IV-D para preservar la autoridad
+// actual del componente y evitar introducir una segunda autoridad de foco.
 //
 // Filtro de mes: reusa selectedYear/selectedMonth/setSelectedYear/
 // setSelectedMonth de useFilters() (que a su vez delega a PeriodContext,
@@ -67,6 +78,42 @@ export function Historial({
   const [expandedId, setExpandedId] = useState(null);
   const toggleExpanded = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
+  // Checkpoint IV-D — Historial es la ÚNICA autoridad del roving tabindex de
+  // sus filas (docs/design/screens/Saldo Historial.dc.html: "↑↓ recorren
+  // filas, Enter expande, E edita, ⌫ elimina, foco visible siempre"). Una
+  // sola fila del listado es alcanzable por Tab a la vez; ↑↓ mueve el foco
+  // real del DOM entre filas.
+  //
+  // `explicitActiveId`: la última fila que el usuario eligió de verdad (por
+  // teclado o mouse, vía onFocus de cada fila — único punto de escritura).
+  // `effectiveActiveId` (derivado, sin efecto): si esa fila sigue visible se
+  // usa tal cual; si desapareció por un filtro (nadie tenía foco real ahí —
+  // el usuario está en el buscador) cae a la primera fila visible, SIN
+  // robarle el foco a nada — nunca se llama .focus() acá, es solo el valor
+  // que decide qué fila tiene tabIndex 0 la próxima vez que el usuario entre
+  // a la lista.
+  const [explicitActiveId, setExplicitActiveId] = useState(null);
+  const rowRefs = useRef(new Map());
+  const setRowRef = (id) => (node) => {
+    if (node) rowRefs.current.set(id, node);
+    else rowRefs.current.delete(id);
+  };
+
+  // Único mecanismo de "foco pendiente por id": una fila puede desaparecer
+  // del DOM como consecuencia directa de una acción del propio usuario sobre
+  // ELLA (eliminarla) — el navegador resetea el foco a <body> cuando el
+  // elemento enfocado se desmonta. Se calcula el vecino ANTES de eliminar y
+  // se consume acá, una sola vez por render, sin sondear nada en cada
+  // renderización ajena (evita robarle el foco al buscador mientras el
+  // usuario filtra, que no tiene relación con esto).
+  const pendingFocusIdRef = useRef(null);
+  useEffect(() => {
+    if (pendingFocusIdRef.current == null) return;
+    const id = pendingFocusIdRef.current;
+    pendingFocusIdRef.current = null;
+    rowRefs.current.get(id)?.focus();
+  });
+
   // Deep-link desde el banner de dominancia de "Otros" en ChartsTab — se
   // consume una sola vez al montar y se limpia, mismo patrón que tenía
   // ExpenseList.jsx (initialCategoryFilter/onInitialFilterConsumed).
@@ -104,6 +151,72 @@ export function Historial({
   ];
 
   const groups = groupMovementsByDay(movements, i18n.language, new Date());
+
+  // Orden visual real (cruza fronteras de GrupoDía) — la misma que ve el
+  // usuario en pantalla, necesaria para que ↑↓ avancen a la fila siguiente
+  // aunque esté en otro día.
+  const orderedMovements = useMemo(() => groups.flatMap((g) => g.items), [groups]);
+  const indexById = useMemo(
+    () => new Map(orderedMovements.map((m, i) => [m.id, i])),
+    [orderedMovements]
+  );
+
+  const effectiveActiveId = useMemo(() => {
+    if (orderedMovements.length === 0) return null;
+    if (explicitActiveId != null && indexById.has(explicitActiveId)) return explicitActiveId;
+    return orderedMovements[0].id;
+  }, [orderedMovements, indexById, explicitActiveId]);
+
+  // Único punto de entrada de eliminación (teclado ⌫ y clic en "Eliminar"
+  // dentro de ExpansionDetalle pasan por acá): calcula el vecino ANTES de
+  // eliminar y lo deja en pendingFocusIdRef — la fila desaparece del DOM
+  // como efecto directo de esta acción, así que el foco se recupera acá
+  // mismo, no en un efecto genérico que reaccione a cualquier cambio de la
+  // lista.
+  const handleDeleteMovement = (movement) => {
+    if (!onDeleteMovement) return;
+    const index = indexById.get(movement.id);
+    const neighbor = orderedMovements[index + 1] ?? orderedMovements[index - 1] ?? null;
+    pendingFocusIdRef.current = neighbor?.id ?? null;
+    setExplicitActiveId(neighbor?.id ?? null);
+    onDeleteMovement(movement);
+  };
+
+  const handleRowKeyDown = (e, movement) => {
+    const index = indexById.get(movement.id);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = orderedMovements[index + 1];
+      if (next) rowRefs.current.get(next.id)?.focus();
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = orderedMovements[index - 1];
+      if (prev) rowRefs.current.get(prev.id)?.focus();
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (expandedId === movement.id) {
+        e.preventDefault();
+        setExpandedId(null);
+      }
+      return;
+    }
+    if ((e.key === 'e' || e.key === 'E') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (!onEditMovement) return;
+      e.preventDefault();
+      onEditMovement(movement);
+      return;
+    }
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault();
+      handleDeleteMovement(movement);
+    }
+    // Enter: sin manejo explícito — la fila es un <button> real, el
+    // navegador ya dispara su onClick (toggleExpanded) nativamente.
+  };
 
   const monthChipLabel = (() => {
     if (selectedYear == null) return null;
@@ -202,6 +315,7 @@ export function Historial({
                 {group.items.map((item) => (
                   <div key={item.id}>
                     <FilaMovimiento
+                      ref={setRowRef(item.id)}
                       description={item.description}
                       date={item.date}
                       amount={item.amount}
@@ -210,12 +324,15 @@ export function Historial({
                       category={item.type === 'expense' ? item.category : undefined}
                       showRelativeDate={false}
                       onClick={() => toggleExpanded(item.id)}
+                      tabIndex={item.id === effectiveActiveId ? 0 : -1}
+                      onKeyDown={(e) => handleRowKeyDown(e, item)}
+                      onFocus={() => setExplicitActiveId(item.id)}
                     />
                     {expandedId === item.id && (
                       <ExpansionDetalle
                         movement={item}
                         onEditMovement={onEditMovement}
-                        onDeleteMovement={onDeleteMovement}
+                        onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
                       />
                     )}
                   </div>

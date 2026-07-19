@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../utils/formatters';
@@ -34,7 +35,7 @@ import { cn } from './cn';
 
 const MINUS_SIGN = '−';
 
-export function FilaMovimiento({
+export const FilaMovimiento = forwardRef(function FilaMovimiento({
   description,
   date,
   amount,
@@ -44,7 +45,10 @@ export function FilaMovimiento({
   showRelativeDate = true,
   className = '',
   onClick = undefined,
-}) {
+  tabIndex = undefined,
+  onKeyDown = undefined,
+  onFocus = undefined,
+}, ref) {
   const { i18n } = useTranslation();
   const isExpense = type === 'expense';
 
@@ -67,12 +71,20 @@ export function FilaMovimiento({
 
   return (
     <Wrapper
+      ref={ref}
       type={onClick ? 'button' : undefined}
       onClick={onClick}
+      tabIndex={tabIndex}
+      onKeyDown={onKeyDown}
+      onFocus={onFocus}
       className={cn(
         'grid items-center h-11 border-b border-ds-border-separator px-1',
         'hover:bg-ds-interaction-hover transition-colors duration-ds-fast ease-ds',
-        onClick && 'w-full text-left cursor-pointer',
+        // Checkpoint IV-D — anillo de foco 2px acento (spec: "foco anillo
+        // acento 2 px"), no el outline genérico global — mismo patrón que
+        // Button.jsx. Solo cuando la fila es interactiva (onClick presente);
+        // Dashboard, que no pasa onClick, no se ve afectado.
+        onClick && 'w-full text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent',
         className
       )}
       style={{ gridTemplateColumns: '1fr 80px 120px' }}
@@ -87,7 +99,7 @@ export function FilaMovimiento({
       </span>
     </Wrapper>
   );
-}
+});
 
 FilaMovimiento.propTypes = {
   description: PropTypes.string.isRequired,
@@ -97,6 +109,9 @@ FilaMovimiento.propTypes = {
   currency: PropTypes.string,
   category: PropTypes.string,
   showRelativeDate: PropTypes.bool,
+  tabIndex: PropTypes.number,
+  onKeyDown: PropTypes.func,
+  onFocus: PropTypes.func,
   className: PropTypes.string,
   onClick: PropTypes.func,
 };

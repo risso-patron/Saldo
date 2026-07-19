@@ -5,7 +5,7 @@
 // pestaña "Movimientos". Alcance CERRADO: sin selección múltiple, sin
 // sugerencia heurística de categoría, sin editar/eliminar (filas de solo
 // lectura, igual que Dashboard hoy), sin estados ilustrados completos.
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Historial } from './Historial';
 
 vi.mock('react-i18next', () => ({
@@ -334,5 +334,139 @@ describe('Historial — Checkpoint IV-B: filas interactivas, expansión en líne
     fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
 
     expect(screen.getByRole('button', { name: /eliminar/i })).toBeInTheDocument();
+  });
+});
+
+describe('Historial — Checkpoint IV-D: navegación completa por teclado (roving tabindex)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 14)); // martes 14 jul 2026
+  });
+  afterEach(() => vi.useRealTimers());
+
+  // Orden visual esperado (groupMovementsByDay: por día desc; dentro del
+  // día, ingresos antes que gastos — orden de `movements` en Historial.jsx):
+  // Nómina (hoy), Farmacia (hoy), Supermercado (ayer) — cruza GrupoDía.
+  const incomes = [{ id: 'i1', description: 'Nómina', date: '2026-07-14', amount: 2400 }];
+  const expenses = [
+    { id: 'e1', description: 'Farmacia', date: '2026-07-14', category: 'Salud', amount: 38.2 },
+    { id: 'e2', description: 'Supermercado', date: '2026-07-13', category: 'Alimentación', amount: 50 },
+  ];
+
+  it('solo una fila es alcanzable por Tab (tabIndex 0) antes de cualquier interacción — la primera del orden visual', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+
+    expect(screen.getByRole('button', { name: /Nómina/ })).toHaveAttribute('tabIndex', '0');
+    expect(screen.getByRole('button', { name: /Farmacia/ })).toHaveAttribute('tabIndex', '-1');
+    expect(screen.getByRole('button', { name: /Supermercado/ })).toHaveAttribute('tabIndex', '-1');
+  });
+
+  it('ArrowDown mueve el foco real del DOM a la fila siguiente, cruzando el límite de GrupoDía', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    const nomina = screen.getByRole('button', { name: /Nómina/ });
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+    const supermercado = screen.getByRole('button', { name: /Supermercado/ });
+
+    nomina.focus();
+    fireEvent.keyDown(nomina, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(farmacia);
+
+    fireEvent.keyDown(farmacia, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(supermercado);
+
+    // Última fila: ArrowDown no tiene adónde ir, no hace nada.
+    fireEvent.keyDown(supermercado, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(supermercado);
+  });
+
+  it('ArrowUp mueve el foco real del DOM a la fila anterior', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+
+    farmacia.focus();
+    fireEvent.keyDown(farmacia, { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /Nómina/ }));
+  });
+
+  it('mover el foco real (programático, equivalente a lo que hace un clic real en el navegador) también actualiza cuál fila es tabbable — un único punto de sincronización (onFocus)', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+
+    // jsdom no simula que un clic real mueve el foco (fireEvent.click no
+    // dispara el `focus` nativo que sí dispara un navegador real) — se
+    // invoca .focus() directamente, envuelto en act(), como equivalente de
+    // prueba de esa consecuencia del clic.
+    act(() => {
+      screen.getByRole('button', { name: /Supermercado/ }).focus();
+    });
+
+    expect(screen.getByRole('button', { name: /Supermercado/ })).toHaveAttribute('tabIndex', '0');
+    expect(screen.getByRole('button', { name: /Nómina/ })).toHaveAttribute('tabIndex', '-1');
+  });
+
+  it('Escape colapsa la fila expandida sobre la que está el foco', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+
+    fireEvent.click(farmacia);
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+
+    fireEvent.keyDown(farmacia, { key: 'Escape' });
+    expect(screen.queryByText(/Categoría: Salud/)).not.toBeInTheDocument();
+  });
+
+  it('E sobre la fila con foco dispara onEditMovement con ese movimiento (no la hoja directamente)', () => {
+    const onEditMovement = vi.fn();
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} onEditMovement={onEditMovement} />);
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+
+    farmacia.focus();
+    fireEvent.keyDown(farmacia, { key: 'e' });
+
+    expect(onEditMovement).toHaveBeenCalledTimes(1);
+    expect(onEditMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1' }));
+  });
+
+  it('⌫ sobre la fila con foco elimina y mueve el foco real al vecino SIGUIENTE (misma prioridad que la especificación de posición)', () => {
+    const onDeleteMovement = vi.fn();
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} onDeleteMovement={onDeleteMovement} />);
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+
+    farmacia.focus();
+    fireEvent.keyDown(farmacia, { key: 'Backspace' });
+
+    expect(onDeleteMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1' }));
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /Supermercado/ }));
+  });
+
+  it('⌫ sobre la ÚLTIMA fila mueve el foco al vecino ANTERIOR (no hay siguiente) — nunca queda huérfano en document.body', () => {
+    const onDeleteMovement = vi.fn();
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} onDeleteMovement={onDeleteMovement} />);
+    const supermercado = screen.getByRole('button', { name: /Supermercado/ });
+
+    supermercado.focus();
+    fireEvent.keyDown(supermercado, { key: 'Backspace' });
+
+    expect(onDeleteMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e2' }));
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /Farmacia/ }));
+    expect(document.activeElement).not.toBe(document.body);
+  });
+
+  it('clic en "Eliminar" desde la expansión pasa por el MISMO mecanismo de foco que ⌫ (un único camino de eliminación)', () => {
+    const onDeleteMovement = vi.fn();
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} onDeleteMovement={onDeleteMovement} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ })); // expande
+    fireEvent.click(screen.getByRole('button', { name: /eliminar/i }));
+
+    expect(onDeleteMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1' }));
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /Supermercado/ }));
+  });
+
+  it('sin onDeleteMovement, ⌫ no hace nada (no revienta ni llama a nada)', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+
+    farmacia.focus();
+    expect(() => fireEvent.keyDown(farmacia, { key: 'Backspace' })).not.toThrow();
   });
 });
