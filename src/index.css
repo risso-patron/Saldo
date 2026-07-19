@@ -200,6 +200,29 @@
     font-variant-numeric: tabular-nums;
     text-align: right; /* toda cifra siempre alineada a la derecha */
   }
+
+  /* Checkpoint IV-E.1 — layout responsivo de FilaMovimiento.jsx
+     (docs/design/screens/Saldo Historial.dc.html + Saldo Dashboard.dc.html:
+     mobile apila concepto/categoría en dos líneas con el importe a la
+     derecha abarcando ambas; desktop los pone en 3 columnas en línea, como
+     ya existía). Los 3 elementos (concepto/columna media/importe) NO
+     cambian de posición en el árbol de React — siguen siendo hermanos en el
+     mismo orden; solo cambia cómo el grid los ubica según el viewport, vía
+     `grid-area` en cada uno. Tailwind no tiene una utilidad de
+     grid-template-areas responsiva sin sintaxis arbitraria frágil para
+     strings con comillas anidadas — se resuelve acá con CSS plano, mismo
+     criterio que otros valores arbitrarios ya documentados en el proyecto
+     (ver Toast.jsx). */
+  .fila-movimiento-grid {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "desc amt" "cat amt";
+  }
+  @media (min-width: 768px) {
+    .fila-movimiento-grid {
+      grid-template-columns: 1fr 80px 120px;
+      grid-template-areas: "desc cat amt";
+    }
+  }
 }
 
 /* Reduced motion — componentes ds/ (identificados por sus utilidades

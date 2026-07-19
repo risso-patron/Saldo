@@ -78,7 +78,21 @@ export const FilaMovimiento = forwardRef(function FilaMovimiento({
       onKeyDown={onKeyDown}
       onFocus={onFocus}
       className={cn(
-        'grid items-center h-11 border-b border-ds-border-separator px-1',
+        // Checkpoint IV-E.1 — 52px/apilado en mobile, 44px/3-columnas desde
+        // md (768px) — .fila-movimiento-grid define grid-template-areas
+        // responsivo en index.css (ver comentario ahí). Mismos 3 hijos en
+        // el mismo orden en ambos casos, solo cambia su `grid-area`.
+        //
+        // DECISIÓN DE ALCANCE DE IV-E.1: este checkpoint implementa
+        // únicamente el layout responsivo compartido de FilaMovimiento. El
+        // breakpoint específico de tablet definido por el mockup (hoja
+        // inferior hasta ~834px) no se aborda acá. IV-E.1 reutiliza
+        // deliberadamente el corte responsivo actual (`md`, 768px) y deja la
+        // alineación definitiva del comportamiento tablet para IV-E.2,
+        // cuando evolucione Sheet.jsx mediante el prop opcional ya
+        // aprobado — no antes.
+        'fila-movimiento-grid grid items-center gap-x-4 h-[52px] md:h-11',
+        'border-b border-ds-border-separator px-1',
         'hover:bg-ds-interaction-hover transition-colors duration-ds-fast ease-ds',
         // Checkpoint IV-D — anillo de foco 2px acento (spec: "foco anillo
         // acento 2 px"), no el outline genérico global — mismo patrón que
@@ -87,13 +101,12 @@ export const FilaMovimiento = forwardRef(function FilaMovimiento({
         onClick && 'w-full text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent',
         className
       )}
-      style={{ gridTemplateColumns: '1fr 80px 120px' }}
     >
-      <span className="text-ds-body text-ds-text-primary truncate">{description}</span>
+      <span style={{ gridArea: 'desc' }} className="text-ds-body text-ds-text-primary truncate">{description}</span>
       {middleColumnContent && (
-        <span className="text-ds-caption text-ds-text-tertiary truncate">{middleColumnContent}</span>
+        <span style={{ gridArea: 'cat' }} className="text-ds-caption text-ds-text-tertiary truncate">{middleColumnContent}</span>
       )}
-      <span className="text-ds-numeric text-ds-text-primary tabular-nums">
+      <span style={{ gridArea: 'amt' }} className="text-ds-numeric text-ds-text-primary tabular-nums">
         {isExpense ? MINUS_SIGN : ''}
         {formattedAmount}
       </span>
