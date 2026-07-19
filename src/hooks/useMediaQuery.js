@@ -42,3 +42,15 @@ const DS_DESKTOP_QUERY = '(min-width: 1200px)';
 export function useIsDesktop() {
   return useMediaQuery(DS_DESKTOP_QUERY);
 }
+
+// Checkpoint IV-E.3 — corte "fila mobile": el mismo `md` (768px) que ya usa
+// el layout apilado de FilaMovimiento (IV-E.1) y el propio mockup ("Filas
+// de 52 px... deslizar una fila revela Editar/Eliminar" — el swipe está
+// descripto únicamente bajo el mockup Mobile, NO bajo Tablet). Envoltorio
+// nombrado por la misma razón que useIsDesktop(): quien lo consume no
+// necesita conocer el valor en píxeles ni el mecanismo.
+const MOBILE_ROW_QUERY = '(max-width: 767px)';
+
+export function useIsMobileRow() {
+  return useMediaQuery(MOBILE_ROW_QUERY);
+}

@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useMediaQuery, useIsDesktop } from './useMediaQuery';
+import { useMediaQuery, useIsDesktop, useIsMobileRow } from './useMediaQuery';
 
 // Checkpoint IV-E.2 — primer hook de breakpoint "vivo" del proyecto.
 // setupTests.js mockea window.matchMedia globalmente (matches: false,
@@ -99,5 +99,25 @@ describe('useIsDesktop', () => {
 
     expect(result.current).toBe(true);
     expect(window.matchMedia).toHaveBeenCalledWith('(min-width: 1200px)');
+  });
+});
+
+describe('useIsMobileRow', () => {
+  let originalMatchMedia;
+  beforeEach(() => {
+    originalMatchMedia = window.matchMedia;
+  });
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+  });
+
+  it('consulta el corte de fila mobile (max-width: 767px), mismo corte que el layout apilado de FilaMovimiento', () => {
+    const { mql } = makeMatchMediaMock(true);
+    window.matchMedia = vi.fn(() => mql);
+
+    const { result } = renderHook(() => useIsMobileRow());
+
+    expect(result.current).toBe(true);
+    expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 767px)');
   });
 });

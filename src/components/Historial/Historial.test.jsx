@@ -7,7 +7,7 @@
 // lectura, igual que Dashboard hoy), sin estados ilustrados completos.
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { Historial } from './Historial';
-import { useIsDesktop } from '../../hooks/useMediaQuery';
+import { useIsDesktop, useIsMobileRow } from '../../hooks/useMediaQuery';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ i18n: { language: 'es' } }),
@@ -19,8 +19,31 @@ vi.mock('react-i18next', () => ({
 // entonces (en línea) — se mockea acá en `true` por defecto para que seguir
 // pasando sin modificarlos sea el comportamiento por defecto del archivo;
 // el describe de IV-E.2 lo sobreescribe puntualmente a `false`.
+//
+// Checkpoint IV-E.3 — useIsMobileRow decide si el swipe está activo
+// (FilaDeslizable). Se mockea en `false` por defecto (mismo criterio: los
+// tests anteriores a IV-E.3 no conocían el swipe) — el describe de IV-E.3
+// lo sobreescribe puntualmente a `true`.
 vi.mock('../../hooks/useMediaQuery', () => ({
   useIsDesktop: vi.fn(() => true),
+  useIsMobileRow: vi.fn(() => false),
+}));
+
+// Checkpoint IV-E.3 — FilaDeslizable envuelve el gesto real (framer-motion
+// drag), que no tiene sentido simular en jsdom (sin motor de layout/touch
+// real — ver FilaDeslizable.test.jsx para el porqué). Acá se reemplaza por
+// un doble simple con dos botones que invocan onReveal/onCloseReveal
+// directamente, para poder probar la COORDINACIÓN entre filas que vive en
+// Historial.jsx (el reducer) de forma determinística — no la física del
+// gesto, que se valida en navegador/dispositivo.
+vi.mock('./FilaDeslizable', () => ({
+  FilaDeslizable: ({ id, isRevealed, onReveal, onCloseReveal, children }) => (
+    <div data-testid={`fila-deslizable-${id}`} data-revealed={isRevealed}>
+      <button type="button" onClick={() => onReveal(id)}>{`reveal-${id}`}</button>
+      <button type="button" onClick={() => onCloseReveal(id)}>{`close-reveal-${id}`}</button>
+      {children}
+    </div>
+  ),
 }));
 
 const noop = () => {};
@@ -565,5 +588,87 @@ describe('Historial — Checkpoint IV-E.2: HojaDetalle en tablet/mobile (mismo e
     fireEvent.click(screen.getByRole('button', { name: /eliminar/i }));
 
     expect(onDeleteMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1' }));
+  });
+});
+
+describe('Historial — Checkpoint IV-E.3: swipe-to-reveal, acordeón único con la expansión (rowInteractionReducer)', () => {
+  // FilaDeslizable está mockeado arriba (doble simple con botones
+  // reveal-{id}/close-reveal-{id}) — acá se prueba la COORDINACIÓN entre
+  // filas que vive en Historial.jsx, no la física del gesto.
+  const expenses = [
+    { id: 'a', description: 'Fila A', date: '2026-07-14', category: 'Salud', amount: 10 },
+    { id: 'b', description: 'Fila B', date: '2026-07-14', category: 'Salud', amount: 20 },
+  ];
+
+  beforeEach(() => {
+    useIsMobileRow.mockReturnValue(true);
+  });
+  afterEach(() => {
+    useIsMobileRow.mockReturnValue(false);
+  });
+
+  it('secuencia completa: swipe A → swipe B cierra A → tap en B cierra el swipe y abre el detalle → Escape cierra todo', () => {
+    render(<Historial {...baseProps} expenses={expenses} onEditMovement={noop} />);
+
+    // 1) Swipe sobre fila A → acciones visibles.
+    fireEvent.click(screen.getByRole('button', { name: 'reveal-a' }));
+    expect(screen.getByTestId('fila-deslizable-a')).toHaveAttribute('data-revealed', 'true');
+    expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'false');
+    expect(screen.queryByText(/Categoría:/)).not.toBeInTheDocument();
+
+    // 2) Swipe sobre fila B → A se cierra automáticamente.
+    fireEvent.click(screen.getByRole('button', { name: 'reveal-b' }));
+    expect(screen.getByTestId('fila-deslizable-a')).toHaveAttribute('data-revealed', 'false');
+    expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'true');
+
+    // 3) Tap sobre B (la fila real envuelta, no el doble) → el swipe
+    // desaparece y se abre el detalle.
+    fireEvent.click(screen.getByRole('button', { name: /Fila B/ }));
+    expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'false');
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+
+    // Nunca coexisten expansión y swipe.
+    expect(screen.getByTestId('fila-deslizable-a')).toHaveAttribute('data-revealed', 'false');
+
+    // 4) Escape sobre la fila con foco (B, recién tocada) → todo cierra.
+    fireEvent.keyDown(screen.getByRole('button', { name: /Fila B/ }), { key: 'Escape' });
+    expect(screen.queryByText(/Categoría: Salud/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'false');
+  });
+
+  it('revelar una fila por swipe cierra una expansión ya abierta en otra fila', () => {
+    render(<Historial {...baseProps} expenses={expenses} onEditMovement={noop} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Fila A/ })); // expande A
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'reveal-b' })); // swipe en B
+
+    expect(screen.queryByText(/Categoría: Salud/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'true');
+  });
+
+  it('expandir una fila cierra un swipe ya revelado en otra fila', () => {
+    render(<Historial {...baseProps} expenses={expenses} onEditMovement={noop} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reveal-a' })); // swipe en A
+    expect(screen.getByTestId('fila-deslizable-a')).toHaveAttribute('data-revealed', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: /Fila B/ })); // expande B
+
+    expect(screen.getByTestId('fila-deslizable-a')).toHaveAttribute('data-revealed', 'false');
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+  });
+
+  it('close-reveal de una fila que ya no es la activa (mensaje tardío) no pisa el estado de la fila que sí lo es', () => {
+    render(<Historial {...baseProps} expenses={expenses} onEditMovement={noop} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reveal-a' }));
+    fireEvent.click(screen.getByRole('button', { name: 'reveal-b' })); // B pasa a ser la activa, A ya se cerró
+
+    // Un close-reveal tardío de A (ya inactiva) no debe tocar el estado de B.
+    fireEvent.click(screen.getByRole('button', { name: 'close-reveal-a' }));
+
+    expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'true');
   });
 });

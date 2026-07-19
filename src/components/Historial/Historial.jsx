@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X, MagnifyingGlass } from '@phosphor-icons/react';
@@ -8,8 +8,10 @@ import { formatCurrency } from '../../utils/formatters';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
 import { FilaMovimiento } from '../ds/FilaMovimiento';
 import { ExpansionDetalle } from './ExpansionDetalle';
+import { FilaDeslizable } from './FilaDeslizable';
 import { Sheet } from '../ds/Sheet';
-import { useIsDesktop } from '../../hooks/useMediaQuery';
+import { rowInteractionReducer, ROW_INTERACTION_INITIAL } from './rowInteractionReducer';
+import { useIsDesktop, useIsMobileRow } from '../../hooks/useMediaQuery';
 import { cn } from '../ds/cn';
 
 // Checkpoint IV-A (Saldo Design Constitution v1.2) — Historial de movimientos.
@@ -24,8 +26,19 @@ import { cn } from '../ds/cn';
 //
 // Alcance CERRADO (negociado con el PO, ver checkpoint): SIN selección
 // múltiple/acciones en lote, SIN sugerencia heurística de categoría, SIN
-// swipe (IV-E.3), SIN estados ilustrados completos (IV-F: vacío ilustrado,
-// sin-resultados con dos salidas, error de sync), SIN nota IA.
+// estados ilustrados completos (IV-F: vacío ilustrado, sin-resultados con
+// dos salidas, error de sync), SIN nota IA.
+//
+// Checkpoint IV-E.3 — swipe-to-reveal (mobile, `useIsMobileRow`, el mismo
+// corte `md` que ya usa el layout apilado de FilaMovimiento en IV-E.1;
+// tablet/desktop no se ven afectados). `expandedId` (IV-B/IV-E.2) y
+// `swipedId` (IV-E.3, revelar Editar/Eliminar deslizando la fila) son
+// proyecciones de lectura de un ÚNICO useReducer (rowInteractionReducer.js)
+// — no dos useState independientes con exclusión mutua mantenida a mano.
+// El reducer es puro y agnóstico de gestos: Historial.jsx decide QUÉ
+// transición pedir (ver handleRowClick/handleReveal/handleCloseReveal),
+// el reducer solo la ejecuta. FilaDeslizable.jsx (el wrapper del gesto) no
+// conoce otras filas — la coordinación entre filas vive acá.
 //
 // Checkpoint IV-E.2 — HojaDetalle: en desktop real (`ds-desktop`, 1200px,
 // el mismo corte que ya usa DSSidebar.jsx) el detalle sigue expandiéndose
@@ -87,14 +100,45 @@ export function Historial({
   const [categoryFilter, setCategoryFilter] = useState(initialCategoryFilter || 'all');
   const [typeFilter, setTypeFilter] = useState('all');
   // Checkpoint IV-B — expansión en línea (definitiva, no provisoria): clic
-  // en una fila la expande mostrando detalle + Editar. Un solo id expandido
-  // a la vez (acordeón) — clic en la misma fila la colapsa, clic en otra
-  // cambia cuál está expandida.
-  const [expandedId, setExpandedId] = useState(null);
-  const toggleExpanded = (id) => setExpandedId((prev) => (prev === id ? null : id));
+  // en una fila la expande mostrando detalle + Editar. Checkpoint IV-E.3 —
+  // `expandedId` y `swipedId` (revelar Editar/Eliminar por swipe, mobile)
+  // son proyecciones de UN ÚNICO reducer (rowInteractionReducer.js): nunca
+  // pueden ser ambos no-nulos, por construcción (cada transición del
+  // reducer define el par completo). Acordeón de uno para las DOS
+  // interacciones combinadas, no una por separado.
+  const [rowInteraction, dispatchRowInteraction] = useReducer(
+    rowInteractionReducer,
+    ROW_INTERACTION_INITIAL
+  );
+  const { expandedId, swipedId } = rowInteraction;
+
+  // La intención ("¿abrir o cerrar?") se resuelve ACÁ, mirando el estado
+  // actual — el reducer nunca inspecciona el estado previo, solo ejecuta.
+  const handleRowClick = (id) => {
+    dispatchRowInteraction(
+      expandedId === id ? { type: 'CLOSE_ACTIVE_ROW' } : { type: 'OPEN_EXPANSION', id }
+    );
+  };
+  // Checkpoint IV-E.3 — únicos dos puntos de entrada que FilaDeslizable
+  // conoce (onReveal/onCloseReveal). La exclusión con `expandedId` es
+  // gratis por la forma del reducer (REVEAL_ACTIONS ya limpia expandedId);
+  // `handleCloseReveal` es id-aware para no pisar a otra fila que haya
+  // pasado a ser la activa entretanto (coordinación entre filas, exclusiva
+  // de Historial — FilaDeslizable no la conoce).
+  const handleReveal = (id) => {
+    dispatchRowInteraction({ type: 'REVEAL_ACTIONS', id });
+  };
+  const handleCloseReveal = (id) => {
+    if (swipedId === id) {
+      dispatchRowInteraction({ type: 'CLOSE_ACTIVE_ROW' });
+    }
+  };
+
   // Checkpoint IV-E.2 — decide únicamente CÓMO se renderiza expandedId
   // (en línea vs. HojaDetalle), nunca SI hay algo expandido.
   const isDesktop = useIsDesktop();
+  // Checkpoint IV-E.3 — decide si el gesto de swipe está activo (mobile).
+  const isMobileRow = useIsMobileRow();
 
   // Checkpoint IV-D — Historial es la ÚNICA autoridad del roving tabindex de
   // sus filas (docs/design/screens/Saldo Historial.dc.html: "↑↓ recorren
@@ -216,9 +260,9 @@ export function Historial({
       return;
     }
     if (e.key === 'Escape') {
-      if (expandedId === movement.id) {
+      if (expandedId === movement.id || swipedId === movement.id) {
         e.preventDefault();
-        setExpandedId(null);
+        dispatchRowInteraction({ type: 'CLOSE_ACTIVE_ROW' });
       }
       return;
     }
@@ -233,7 +277,7 @@ export function Historial({
       handleDeleteMovement(movement);
     }
     // Enter: sin manejo explícito — la fila es un <button> real, el
-    // navegador ya dispara su onClick (toggleExpanded) nativamente.
+    // navegador ya dispara su onClick (handleRowClick) nativamente.
   };
 
   const monthChipLabel = (() => {
@@ -330,8 +374,8 @@ export function Historial({
             <div key={group.key}>
               <p className="text-ds-overline">{group.label}</p>
               <div className="mt-1">
-                {group.items.map((item) => (
-                  <div key={item.id}>
+                {group.items.map((item) => {
+                  const fila = (
                     <FilaMovimiento
                       ref={setRowRef(item.id)}
                       description={item.description}
@@ -341,34 +385,54 @@ export function Historial({
                       currency={item.currency}
                       category={item.type === 'expense' ? item.category : undefined}
                       showRelativeDate={false}
-                      onClick={() => toggleExpanded(item.id)}
+                      onClick={() => handleRowClick(item.id)}
                       tabIndex={item.id === effectiveActiveId ? 0 : -1}
                       onKeyDown={(e) => handleRowKeyDown(e, item)}
                       onFocus={() => setExplicitActiveId(item.id)}
                     />
-                    {expandedId === item.id && (
-                      isDesktop ? (
-                        <ExpansionDetalle
-                          movement={item}
+                  );
+
+                  return (
+                    <div key={item.id}>
+                      {isMobileRow ? (
+                        <FilaDeslizable
+                          id={item.id}
+                          isRevealed={swipedId === item.id}
+                          onReveal={handleReveal}
+                          onCloseReveal={handleCloseReveal}
                           onEditMovement={onEditMovement}
                           onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
-                        />
-                      ) : (
-                        <Sheet
-                          isOpen
-                          onClose={() => setExpandedId(null)}
-                          desktopBreakpoint="ds-desktop"
+                          movement={item}
                         >
+                          {fila}
+                        </FilaDeslizable>
+                      ) : (
+                        fila
+                      )}
+                      {expandedId === item.id && (
+                        isDesktop ? (
                           <ExpansionDetalle
                             movement={item}
                             onEditMovement={onEditMovement}
                             onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
                           />
-                        </Sheet>
-                      )
-                    )}
-                  </div>
-                ))}
+                        ) : (
+                          <Sheet
+                            isOpen
+                            onClose={() => dispatchRowInteraction({ type: 'CLOSE_ACTIVE_ROW' })}
+                            desktopBreakpoint="ds-desktop"
+                          >
+                            <ExpansionDetalle
+                              movement={item}
+                              onEditMovement={onEditMovement}
+                              onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
+                            />
+                          </Sheet>
+                        )
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
