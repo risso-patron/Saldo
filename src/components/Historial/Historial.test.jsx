@@ -5,11 +5,22 @@
 // pestaña "Movimientos". Alcance CERRADO: sin selección múltiple, sin
 // sugerencia heurística de categoría, sin editar/eliminar (filas de solo
 // lectura, igual que Dashboard hoy), sin estados ilustrados completos.
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { Historial } from './Historial';
+import { useIsDesktop } from '../../hooks/useMediaQuery';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ i18n: { language: 'es' } }),
+}));
+
+// Checkpoint IV-E.2 — useIsDesktop decide entre expansión en línea (desktop
+// real) y HojaDetalle (Sheet). Todos los tests de este archivo anteriores a
+// IV-E.2 se escribieron asumiendo el único comportamiento que existía
+// entonces (en línea) — se mockea acá en `true` por defecto para que seguir
+// pasando sin modificarlos sea el comportamiento por defecto del archivo;
+// el describe de IV-E.2 lo sobreescribe puntualmente a `false`.
+vi.mock('../../hooks/useMediaQuery', () => ({
+  useIsDesktop: vi.fn(() => true),
 }));
 
 const noop = () => {};
@@ -468,5 +479,91 @@ describe('Historial — Checkpoint IV-D: navegación completa por teclado (rovin
 
     farmacia.focus();
     expect(() => fireEvent.keyDown(farmacia, { key: 'Backspace' })).not.toThrow();
+  });
+});
+
+describe('Historial — Checkpoint IV-E.2: HojaDetalle en tablet/mobile (mismo expandedId, otra representación)', () => {
+  // Sin fake timers en este describe: estas pruebas no dependen de "Hoy"/
+  // "Ayer" (esa cobertura ya vive en los describes de arriba) y Sheet.jsx
+  // necesita esperar su efecto de foco vía requestAnimationFrame
+  // (waitFor) — mezclar eso con vi.useFakeTimers() es el gotcha ya
+  // documentado del proyecto (userEvent/waitFor + fake timers cuelgan).
+  const expenses = [
+    { id: 'e1', description: 'Farmacia', date: '2026-07-14', category: 'Salud', amount: 38.2 },
+  ];
+
+  beforeEach(() => {
+    useIsDesktop.mockReturnValue(false);
+  });
+  afterEach(() => {
+    useIsDesktop.mockReturnValue(true);
+  });
+
+  it('en tablet/mobile (isDesktop=false), expandir una fila NO la expande en línea — abre una HojaDetalle (Sheet)', () => {
+    render(<Historial {...baseProps} expenses={expenses} />);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+
+    // El mismo ExpansionDetalle, ahora dentro de un diálogo — no una
+    // segunda implementación de detalle.
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
+  });
+
+  it('Escape cierra la HojaDetalle (vía el propio manejador de Sheet.jsx) y el foco vuelve a la fila', async () => {
+    render(<Historial {...baseProps} expenses={expenses} />);
+    const farmacia = screen.getByRole('button', { name: /Farmacia/ });
+
+    // jsdom no simula que un clic real mueve el foco (fireEvent.click no
+    // dispara el `focus` nativo que sí dispara un navegador real) — se
+    // enfoca explícitamente para que Sheet.jsx capture la fila correcta
+    // como "elemento a restaurar" al cerrar, igual que en un navegador real.
+    act(() => {
+      farmacia.focus();
+    });
+    fireEvent.click(farmacia);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.activeElement).toBe(farmacia);
+    });
+  });
+
+  it('sin scroll-lock residual: overflow del body se restaura al cerrar la HojaDetalle', () => {
+    render(<Historial {...baseProps} expenses={expenses} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+    expect(document.body.style.overflow).toBe('hidden');
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+
+  it('el botón "Editar" dentro de la HojaDetalle dispara onEditMovement con el movimiento correcto', () => {
+    const onEditMovement = vi.fn();
+    render(<Historial {...baseProps} expenses={expenses} onEditMovement={onEditMovement} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+
+    expect(onEditMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1' }));
+  });
+
+  it('el botón "Eliminar" dentro de la HojaDetalle pasa por el mismo mecanismo de foco que en desktop', () => {
+    const onDeleteMovement = vi.fn();
+    render(<Historial {...baseProps} expenses={expenses} onDeleteMovement={onDeleteMovement} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+    fireEvent.click(screen.getByRole('button', { name: /eliminar/i }));
+
+    expect(onDeleteMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1' }));
   });
 });

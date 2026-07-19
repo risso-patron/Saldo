@@ -8,6 +8,8 @@ import { formatCurrency } from '../../utils/formatters';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
 import { FilaMovimiento } from '../ds/FilaMovimiento';
 import { ExpansionDetalle } from './ExpansionDetalle';
+import { Sheet } from '../ds/Sheet';
+import { useIsDesktop } from '../../hooks/useMediaQuery';
 import { cn } from '../ds/cn';
 
 // Checkpoint IV-A (Saldo Design Constitution v1.2) — Historial de movimientos.
@@ -22,8 +24,21 @@ import { cn } from '../ds/cn';
 //
 // Alcance CERRADO (negociado con el PO, ver checkpoint): SIN selección
 // múltiple/acciones en lote, SIN sugerencia heurística de categoría, SIN
-// swipe (IV-E), SIN estados ilustrados completos (IV-F: vacío ilustrado,
+// swipe (IV-E.3), SIN estados ilustrados completos (IV-F: vacío ilustrado,
 // sin-resultados con dos salidas, error de sync), SIN nota IA.
+//
+// Checkpoint IV-E.2 — HojaDetalle: en desktop real (`ds-desktop`, 1200px,
+// el mismo corte que ya usa DSSidebar.jsx) el detalle sigue expandiéndose
+// en línea (ExpansionDetalle, sin cambios desde IV-B); en todo lo demás
+// (tablet/mobile) el MISMO ExpansionDetalle se renderiza dentro de un
+// <Sheet desktopBreakpoint="ds-desktop">. `expandedId` sigue siendo la
+// única fuente de verdad — no hay un segundo estado que distinga "en línea"
+// de "hoja", solo cambia cómo se renderiza. Sheet.jsx dispara sus propios
+// efectos secundarios (trampa de foco, scroll-lock) en cuanto `isOpen` es
+// true, sin importar si el nodo está oculto por CSS — por eso esta decisión
+// se resuelve en JS (useIsDesktop, primer hook de breakpoint vivo del
+// proyecto) y no con los pares `hidden`/`md:flex` que usa el resto de la
+// navegación responsiva de la app.
 //
 // Checkpoint IV-D — navegación completa por teclado (↑↓/Enter/E/⌫/Escape),
 // roving tabindex: Historial es la ÚNICA autoridad de cuál fila es
@@ -77,6 +92,9 @@ export function Historial({
   // cambia cuál está expandida.
   const [expandedId, setExpandedId] = useState(null);
   const toggleExpanded = (id) => setExpandedId((prev) => (prev === id ? null : id));
+  // Checkpoint IV-E.2 — decide únicamente CÓMO se renderiza expandedId
+  // (en línea vs. HojaDetalle), nunca SI hay algo expandido.
+  const isDesktop = useIsDesktop();
 
   // Checkpoint IV-D — Historial es la ÚNICA autoridad del roving tabindex de
   // sus filas (docs/design/screens/Saldo Historial.dc.html: "↑↓ recorren
@@ -329,11 +347,25 @@ export function Historial({
                       onFocus={() => setExplicitActiveId(item.id)}
                     />
                     {expandedId === item.id && (
-                      <ExpansionDetalle
-                        movement={item}
-                        onEditMovement={onEditMovement}
-                        onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
-                      />
+                      isDesktop ? (
+                        <ExpansionDetalle
+                          movement={item}
+                          onEditMovement={onEditMovement}
+                          onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
+                        />
+                      ) : (
+                        <Sheet
+                          isOpen
+                          onClose={() => setExpandedId(null)}
+                          desktopBreakpoint="ds-desktop"
+                        >
+                          <ExpansionDetalle
+                            movement={item}
+                            onEditMovement={onEditMovement}
+                            onDeleteMovement={onDeleteMovement ? handleDeleteMovement : undefined}
+                          />
+                        </Sheet>
+                      )
                     )}
                   </div>
                 ))}

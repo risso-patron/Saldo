@@ -35,7 +35,36 @@ function getFocusableElements(container) {
   );
 }
 
-export function Sheet({ isOpen, onClose, children, initialFocusRef }) {
+// Checkpoint IV-E.2 — `desktopBreakpoint` (opcional, default 'md'): a qué
+// ancho el panel pasa de "hoja anclada abajo" a "modal centrado". Tailwind
+// (JIT) necesita el nombre de clase completo y literal en el código fuente
+// para generar su CSS — un string armado en tiempo de ejecución
+// (`` `${bp}:inset-0` ``) nunca sería detectado. Por eso NO es un breakpoint
+// libre: son estas dos variantes completas y ya escritas, elegidas por
+// nombre. 'md' preserva EXACTAMENTE el comportamiento anterior a este
+// checkpoint (NewMovementSheet, Omnibar-adyacentes, cualquier consumidor
+// existente — nadie pasa este prop hoy). 'ds-desktop' (1200px, el corte
+// desktop/tablet que ya define la Constitución y ya usa DSSidebar.jsx) lo
+// usa HojaDetalle (Historial, IV-E.2) para seguir viéndose como hoja en
+// todo el rango de tablet del mockup.
+const DESKTOP_VARIANTS = {
+  md: {
+    panel:
+      'md:inset-0 md:bottom-auto md:m-auto md:h-fit md:w-full md:max-w-[480px] ' +
+      'md:rounded-ds-modal md:pt-10 md:px-10 md:pb-8 md:translate-y-0',
+    grabberHidden: 'md:hidden',
+  },
+  'ds-desktop': {
+    panel:
+      'ds-desktop:inset-0 ds-desktop:bottom-auto ds-desktop:m-auto ds-desktop:h-fit ds-desktop:w-full ds-desktop:max-w-[480px] ' +
+      'ds-desktop:rounded-ds-modal ds-desktop:pt-10 ds-desktop:px-10 ds-desktop:pb-8 ds-desktop:translate-y-0',
+    grabberHidden: 'ds-desktop:hidden',
+  },
+};
+
+export function Sheet({ isOpen, onClose, children, initialFocusRef, desktopBreakpoint = 'md' }) {
+  const { panel: desktopPanelClasses, grabberHidden: desktopGrabberHiddenClass } =
+    DESKTOP_VARIANTS[desktopBreakpoint];
   const [entered, setEntered] = useState(false);
   const dialogRef = useRef(null);
   const previouslyFocusedRef = useRef(null);
@@ -147,16 +176,15 @@ export function Sheet({ isOpen, onClose, children, initialFocusRef }) {
           'rounded-t-ds-modal pt-5 px-6 pb-7',
           'transition-[opacity,transform] duration-ds-slow ease-ds',
           entered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2',
-          // Desktop/tablet (≥768px): centrado vía inset-0 + margin:auto,
-          // max-width 480px, radio ds-modal completo, padding 40/40/32.
-          'md:inset-0 md:bottom-auto md:m-auto md:h-fit md:w-full md:max-w-[480px]',
-          'md:rounded-ds-modal md:pt-10 md:px-10 md:pb-8',
-          'md:translate-y-0'
+          // Desktop: centrado vía inset-0 + margin:auto, max-width 480px,
+          // radio ds-modal completo, padding 40/40/32 — a partir de
+          // `desktopBreakpoint` (default 'md', ≥768px; ver DESKTOP_VARIANTS).
+          desktopPanelClasses
         )}
       >
         <div
           aria-hidden="true"
-          className="md:hidden mx-auto mb-5 h-1 w-9 rounded-ds-full bg-ds-border"
+          className={cn('mx-auto mb-5 h-1 w-9 rounded-ds-full bg-ds-border', desktopGrabberHiddenClass)}
         />
         {children}
       </div>
@@ -169,4 +197,5 @@ Sheet.propTypes = {
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node,
   initialFocusRef: PropTypes.shape({ current: PropTypes.any }),
+  desktopBreakpoint: PropTypes.oneOf(Object.keys(DESKTOP_VARIANTS)),
 };
