@@ -82,9 +82,6 @@ function AppContent() {
   // desmontaje/remontaje real cambiándole el prop `key` — metadata de React
   // para el reconciler, no parte del contrato del componente en sí.
   const [newMovementRemountKey, setNewMovementRemountKey] = useState(0);
-  // Checkpoint III-B: toast de "Deshacer" tras crear un movimiento desde
-  // NewMovementSheet. Forma: { movement } | null — null significa "cerrado".
-  const [undoToast, setUndoToast] = useState(null);
   const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
   // Checkpoint IV-B — única instancia de NewMovementSheet, reusada tanto
@@ -161,17 +158,22 @@ function AppContent() {
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
 
-  // Checkpoint IV-A: removeIncome/removeExpense/removeMultiple/
-  // categorizeMultiple seguían sin consumidor en App.jsx (eliminar es
-  // IV-C) — se mantienen fuera de esta desestructuración; useTransactions.js
-  // no se toca, las sigue exponiendo para quien las necesite.
+  // Checkpoint IV-A: removeMultiple/categorizeMultiple siguen sin consumidor
+  // en App.jsx (bulk actions descartadas por el PO) — se mantienen fuera de
+  // esta desestructuración; useTransactions.js no se toca, las sigue
+  // exponiendo para quien las necesite.
   // Checkpoint IV-B: updateIncome/updateExpense vuelven a desestructurarse —
   // editar movimientos desde Historial vía NewMovementSheet en modo edición
   // los necesita de nuevo (contrato ya boolean, sin envoltorio adicional).
+  // Checkpoint IV-C: pendingOperation/deleteMovement/confirmPendingOperation/
+  // undoPendingOperation reemplazan a undoAddMovement (III-B) — el hook es
+  // ahora la única fuente de verdad de la operación reversible activa
+  // (alta o baja), App.jsx solo la renderiza.
   const {
     incomes, expenses, alert, addIncome, addExpense, addBulkTransactions,
     updateIncome, updateExpense,
-    undoAddMovement, showAlert,
+    pendingOperation, deleteMovement, confirmPendingOperation, undoPendingOperation,
+    showAlert,
     balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
   } = useTransactions();
 
@@ -255,23 +257,18 @@ function AppContent() {
   // operaciones de dominio, dos consumidores con necesidades de notificación
   // distintas — Checkpoint III-B): BudgetForm.jsx sigue disparando el
   // showAlert legacy vía handleAddIncome/handleAddExpense; NewMovementSheet
-  // usa estos handleCreate* con { notification: 'none' } y en su lugar
-  // muestra el Toast de "Deshacer" propio de este flujo.
+  // usa estos handleCreate* con { notification: 'toast' } — el hook arranca
+  // la operación reversible internamente (Checkpoint IV-C), acá solo se
+  // registra el logro.
   const handleCreateIncome = (description, amount, date, currency) => {
-    const result = addIncome(description, amount, date, currency, { notification: 'none' });
-    if (result.success) {
-      achievements.recordTransaction('income');
-      setUndoToast({ movement: result.movement });
-    }
+    const result = addIncome(description, amount, date, currency, { notification: 'toast' });
+    if (result.success) achievements.recordTransaction('income');
     return result.success;
   };
 
   const handleCreateExpense = (description, category, amount, date, currency) => {
-    const result = addExpense(description, category, amount, date, currency, { notification: 'none' });
-    if (result.success) {
-      achievements.recordTransaction('expense');
-      setUndoToast({ movement: result.movement });
-    }
+    const result = addExpense(description, category, amount, date, currency, { notification: 'toast' });
+    if (result.success) achievements.recordTransaction('expense');
     return result.success;
   };
 
@@ -394,12 +391,17 @@ function AppContent() {
                 onUpdateExpense={updateExpense}
                 movement={editingMovement}
               />
+              {/* Checkpoint IV-C — un único <Toast>, dirigido enteramente por
+                  pendingOperation (useTransactions.js): App.jsx no decide
+                  cuál de las dos operaciones (alta/baja) está viva ni qué
+                  pasa al confirmar/deshacer, solo renderiza el estado que el
+                  hook ya resolvió. */}
               <Toast
-                isOpen={undoToast !== null}
-                message="Movimiento añadido"
+                isOpen={pendingOperation !== null}
+                message={pendingOperation?.kind === 'delete' ? 'Movimiento eliminado' : 'Movimiento añadido'}
                 actionLabel="Deshacer"
-                onAction={() => { undoAddMovement(undoToast.movement); setUndoToast(null); }}
-                onDismiss={() => setUndoToast(null)}
+                onAction={undoPendingOperation}
+                onDismiss={confirmPendingOperation}
               />
 
               {activeTab === 'resumen' && (
@@ -424,6 +426,7 @@ function AppContent() {
                   initialCategoryFilter={pendingCategoryFilter}
                   onInitialFilterConsumed={() => setPendingCategoryFilter(null)}
                   onEditMovement={setEditingMovement}
+                  onDeleteMovement={deleteMovement}
                 />
               )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}

@@ -133,15 +133,86 @@ export const useTransactions = () => {
     if (error) console.error('Supabase update multiple error:', error.message);
   }, [user]);
 
+  // ── Operación reversible (Checkpoint IV-C) ────────────────────────────────
+  //
+  // Única fuente de verdad de "cuál es la operación reversible viva ahora
+  // mismo" — antes partida entre este hook (la lógica de deshacer un alta,
+  // III-B) y App.jsx (el estado `undoToast` que decidía si había un Toast
+  // visible). Esa partición es lo que iba a obligar a App.jsx a arbitrar
+  // entre dos operaciones ("¿gana el alta o la baja?"), convirtiéndolo en un
+  // orquestador de reglas de negocio — exactamente lo que la Constitución
+  // prohíbe. Ahora vive acá entera.
+  //
+  // pendingOperation: { kind: 'create', movement } | { kind: 'delete', movement, index } | null
+  //
+  // Autoridad única (mismo principio que isAnyOverlayOpen, III-C.4, aplicado
+  // acá a operaciones de dominio en vez de a overlays de UI): iniciar una
+  // operación reversible nueva SIEMPRE finaliza la anterior según su propio
+  // tipo antes de reemplazarla. Nunca hay dos operaciones "Deshacer" vivas
+  // a la vez.
+  const [pendingOperation, setPendingOperation] = useState(null);
+
+  // Remueve del estado local sin sincronizar ni alertar — paso puramente
+  // optimista, compartido por deleteMovement (baja diferida) y por la
+  // compensación de deshacer una creación (antes `undoAddMovement`).
+  const removeFromLocalState = useCallback((movement) => {
+    if (movement.type === 'income') {
+      setIncomes(prev => prev.filter(i => i.id !== movement.id));
+    } else {
+      setExpenses(prev => prev.filter(e => e.id !== movement.id));
+    }
+  }, []);
+
+  // Efecto de "confirmar" una operación pendiente, según su tipo. Se llama
+  // SIEMPRE en el cuerpo de una función normal (deleteMovement,
+  // confirmPendingOperation, los "toast" de addIncome/addExpense) — NUNCA
+  // dentro de un actualizador funcional de setState (`setX(prev => ...)`),
+  // porque StrictMode invoca esos actualizadores dos veces a propósito para
+  // detectar efectos secundarios escondidos ahí — duplicaría el syncDelete.
+  const finalizePendingOperation = useCallback((pending) => {
+    if (!pending) return;
+    if (pending.kind === 'delete') {
+      syncDelete(pending.movement.id);
+      markSaved();
+    }
+    // kind 'create': no-op — el alta ya se sincronizó al crearse.
+  }, [syncDelete, markSaved]);
+
+  const confirmPendingOperation = useCallback(() => {
+    finalizePendingOperation(pendingOperation);
+    setPendingOperation(null);
+  }, [pendingOperation, finalizePendingOperation]);
+
+  const undoPendingOperation = useCallback(() => {
+    if (!pendingOperation) return;
+
+    if (pendingOperation.kind === 'delete') {
+      const { movement, index } = pendingOperation;
+      const restore = (prev) => {
+        const next = [...prev];
+        next.splice(index, 0, movement);
+        return next;
+      };
+      if (movement.type === 'income') setIncomes(restore);
+      else setExpenses(restore);
+    } else {
+      // kind 'create': compensar — ya estaba sincronizado, hay que
+      // removerlo de verdad y avisarle a Supabase (mismo efecto que el
+      // `undoAddMovement` de III-B, ahora como rama de un único coordinador).
+      removeFromLocalState(pendingOperation.movement);
+      syncDelete(pendingOperation.movement.id);
+      markSaved();
+    }
+    setPendingOperation(null);
+  }, [pendingOperation, removeFromLocalState, syncDelete, markSaved]);
+
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
   // `options.notification`: 'legacy' (default, preserva el showAlert interno
-  // ya existente) | 'none' (suprime showAlert de éxito y de error — usado por
-  // el flujo de Toast+Deshacer de Checkpoint III-B, que muestra su propia
-  // notificación en App.jsx en vez de la de Alert.jsx). Cualquier valor que
-  // no sea 'none' se trata como 'legacy' — el valor futuro 'toast' está
-  // documentado pero NO implementado todavía (Checkpoint III-B, alcance
-  // cerrado por el PO).
+  // ya existente — lo sigue usando ImportManager vía handleAddIncome/
+  // handleAddExpense) | 'toast' (suprime showAlert y en su lugar arranca una
+  // operación reversible — Checkpoint IV-C, usado por NewMovementSheet vía
+  // handleCreateIncome/handleCreateExpense).
   const addIncome = useCallback((description, amount, date = null, currency = 'USD', options = {}) => {
     const { notification = 'legacy' } = options;
     const validation = validateTransaction({ description, amount, date });
@@ -162,10 +233,14 @@ export const useTransactions = () => {
 
     setIncomes(prev => [...prev, newIncome]);
     if (notification === 'legacy') showAlert('success', 'Ingreso agregado exitosamente');
+    if (notification === 'toast') {
+      finalizePendingOperation(pendingOperation);
+      setPendingOperation({ kind: 'create', movement: newIncome });
+    }
     syncInsert(newIncome);
     markSaved();
     return { success: true, movement: newIncome };
-  }, [showAlert, syncInsert, markSaved]);
+  }, [showAlert, syncInsert, markSaved, pendingOperation, finalizePendingOperation]);
 
   const addExpense = useCallback((description, category, amount, date = null, currency = 'USD', options = {}) => {
     const { notification = 'legacy' } = options;
@@ -192,10 +267,30 @@ export const useTransactions = () => {
 
     setExpenses(prev => [...prev, newExpense]);
     if (notification === 'legacy') showAlert('success', 'Gasto agregado exitosamente');
+    if (notification === 'toast') {
+      finalizePendingOperation(pendingOperation);
+      setPendingOperation({ kind: 'create', movement: newExpense });
+    }
     syncInsert(newExpense);
     markSaved();
     return { success: true, movement: newExpense };
-  }, [showAlert, syncInsert, markSaved]);
+  }, [showAlert, syncInsert, markSaved, pendingOperation, finalizePendingOperation]);
+
+  // Checkpoint IV-C — ÚNICA API pública para eliminar un movimiento existente
+  // (Historial). Sin confirmación (spec: docs/design/screens/Saldo
+  // Historial.dc.html, "Eliminar: sin confirmación"). Baja diferida: sale
+  // del estado local al instante (Dashboard e Historial lo pierden de vista
+  // gratis, derivan del mismo array); Supabase NO se toca hasta que la
+  // operación se confirme (confirmPendingOperation, cuando expira el Toast)
+  // — mientras tanto puede deshacerse (undoPendingOperation) sin que el
+  // servidor se haya enterado nunca.
+  const deleteMovement = useCallback((movement) => {
+    finalizePendingOperation(pendingOperation);
+    const list = movement.type === 'income' ? incomes : expenses;
+    const index = list.findIndex((m) => m.id === movement.id);
+    removeFromLocalState(movement);
+    setPendingOperation({ kind: 'delete', movement, index });
+  }, [incomes, expenses, pendingOperation, finalizePendingOperation, removeFromLocalState]);
 
   const updateIncome = useCallback((id, updates) => {
     const validation = validateTransaction(updates);
@@ -234,30 +329,6 @@ export const useTransactions = () => {
     markSaved();
     return true;
   }, [showAlert, syncUpdate, markSaved]);
-
-  const removeIncome = useCallback((id) => {
-    setIncomes(prev => prev.filter(i => i.id !== id));
-    showAlert('success', 'Ingreso eliminado');
-    syncDelete(id);
-    markSaved();
-  }, [showAlert, syncDelete, markSaved]);
-
-  const removeExpense = useCallback((id) => {
-    setExpenses(prev => prev.filter(e => e.id !== id));
-    syncDelete(id);
-    markSaved();
-    showAlert('success', 'Gasto eliminado con éxito.');
-  }, [syncDelete, markSaved, showAlert]);
-
-  // Única función pública para "deshacer una creación reciente" (Checkpoint
-  // III-B, Toast + Deshacer de "Nuevo Movimiento"). Recibe el `movement`
-  // completo (no solo el id) porque necesita su `.type` para decidir a qué
-  // remove* delegar — nadie fuera del hook debe llamar removeIncome/
-  // removeExpense directamente con este propósito.
-  const undoAddMovement = useCallback((movement) => {
-    if (movement.type === 'income') return removeIncome(movement.id);
-    return removeExpense(movement.id);
-  }, [removeIncome, removeExpense]);
 
   // --- CRM BULK ACTIONS ---
   const removeMultiple = useCallback((ids) => {
@@ -419,9 +490,10 @@ export const useTransactions = () => {
     addBulkTransactions,
     updateIncome,
     updateExpense,
-    removeIncome,
-    removeExpense,
-    undoAddMovement,
+    pendingOperation,
+    deleteMovement,
+    confirmPendingOperation,
+    undoPendingOperation,
     removeMultiple,
     categorizeMultiple,
     clearAll,
