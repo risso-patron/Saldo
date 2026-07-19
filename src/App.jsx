@@ -175,6 +175,7 @@ function AppContent() {
     pendingOperation, deleteMovement, confirmPendingOperation, undoPendingOperation,
     showAlert,
     balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
+    syncError, lastSyncedAt,
   } = useTransactions();
 
   const [welcomeBanner, setWelcomeBanner] = useState(null);
@@ -444,6 +445,9 @@ function AppContent() {
                   hasMovements={allTransactions.length > 0}
                   onRegisterExpense={handleQuickAddAction}
                   onNavigateToImport={() => setActiveTab('herramientas')}
+                  syncError={syncError}
+                  lastSyncedAt={lastSyncedAt}
+                  onRetrySync={refreshTransactions}
                 />
               )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}

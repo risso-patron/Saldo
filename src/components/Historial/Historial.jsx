@@ -12,6 +12,7 @@ import { FilaDeslizable } from './FilaDeslizable';
 import { HistorialSkeleton } from './HistorialSkeleton';
 import { EstadoVacio } from './EstadoVacio';
 import { EstadoSinResultados } from './EstadoSinResultados';
+import { BannerErrorSincronizacion } from './BannerErrorSincronizacion';
 import { Sheet } from '../ds/Sheet';
 import { rowInteractionReducer, ROW_INTERACTION_INITIAL } from './rowInteractionReducer';
 import { useIsDesktop, useIsMobileRow } from '../../hooks/useMediaQuery';
@@ -40,8 +41,17 @@ import { cn } from '../ds/cn';
 // de sus propios props. "Sin resultados" (groups.length===0 con
 // hasMovements=true) es un caso distinto — ahí sí hay datos, el filtro
 // actual no encuentra nada, y los filtros permanecen visibles (al revés
-// que "vacío real", que los oculta por completo). Error de sincronización
-// queda en IV-F.2 — toca useTransactions.js, fuera de este checkpoint.
+// que "vacío real", que los oculta por completo).
+//
+// Checkpoint IV-F.2 — banner de error de sincronización. A diferencia de
+// los estados de IV-F.1 (mutuamente excluyentes entre sí), este banner es
+// ADITIVO: se muestra dentro del contenido normal cuando `syncError` es
+// true, sin reemplazar nada. `useTransactions.js` sigue siendo la única
+// autoridad de `syncError`/`lastSyncedAt` — Historial solo los recibe y los
+// presenta, nunca los calcula. Alcance: cubre fallos de LECTURA (carga
+// inicial y refreshTransactions) — fallos de escritura optimista
+// (insert/update/delete) quedan fuera, documentados como deuda técnica
+// independiente (ver diagnóstico del checkpoint).
 //
 // Checkpoint IV-E.3 — swipe-to-reveal (mobile, `useIsMobileRow`, el mismo
 // corte `md` que ya usa el layout apilado de FilaMovimiento en IV-E.1;
@@ -109,6 +119,9 @@ export function Historial({
   hasMovements = true,
   onRegisterExpense,
   onNavigateToImport,
+  syncError = false,
+  lastSyncedAt = null,
+  onRetrySync,
 }) {
   const { i18n } = useTranslation();
 
@@ -330,6 +343,12 @@ export function Historial({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Checkpoint IV-F.2 — aditivo, no excluyente: convive con filtros,
+          resumen y lista/sin-resultados de más abajo. */}
+      {syncError && (
+        <BannerErrorSincronizacion lastSyncedAt={lastSyncedAt} onRetrySync={onRetrySync} />
+      )}
+
       {/* Filtros — mes (chip), categoría, tipo, búsqueda. Aplican al instante. */}
       <div className="flex flex-wrap items-center gap-2">
         {monthChipLabel && (
@@ -496,4 +515,7 @@ Historial.propTypes = {
   hasMovements: PropTypes.bool,
   onRegisterExpense: PropTypes.func,
   onNavigateToImport: PropTypes.func,
+  syncError: PropTypes.bool,
+  lastSyncedAt: PropTypes.string,
+  onRetrySync: PropTypes.func,
 };

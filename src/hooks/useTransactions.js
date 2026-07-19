@@ -62,37 +62,73 @@ export const useTransactions = () => {
     syncTimerRef.current = setTimeout(() => setSyncStatus('idle'), 3000);
   }, []);
 
+  // Checkpoint IV-F.2 — estado de sincronización de LECTURA (carga inicial +
+  // refreshTransactions), eje distinto de `syncStatus` (que es de ESCRITURA:
+  // "¿guardé algo localmente hace poco?", vía markSaved, sin relación con si
+  // Supabase realmente lo recibió). No se unifican — no comparten
+  // consumidor ni ciclo de vida, mismo criterio ya aplicado a
+  // pendingOperation (IV-C) y expandedId/swipedId (IV-E.3): cosas
+  // conceptualmente distintas no se fuerzan a compartir una variable.
+  //
+  // `lastSyncedAt` SOLO se actualiza en un fetch exitoso — un fallo
+  // posterior deja el valor anterior intacto (el banner de error sigue
+  // mostrando la fecha del último sync que sí funcionó, spec: "Datos del 14
+  // jul, 18:40" conviviendo con el aviso de error). `syncError` es lo único
+  // que cambia ante un fallo.
+  const [syncError, setSyncError] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState(null);
+  // Guardia de concurrencia: "Reintentar ahora" es ahora un botón real que
+  // el usuario puede clickear varias veces seguidas — sin esto, dos fetches
+  // superpuestos podrían resolverse fuera de orden y el más viejo pisar al
+  // más nuevo.
+  const isFetchingRef = useRef(false);
+
   // Actualiza localStorage cada vez que cambia el estado (caché de respaldo)
   useEffect(() => { saveToStorage(STORAGE_KEYS.INCOMES, incomes); }, [incomes]);
   useEffect(() => { saveToStorage(STORAGE_KEYS.EXPENSES, expenses); }, [expenses]);
 
+  // Checkpoint IV-F.2 — única función que trae transacciones desde Supabase.
+  // Antes duplicada casi literalmente entre la carga inicial y
+  // refreshTransactions (dos bloques idénticos: mismo query, mismo mapeo,
+  // mismo try/catch) — ahora es la MISMA función en ambos casos, así que la
+  // carga inicial simplemente es su primera invocación. NO toca `loading`
+  // acá adentro: quien la llama decide si corresponde mostrar el skeleton
+  // (la carga inicial sí; un reintento manual NO — el historial debe seguir
+  // visible mientras reintenta, spec: "El diario sigue completo y
+  // fechado").
+  const refreshTransactions = useCallback(async () => {
+    if (!user) return;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+
+      setIncomes(data.filter(r => r.type === 'income').map(fromSupabase));
+      setExpenses(data.filter(r => r.type === 'expense').map(fromSupabase));
+      setSyncError(false);
+      setLastSyncedAt(new Date().toISOString());
+    } catch (err) {
+      console.error('Error sincronizando transacciones desde Supabase:', err);
+      // Mantiene el caché local como fallback (ya cargado en useState
+      // inicial) y conserva el lastSyncedAt anterior — solo syncError cambia.
+      setSyncError(true);
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [user?.id]);
+
   // ── Carga inicial desde Supabase ──────────────────────────────────────────
   useEffect(() => {
     if (!user) { setLoading(false); return; }
-
-    const load = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('transactions')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('date', { ascending: false });
-
-        if (error) throw error;
-
-        setIncomes(data.filter(r => r.type === 'income').map(fromSupabase));
-        setExpenses(data.filter(r => r.type === 'expense').map(fromSupabase));
-      } catch (err) {
-        console.error('Error cargando transacciones desde Supabase:', err);
-        // Mantiene el caché local como fallback (ya cargado en useState inicial)
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-  }, [user?.id]);
+    setLoading(true);
+    refreshTransactions().finally(() => setLoading(false));
+  }, [user?.id, refreshTransactions]);
 
   // ── Helpers internos ──────────────────────────────────────────────────────
   const syncInsert = useCallback(async (tx) => {
@@ -433,22 +469,6 @@ export const useTransactions = () => {
     return { imported: total, errors: errorCount, total: transactions.length };
   }, [user, showAlert]);
 
-  const refreshTransactions = useCallback(async () => {
-    if (!user) return;
-    try {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false });
-      if (error) throw error;
-      setIncomes(data.filter(r => r.type === 'income').map(fromSupabase));
-      setExpenses(data.filter(r => r.type === 'expense').map(fromSupabase));
-    } catch (err) {
-      console.error('Error en refreshTransactions:', err);
-    }
-  }, [user?.id]);
-
   // ── Cálculos memoizados (Normalizados a la Moneda Principal) ─────────────
   
   // Normalizador interno: Mapea todas las transacciones a la moneda base seleccionada usando la tasa en tiempo real
@@ -485,6 +505,8 @@ export const useTransactions = () => {
     alert,
     loading,
     syncStatus,
+    syncError,
+    lastSyncedAt,
     addIncome,
     addExpense,
     addBulkTransactions,

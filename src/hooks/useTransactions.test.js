@@ -357,3 +357,90 @@ describe('useTransactions — operación reversible única (pendingOperation, Ch
     expect(result.current.pendingOperation).toEqual({ kind: 'create', movement: income });
   });
 });
+
+describe('useTransactions — syncError/lastSyncedAt (Checkpoint IV-F.2)', () => {
+  beforeEach(() => {
+    localStorage.getItem.mockReturnValue(null);
+    vi.mocked(useAuth).mockReturnValue({ user: { id: 'user-1' } });
+  });
+  afterEach(() => {
+    vi.mocked(useAuth).mockReturnValue({ user: null });
+  });
+
+  it('si la carga inicial falla, syncError se activa y lastSyncedAt permanece null', async () => {
+    const chain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(chain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    expect(result.current.syncError).toBe(true);
+    expect(result.current.lastSyncedAt).toBeNull();
+  });
+
+  it('un fetch exitoso limpia syncError y fija lastSyncedAt; un fallo posterior CONSERVA ese lastSyncedAt', async () => {
+    const successChain = makeSupabaseChain({ data: [], error: null });
+    supabase.from.mockReturnValue(successChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    expect(result.current.syncError).toBe(false);
+    const firstSyncedAt = result.current.lastSyncedAt;
+    expect(firstSyncedAt).not.toBeNull();
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'timeout' } });
+    supabase.from.mockReturnValue(failChain);
+    await act(async () => {
+      await result.current.refreshTransactions();
+    });
+
+    expect(result.current.syncError).toBe(true);
+    expect(result.current.lastSyncedAt).toBe(firstSyncedAt);
+  });
+
+  it('tras un fallo, un refreshTransactions posterior exitoso limpia syncError y actualiza lastSyncedAt', async () => {
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'timeout' } });
+    supabase.from.mockReturnValue(failChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+    expect(result.current.syncError).toBe(true);
+
+    const successChain = makeSupabaseChain({ data: [], error: null });
+    supabase.from.mockReturnValue(successChain);
+    await act(async () => {
+      await result.current.refreshTransactions();
+    });
+
+    expect(result.current.syncError).toBe(false);
+    expect(result.current.lastSyncedAt).not.toBeNull();
+  });
+
+  it('refreshTransactions nunca activa loading — el historial debe seguir visible durante un reintento', async () => {
+    const chain = makeSupabaseChain();
+    supabase.from.mockReturnValue(chain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+    expect(result.current.loading).toBe(false);
+
+    await act(async () => {
+      await result.current.refreshTransactions();
+    });
+
+    expect(result.current.loading).toBe(false);
+  });
+
+  it('llamadas superpuestas a refreshTransactions no disparan más de un fetch concurrente (guardia de concurrencia)', async () => {
+    const chain = makeSupabaseChain();
+    supabase.from.mockReturnValue(chain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+    chain.select.mockClear();
+
+    await act(async () => {
+      const first = result.current.refreshTransactions();
+      const second = result.current.refreshTransactions(); // debe ignorarse: guardia activa
+      await Promise.all([first, second]);
+    });
+
+    expect(chain.select).toHaveBeenCalledTimes(1);
+  });
+});

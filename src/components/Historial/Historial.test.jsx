@@ -774,3 +774,46 @@ describe('Historial — Checkpoint IV-E.3: swipe-to-reveal, acordeón único con
     expect(screen.getByTestId('fila-deslizable-b')).toHaveAttribute('data-revealed', 'true');
   });
 });
+
+describe('Historial — Checkpoint IV-F.2: banner de error de sincronización (aditivo, no excluyente)', () => {
+  it('syncError=false (default) no muestra ningún banner', () => {
+    render(<Historial {...baseProps} />);
+    expect(screen.queryByText(/no pudimos actualizar/i)).not.toBeInTheDocument();
+  });
+
+  it('syncError=true muestra el banner CONVIVIENDO con filtros/resumen (contenido normal, no lo reemplaza)', () => {
+    render(<Historial {...baseProps} syncError onRetrySync={noop} />);
+
+    expect(screen.getByText(/no pudimos actualizar/i)).toBeInTheDocument();
+    // Sigue siendo el mismo árbol de "contenido normal" — filtros presentes.
+    expect(screen.getByPlaceholderText('Buscar…')).toBeInTheDocument();
+  });
+
+  it('con lastSyncedAt, el banner incluye la fecha formateada', () => {
+    render(
+      <Historial {...baseProps} syncError lastSyncedAt="2026-07-14T18:40:00.000Z" onRetrySync={noop} />
+    );
+    expect(screen.getByText(/no pudimos actualizar/i)).toHaveTextContent(/14 jul/i);
+  });
+
+  it('sin lastSyncedAt (nunca sincronizó con éxito), el banner igual se muestra sin fecha', () => {
+    render(<Historial {...baseProps} syncError lastSyncedAt={null} onRetrySync={noop} />);
+    expect(screen.getByText(/no pudimos actualizar desde tu banco\.$/i)).toBeInTheDocument();
+  });
+
+  it('"Reintentar ahora" dispara onRetrySync (refreshTransactions, inyectado desde App.jsx)', () => {
+    const onRetrySync = vi.fn();
+    render(<Historial {...baseProps} syncError onRetrySync={onRetrySync} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar ahora' }));
+
+    expect(onRetrySync).toHaveBeenCalledTimes(1);
+  });
+
+  it('el banner convive con EstadoSinResultados (ambos visibles a la vez)', () => {
+    render(<Historial {...baseProps} syncError onRetrySync={noop} />);
+    // baseProps no tiene movimientos -> hasMovements default true, groups vacío -> sin-resultados.
+    expect(screen.getByText(/no pudimos actualizar/i)).toBeInTheDocument();
+    expect(screen.getByText('Nada coincide con los filtros actuales.')).toBeInTheDocument();
+  });
+});
