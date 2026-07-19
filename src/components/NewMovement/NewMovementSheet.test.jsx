@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NewMovementSheet } from './NewMovementSheet';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
@@ -385,6 +385,207 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
       expect(screen.getByLabelText(/concepto/i)).toHaveValue('');
       expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('');
       expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    });
+  });
+
+  describe('Checkpoint IV-B — modo edición (unificado con creación, prop `movement`)', () => {
+    const expenseMovement = {
+      id: 'exp-1',
+      type: 'expense',
+      description: 'Supermercado',
+      amount: 55,
+      category: EXPENSE_CATEGORIES[2].value,
+      date: '2026-07-10',
+      currency: 'EUR',
+    };
+    const incomeMovement = {
+      id: 'inc-1',
+      type: 'income',
+      description: 'Freelance',
+      amount: 300,
+      date: '2026-07-05',
+      currency: 'USD',
+    };
+
+    const CURRENCIES = [
+      { code: 'USD', symbol: '$', name: 'Dólar Americano' },
+      { code: 'EUR', symbol: '€', name: 'Euro' },
+    ];
+
+    const renderEditSheet = (movement, props = {}) => {
+      const onClose = vi.fn();
+      const onAddIncome = vi.fn(() => true);
+      const onAddExpense = vi.fn(() => true);
+      const onUpdateIncome = vi.fn(() => true);
+      const onUpdateExpense = vi.fn(() => true);
+      const utils = render(
+        <NewMovementSheet
+          isOpen
+          onClose={onClose}
+          onAddIncome={onAddIncome}
+          onAddExpense={onAddExpense}
+          onUpdateIncome={onUpdateIncome}
+          onUpdateExpense={onUpdateExpense}
+          movement={movement}
+          {...props}
+        />
+      );
+      return { ...utils, onClose, onAddIncome, onAddExpense, onUpdateIncome, onUpdateExpense };
+    };
+
+    beforeEach(() => {
+      useCurrencyMock.mockReturnValue({ getSmartDefaultCurrency: () => 'USD', currencies: CURRENCIES });
+    });
+
+    it('siembra los campos desde `movement` (gasto): tab, concepto, importe, categoría', () => {
+      renderEditSheet(expenseMovement);
+
+      expect(screen.getByRole('tab', { name: 'Gasto' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('Supermercado');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('55');
+    });
+
+    it('siembra los campos desde `movement` (ingreso): tab e importe', () => {
+      renderEditSheet(incomeMovement);
+
+      expect(screen.getByRole('tab', { name: 'Ingreso' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByLabelText(/concepto/i)).toHaveValue('Freelance');
+      expect(screen.getByRole('textbox', { name: 'Importe' })).toHaveValue('300');
+    });
+
+    it('muestra los campos Fecha y Moneda SOLO en modo edición, seedeados desde movement', () => {
+      renderEditSheet(expenseMovement);
+
+      expect(screen.getByLabelText(/^fecha$/i)).toHaveValue('2026-07-10');
+      expect(screen.getByLabelText(/^moneda$/i)).toHaveValue('EUR');
+    });
+
+    it('en modo creación NO muestra los campos Fecha ni Moneda (conserva el chip fijo "Hoy")', () => {
+      renderSheet();
+
+      expect(screen.queryByLabelText(/^fecha$/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/^moneda$/i)).not.toBeInTheDocument();
+      expect(screen.getByText('Hoy')).toBeInTheDocument();
+    });
+
+    it('el botón usa el label "Guardar" en modo edición (no "Añadir")', () => {
+      renderEditSheet(expenseMovement);
+
+      expect(screen.getByRole('button', { name: 'Guardar' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Añadir' })).not.toBeInTheDocument();
+    });
+
+    it('Guardar en modo edición (gasto) llama a onUpdateExpense con el id y los campos correctos, NO a onAddExpense, y cierra la hoja', async () => {
+      const user = userEvent.setup();
+      const { onUpdateExpense, onAddExpense, onClose } = renderEditSheet(expenseMovement);
+
+      await user.clear(screen.getByLabelText(/concepto/i));
+      await user.type(screen.getByLabelText(/concepto/i), 'Super actualizado');
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+      expect(onUpdateExpense).toHaveBeenCalledTimes(1);
+      expect(onAddExpense).not.toHaveBeenCalled();
+      const [id, updates] = onUpdateExpense.mock.calls[0];
+      expect(id).toBe('exp-1');
+      expect(updates.description).toBe('Super actualizado');
+      expect(updates.category).toBe(expenseMovement.category);
+      expect(updates.date).toBe('2026-07-10');
+      expect(updates.currency).toBe('EUR');
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('Guardar en modo edición (ingreso) llama a onUpdateIncome con el id correcto, NO a onAddIncome', async () => {
+      const user = userEvent.setup();
+      const { onUpdateIncome, onAddIncome } = renderEditSheet(incomeMovement);
+
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+      expect(onUpdateIncome).toHaveBeenCalledTimes(1);
+      expect(onAddIncome).not.toHaveBeenCalled();
+      expect(onUpdateIncome.mock.calls[0][0]).toBe('inc-1');
+    });
+
+    it('cambiar Fecha/Moneda en modo edición se refleja en los campos enviados a onUpdateExpense', async () => {
+      const user = userEvent.setup();
+      const { onUpdateExpense } = renderEditSheet(expenseMovement);
+
+      fireEvent.change(screen.getByLabelText(/^fecha$/i), { target: { value: '2026-07-11' } });
+      fireEvent.change(screen.getByLabelText(/^moneda$/i), { target: { value: 'USD' } });
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+      const [, updates] = onUpdateExpense.mock.calls[0];
+      expect(updates.date).toBe('2026-07-11');
+      expect(updates.currency).toBe('USD');
+    });
+
+    it('Ctrl+Enter en modo edición NO activa ráfaga: guarda y cierra la hoja (no permanece abierta)', async () => {
+      const user = userEvent.setup();
+      const { onUpdateExpense, onClose } = renderEditSheet(expenseMovement);
+
+      // Foco explícito dentro del form (el foco automático del Sheet vía
+      // requestAnimationFrame puede no haberse asentado todavía en este
+      // punto del test) — mismo patrón que los tests de ráfaga de III-C.1.
+      await user.click(screen.getByLabelText(/concepto/i));
+      await user.keyboard('{Control>}{Enter}{/Control}');
+
+      expect(onUpdateExpense).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('importe inválido en modo edición NO llama a onUpdateExpense y muestra el mensaje de error', async () => {
+      const user = userEvent.setup();
+      const { onUpdateExpense, onClose } = renderEditSheet(expenseMovement);
+
+      await user.clear(screen.getByRole('textbox', { name: 'Importe' }));
+      await user.keyboard('{Enter}');
+
+      expect(onUpdateExpense).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+      expect(screen.getByText('El importe necesita un número para poder añadirse.')).toBeInTheDocument();
+    });
+
+    describe('modo edición no toca el borrador de creación (localStorage)', () => {
+      const STORAGE_KEY = 'budgetrp_new_movement_draft';
+      let store;
+
+      beforeEach(() => {
+        store = {};
+        localStorage.getItem.mockImplementation((key) => (key in store ? store[key] : null));
+        localStorage.setItem.mockImplementation((key, value) => {
+          store[key] = String(value);
+        });
+        localStorage.removeItem.mockImplementation((key) => {
+          delete store[key];
+        });
+      });
+
+      afterEach(() => {
+        store = {};
+      });
+
+      it('editar campos en modo edición no escribe ningún borrador en localStorage', async () => {
+        const user = userEvent.setup();
+        renderEditSheet(expenseMovement);
+
+        await user.type(screen.getByLabelText(/concepto/i), ' extra');
+
+        expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+      });
+
+      it('con un borrador de creación previamente guardado, abrir en modo edición siembra desde `movement`, no desde el borrador, y no lo sobreescribe', () => {
+        store[STORAGE_KEY] = JSON.stringify({
+          activeType: 'income',
+          description: 'Borrador viejo',
+          amount: 999,
+          category: EXPENSE_CATEGORIES[0].value,
+          savedAt: Date.now(),
+        });
+
+        renderEditSheet(expenseMovement);
+
+        expect(screen.getByLabelText(/concepto/i)).toHaveValue('Supermercado');
+        expect(JSON.parse(localStorage.getItem(STORAGE_KEY)).description).toBe('Borrador viejo');
+      });
     });
   });
 });

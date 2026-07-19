@@ -43,6 +43,7 @@ export function FilaMovimiento({
   category = null,
   showRelativeDate = true,
   className = '',
+  onClick = undefined,
 }) {
   const { i18n } = useTranslation();
   const isExpense = type === 'expense';
@@ -55,11 +56,23 @@ export function FilaMovimiento({
   const middleColumnContent = category
     ?? (showRelativeDate ? formatRelativeDate(date, i18n.language, new Date()) : null);
 
+  // Checkpoint IV-B — prop aditiva `onClick` (default undefined, preserva
+  // EXACTAMENTE el comportamiento de Dashboard, que no la pasa): cuando se
+  // provee, la fila es un elemento accesible real (<button type="button">,
+  // no un <div onClick> sin equivalente de foco/teclado) — Historial la usa
+  // para expandir el detalle de un movimiento. Mismas clases visuales en
+  // ambos casos, un solo bloque de JSX (Wrapper dinámico) en vez de duplicar
+  // los children.
+  const Wrapper = onClick ? 'button' : 'div';
+
   return (
-    <div
+    <Wrapper
+      type={onClick ? 'button' : undefined}
+      onClick={onClick}
       className={cn(
         'grid items-center h-11 border-b border-ds-border-separator px-1',
         'hover:bg-ds-interaction-hover transition-colors duration-ds-fast ease-ds',
+        onClick && 'w-full text-left cursor-pointer',
         className
       )}
       style={{ gridTemplateColumns: '1fr 80px 120px' }}
@@ -72,7 +85,7 @@ export function FilaMovimiento({
         {isExpense ? MINUS_SIGN : ''}
         {formattedAmount}
       </span>
-    </div>
+    </Wrapper>
   );
 }
 
@@ -85,4 +98,5 @@ FilaMovimiento.propTypes = {
   category: PropTypes.string,
   showRelativeDate: PropTypes.bool,
   className: PropTypes.string,
+  onClick: PropTypes.func,
 };

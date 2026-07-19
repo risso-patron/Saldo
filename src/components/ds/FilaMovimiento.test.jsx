@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { FilaMovimiento } from './FilaMovimiento';
 
 // Fase II — Integración del Dashboard (Saldo Design Constitution v1.2).
@@ -153,5 +153,57 @@ describe('FilaMovimiento (ds) — props aditivas Checkpoint IV-A (Historial)', (
       <FilaMovimiento description="Café" date="2026-07-17" amount={5} type="expense" showRelativeDate={false} />
     );
     expect(container.querySelector('.text-ds-caption')).toBeNull();
+  });
+});
+
+// Checkpoint IV-B — fila clickeable (Historial): prop aditiva `onClick`, con
+// default `undefined` que preserva EXACTAMENTE el comportamiento de Dashboard
+// (que no la pasa) — ningún test de arriba se modificó.
+describe('FilaMovimiento (ds) — prop aditiva `onClick` Checkpoint IV-B (fila interactiva de Historial)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 17));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it('sin onClick (Dashboard), renderiza un <div>, no un <button>', () => {
+    const { container } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" />
+    );
+    expect(container.firstChild.tagName).toBe('DIV');
+  });
+
+  it('con onClick, renderiza un elemento accesible real: <button type="button">', () => {
+    const { container } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" onClick={() => {}} />
+    );
+    expect(container.firstChild.tagName).toBe('BUTTON');
+    expect(container.firstChild).toHaveAttribute('type', 'button');
+  });
+
+  it('con onClick, un clic en la fila lo dispara', () => {
+    const onClick = vi.fn();
+    render(<FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" onClick={onClick} />);
+    fireEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('con onClick, Enter con foco en la fila la dispara (semántica nativa de <button>)', () => {
+    const onClick = vi.fn();
+    render(<FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" onClick={onClick} />);
+    const row = screen.getByRole('button');
+    row.focus();
+    fireEvent.keyDown(row, { key: 'Enter', code: 'Enter' });
+    fireEvent.click(row); // jsdom no simula la activación por teclado de <button> automáticamente
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('con onClick, conserva las mismas clases visuales de altura/separador/hover que la fila de solo lectura', () => {
+    const { container } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" onClick={() => {}} />
+    );
+    expect(container.firstChild.className).toMatch(/h-11\b/);
+    expect(container.firstChild.className).toMatch(/border-ds-border-separator\b/);
+    expect(container.firstChild.className).toMatch(/hover:bg-ds-interaction-hover\b/);
   });
 });

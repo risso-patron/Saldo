@@ -240,3 +240,99 @@ describe('Historial — estado vacío mínimo', () => {
     expect(screen.getByText(/sin movimientos/i)).toBeInTheDocument();
   });
 });
+
+// Checkpoint IV-B — filas interactivas + expansión en línea (definitiva, no
+// provisoria): clic en una fila la expande mostrando detalle + Editar.
+// NUNCA clic-directo-a-la-hoja. Sin "Cuenta"/"Nota" (no existen en el
+// modelo de datos de useTransactions.js) — solo Categoría, y solo para
+// gastos (los ingresos no tienen categoría).
+describe('Historial — Checkpoint IV-B: filas interactivas, expansión en línea con Editar', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 14));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  const expenses = [
+    { id: 'e1', description: 'Farmacia', date: '2026-07-14', category: 'Salud', amount: 38.2 },
+  ];
+  const incomes = [
+    { id: 'i1', description: 'Nómina', date: '2026-07-14', amount: 2400 },
+  ];
+
+  it('las filas se renderizan como elementos accesibles reales (botón)', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    expect(screen.getByRole('button', { name: /Farmacia/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Nómina/ })).toBeInTheDocument();
+  });
+
+  it('clic en una fila de GASTO la expande mostrando su categoría', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    // "Salud" ya aparece en la columna media de la fila colapsada (IV-A,
+    // reemplaza la fecha relativa) — lo que verificamos acá es el texto
+    // ESPECÍFICO de la expansión, no una coincidencia parcial ambigua.
+    expect(screen.queryByText(/Categoría: Salud/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+  });
+
+  it('clic en una fila de INGRESO la expande SIN mostrar categoría (los ingresos no tienen)', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Nómina/ }));
+
+    // El botón Editar de la expansión de Nómina debe existir, pero ningún
+    // texto de categoría (ni "Ingresos" sintética, ni la de Farmacia).
+    expect(screen.queryByText(/Categoría:/)).not.toBeInTheDocument();
+  });
+
+  it('clic de nuevo en la misma fila la colapsa', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    const row = screen.getByRole('button', { name: /Farmacia/ });
+
+    fireEvent.click(row);
+    expect(screen.getByText(/Categoría: Salud/)).toBeInTheDocument();
+
+    fireEvent.click(row);
+    expect(screen.queryByText(/Categoría: Salud/)).not.toBeInTheDocument();
+  });
+
+  it('la expansión NO muestra "Cuenta" ni "Nota" (no existen en el modelo de datos)', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+
+    expect(screen.queryByText(/Cuenta/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nota/i)).not.toBeInTheDocument();
+  });
+
+  it('el botón "Editar" de la expansión dispara onEditMovement con el movimiento correcto (no la hoja directamente)', () => {
+    const onEditMovement = vi.fn();
+    render(
+      <Historial {...baseProps} incomes={incomes} expenses={expenses} onEditMovement={onEditMovement} />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Editar/i }));
+
+    expect(onEditMovement).toHaveBeenCalledTimes(1);
+    expect(onEditMovement).toHaveBeenCalledWith(expect.objectContaining({ id: 'e1', description: 'Farmacia' }));
+  });
+
+  it('sin onDeleteMovement (nadie lo pasa en IV-B), NO renderiza un botón "Eliminar"', () => {
+    render(<Historial {...baseProps} incomes={incomes} expenses={expenses} />);
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+
+    expect(screen.queryByRole('button', { name: /eliminar/i })).not.toBeInTheDocument();
+  });
+
+  it('con onDeleteMovement provisto, SÍ renderiza el botón "Eliminar" (preparación estructural para IV-C)', () => {
+    const onDeleteMovement = vi.fn();
+    render(
+      <Historial {...baseProps} incomes={incomes} expenses={expenses} onDeleteMovement={onDeleteMovement} />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Farmacia/ }));
+
+    expect(screen.getByRole('button', { name: /eliminar/i })).toBeInTheDocument();
+  });
+});

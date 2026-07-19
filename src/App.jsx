@@ -70,6 +70,10 @@ function AppContent() {
   const [showMigration, setShowMigration] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isNewMovementOpen, setIsNewMovementOpen] = useState(false);
+  // Checkpoint IV-B — edición de movimientos desde Historial, unificada
+  // sobre la MISMA instancia de NewMovementSheet (nunca un segundo overlay):
+  // null = cerrado/modo creación; objeto movimiento completo = modo edición.
+  const [editingMovement, setEditingMovement] = useState(null);
   // Checkpoint III-C.3 — key de remontaje forzado de NewMovementSheet. El
   // componente lee su borrador UNA sola vez al montar (III-C.2, patrón
   // useRef con guarda) y queda SIEMPRE montado (III-A), así que la única
@@ -83,11 +87,34 @@ function AppContent() {
   const [undoToast, setUndoToast] = useState(null);
   const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
+  // Checkpoint IV-B — única instancia de NewMovementSheet, reusada tanto
+  // para crear (isNewMovementOpen) como para editar (editingMovement != null)
+  // — NUNCA un segundo <NewMovementSheet> montado en Historial (eso
+  // reintroduciría el bug de "dos overlays abiertos a la vez" que
+  // Checkpoint III-C.4 corrigió explícitamente). Variable derivada única,
+  // usada tanto por el `isOpen` del Sheet como por isAnyOverlayOpen de abajo.
+  const isMovementSheetOpen = isNewMovementOpen || editingMovement != null;
+
+  // Checkpoint IV-B — NewMovementSheet queda SIEMPRE montado (III-A) y su
+  // estado local sobrevive a que `isOpen` alterne (para conservar lo escrito
+  // en modo creación, ya probado). Eso significa que sus useState() de
+  // semilla (que leen `movement` solo en el momento del montaje, igual que
+  // ya hacían con readDraft()) NO se re-ejecutan solos cuando `editingMovement`
+  // cambia de un movimiento a otro sin desmontar. Se fuerza un remontaje
+  // real vía `key` — mismo mecanismo que newMovementRemountKey (III-C.3) —
+  // cada vez que entra a edición o cambia el movimiento editado; en modo
+  // creación puro (editingMovement siempre null) la key no cambia nunca por
+  // este motivo, así que el comportamiento de "cerrar y reabrir conserva lo
+  // escrito" (III-C.2) queda intacto.
+  const newMovementSheetKey = editingMovement != null
+    ? `edit-${editingMovement.id}`
+    : `create-${newMovementRemountKey}`;
+
   // Checkpoint III-C.4 — autoridad única de overlay: ningún overlay puede
   // abrirse si otro ya está abierto. Constante derivada única, usada
   // simétricamente por los dos triggers globales de teclado (N y ⌘K) para
   // que ninguno pueda abrir un overlay por encima de otro ya abierto.
-  const isAnyOverlayOpen = isOmnibarOpen || isNewMovementOpen || confirmDialog.isOpen || showMigration;
+  const isAnyOverlayOpen = isOmnibarOpen || isMovementSheetOpen || confirmDialog.isOpen || showMigration;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -134,14 +161,16 @@ function AppContent() {
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
 
-  // Checkpoint IV-A: updateIncome/updateExpense/removeIncome/removeExpense/
-  // removeMultiple/categorizeMultiple dejaban de tener consumidor en App.jsx
-  // al retirar ExpenseList de "Movimientos" (Historial es de solo lectura —
-  // editar/eliminar es IV-B/IV-C) — se dejan de desestructurar acá para no
-  // arrastrar bindings sin uso; useTransactions.js no se toca, las sigue
-  // exponiendo para quien las necesite.
+  // Checkpoint IV-A: removeIncome/removeExpense/removeMultiple/
+  // categorizeMultiple seguían sin consumidor en App.jsx (eliminar es
+  // IV-C) — se mantienen fuera de esta desestructuración; useTransactions.js
+  // no se toca, las sigue exponiendo para quien las necesite.
+  // Checkpoint IV-B: updateIncome/updateExpense vuelven a desestructurarse —
+  // editar movimientos desde Historial vía NewMovementSheet en modo edición
+  // los necesita de nuevo (contrato ya boolean, sin envoltorio adicional).
   const {
     incomes, expenses, alert, addIncome, addExpense, addBulkTransactions,
+    updateIncome, updateExpense,
     undoAddMovement, showAlert,
     balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
   } = useTransactions();
@@ -356,11 +385,14 @@ function AppContent() {
                   Checkpoint III-C.3: `key` fuerza remontaje real cuando el
                   Omnibar precarga un borrador — ver handleOpenNewMovementWithDraft. */}
               <NewMovementSheet
-                key={newMovementRemountKey}
-                isOpen={isNewMovementOpen}
-                onClose={() => setIsNewMovementOpen(false)}
+                key={newMovementSheetKey}
+                isOpen={isMovementSheetOpen}
+                onClose={() => { setIsNewMovementOpen(false); setEditingMovement(null); }}
                 onAddIncome={handleCreateIncome}
                 onAddExpense={handleCreateExpense}
+                onUpdateIncome={updateIncome}
+                onUpdateExpense={updateExpense}
+                movement={editingMovement}
               />
               <Toast
                 isOpen={undoToast !== null}
@@ -391,6 +423,7 @@ function AppContent() {
                   setSelectedMonth={setSelectedMonth}
                   initialCategoryFilter={pendingCategoryFilter}
                   onInitialFilterConsumed={() => setPendingCategoryFilter(null)}
+                  onEditMovement={setEditingMovement}
                 />
               )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}

@@ -36,24 +36,55 @@ const TYPE_OPTIONS = [
 const INITIAL_CATEGORY = EXPENSE_CATEGORIES[0].value;
 const AMOUNT_ERROR_MESSAGE = 'El importe necesita un número para poder añadirse.';
 
-export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense }) {
+export function NewMovementSheet({
+  isOpen,
+  onClose,
+  onAddIncome,
+  onAddExpense,
+  onUpdateIncome,
+  onUpdateExpense,
+  movement = null,
+}) {
   const ai = useAI();
-  const { getSmartDefaultCurrency } = useCurrency();
+  const { getSmartDefaultCurrency, currencies } = useCurrency();
+
+  // Checkpoint IV-B — Punto de contacto 1/5 del modo edición: constante
+  // única calculada arriba de todo, de la que depende todo lo demás.
+  const isEditMode = movement != null;
 
   // Checkpoint III-C.2 — lectura del borrador persistido en localStorage UNA
   // sola vez, síncrona, antes del primer render (ref con guarda en vez de
   // useEffect: un useEffect dispararía un re-render extra con parpadeo
   // vacío→lleno). El resultado siembra los useState de abajo.
+  //
+  // Checkpoint IV-B — en modo edición NUNCA se llama a readDraft(): leer el
+  // borrador de creación mientras se edita un movimiento existente sería un
+  // bug de datos cruzados (regla dura del PO). La semilla viene de
+  // `movement` en su lugar.
   const draftRef = useRef(undefined);
   if (draftRef.current === undefined) {
-    draftRef.current = readDraft();
+    draftRef.current = isEditMode ? null : readDraft();
   }
   const initialDraft = draftRef.current;
 
-  const [activeType, setActiveType] = useState(initialDraft?.activeType ?? 'expense');
-  const [description, setDescription] = useState(initialDraft?.description ?? '');
-  const [amount, setAmount] = useState(initialDraft?.amount ?? '');
-  const [category, setCategory] = useState(initialDraft?.category ?? INITIAL_CATEGORY);
+  const [activeType, setActiveType] = useState(
+    isEditMode ? movement.type : (initialDraft?.activeType ?? 'expense')
+  );
+  const [description, setDescription] = useState(
+    isEditMode ? movement.description : (initialDraft?.description ?? '')
+  );
+  const [amount, setAmount] = useState(
+    isEditMode ? movement.amount : (initialDraft?.amount ?? '')
+  );
+  const [category, setCategory] = useState(
+    isEditMode ? (movement.category ?? INITIAL_CATEGORY) : (initialDraft?.category ?? INITIAL_CATEGORY)
+  );
+  // Campos nuevos, solo relevantes en modo edición (fecha editable, moneda
+  // vía selector) — en modo creación quedan sin uso: la fecha sigue siendo
+  // el chip fijo "Hoy" y la moneda sigue siendo automática vía
+  // getSmartDefaultCurrency(), exactamente como antes.
+  const [date, setDate] = useState(isEditMode ? movement.date : '');
+  const [currency, setCurrency] = useState(isEditMode ? (movement.currency ?? 'USD') : '');
   const [suggestedCategory, setSuggestedCategory] = useState(null);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [amountError, setAmountError] = useState(null);
@@ -90,9 +121,12 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
   // persiste un borrador vacío/intocado (description y amount ambos sin
   // contenido) para no ensuciar el storage con nada útil que restaurar.
   useEffect(() => {
+    // Checkpoint IV-B — Punto de contacto 2/5 del modo edición: no-op total
+    // en modo edición (guard al principio, efecto sin reestructurar).
+    if (isEditMode) return;
     if (description.trim() === '' && amount === '') return;
     writeDraft({ activeType, description, amount, category });
-  }, [activeType, description, amount, category]);
+  }, [activeType, description, amount, category, isEditMode]);
 
   const resetForm = () => {
     setActiveType('expense');
@@ -123,7 +157,21 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
     }
     setAmountError(null);
 
-    const currency = getSmartDefaultCurrency();
+    // Checkpoint IV-B — Punto de contacto 3/5 del modo edición: único punto
+    // de despacho calculado a partir de isEditMode, sin re-verificaciones
+    // repetidas. Edición actualiza el movimiento existente (movement.id);
+    // creación sigue el flujo de siempre.
+    if (isEditMode) {
+      const success =
+        activeType === 'income'
+          ? onUpdateIncome(movement.id, { description, amount, date, currency })
+          : onUpdateExpense(movement.id, { description, category, amount, date, currency });
+
+      if (success) onClose();
+      return;
+    }
+
+    const newMovementCurrency = getSmartDefaultCurrency();
     // Formato 'YYYY-MM-DD' — igual que BudgetForm.jsx y todo lo demás en
     // useTransactions.js. Un objeto Date crudo rompe parseLocalDate()
     // (utils/calculations.js: String(dateStr).substring(0,10) produce texto
@@ -133,8 +181,8 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
     const today = new Date().toISOString().split('T')[0];
     const success =
       activeType === 'income'
-        ? onAddIncome(description, amount, today, currency)
-        : onAddExpense(description, category, amount, today, currency);
+        ? onAddIncome(description, amount, today, newMovementCurrency)
+        : onAddExpense(description, category, amount, today, newMovementCurrency);
 
     if (success) {
       resetForm();
@@ -168,7 +216,9 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
     // Checkpoint III-C.1 — Ctrl/Cmd+Enter es modo ráfaga: guarda y mantiene
     // la hoja abierta con el foco listo para el siguiente movimiento. Enter
     // simple (sin modificador) conserva el comportamiento de siempre.
-    const burst = e.ctrlKey || e.metaKey;
+    // Checkpoint IV-B — Punto de contacto 4/5 del modo edición: ráfaga no
+    // aplica editando un registro puntual.
+    const burst = !isEditMode && (e.ctrlKey || e.metaKey);
     handleSubmit(e, { burst });
   };
 
@@ -239,16 +289,51 @@ export function NewMovementSheet({ isOpen, onClose, onAddIncome, onAddExpense })
           )}
         </div>
 
+        {/* Checkpoint IV-B — punto 5/5 (JSX declarativo, no cuenta contra el
+            límite de 5 puntos de contacto): en modo creación, el chip fijo
+            "Hoy" de siempre; en modo edición, Fecha editable + selector de
+            Moneda (mismo patrón de datos que EditTransactionModal.jsx,
+            useCurrency().currencies — sin reusar ese componente). */}
         <div className="mt-7 flex gap-2">
-          <span className="h-8 px-3 inline-flex items-center border border-ds-border rounded-ds-control text-ds-body text-ds-text-primary">
-            Hoy
-          </span>
+          {isEditMode ? (
+            <>
+              <Input
+                id="new-movement-date"
+                label="Fecha"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <div className="inline-flex w-full flex-col gap-1">
+                <label htmlFor="new-movement-currency" className="text-ds-caption text-ds-text-secondary font-medium">
+                  Moneda
+                </label>
+                <select
+                  id="new-movement-currency"
+                  aria-label="Moneda"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="h-9 bg-ds-surface-sunken text-ds-body rounded-ds-control border-none px-3"
+                >
+                  {currencies.map((cur) => (
+                    <option key={cur.code} value={cur.code}>
+                      {cur.code}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : (
+            <span className="h-8 px-3 inline-flex items-center border border-ds-border rounded-ds-control text-ds-body text-ds-text-primary">
+              Hoy
+            </span>
+          )}
         </div>
 
         <div className="mt-10 flex items-center justify-between">
           <span className="text-ds-caption text-ds-text-tertiary">Esc para cerrar — lo escrito se conserva</span>
           <Button type="submit" variant="primary" disabled={!isAmountValid}>
-            Añadir
+            {isEditMode ? 'Guardar' : 'Añadir'}
           </Button>
         </div>
       </form>
@@ -261,4 +346,15 @@ NewMovementSheet.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAddIncome: PropTypes.func.isRequired,
   onAddExpense: PropTypes.func.isRequired,
+  onUpdateIncome: PropTypes.func,
+  onUpdateExpense: PropTypes.func,
+  movement: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['income', 'expense']).isRequired,
+    description: PropTypes.string,
+    amount: PropTypes.number,
+    category: PropTypes.string,
+    date: PropTypes.string,
+    currency: PropTypes.string,
+  }),
 };

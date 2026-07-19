@@ -7,6 +7,7 @@ import { groupMovementsByDay } from '../../utils/movementGrouping';
 import { formatCurrency } from '../../utils/formatters';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
 import { FilaMovimiento } from '../ds/FilaMovimiento';
+import { ExpansionDetalle } from './ExpansionDetalle';
 import { cn } from '../ds/cn';
 
 // Checkpoint IV-A (Saldo Design Constitution v1.2) — Historial de movimientos.
@@ -51,12 +52,20 @@ export function Historial({
   setSelectedMonth,
   initialCategoryFilter = null,
   onInitialFilterConsumed,
+  onEditMovement,
+  onDeleteMovement,
 }) {
   const { i18n } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(initialCategoryFilter || 'all');
   const [typeFilter, setTypeFilter] = useState('all');
+  // Checkpoint IV-B — expansión en línea (definitiva, no provisoria): clic
+  // en una fila la expande mostrando detalle + Editar. Un solo id expandido
+  // a la vez (acordeón) — clic en la misma fila la colapsa, clic en otra
+  // cambia cuál está expandida.
+  const [expandedId, setExpandedId] = useState(null);
+  const toggleExpanded = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
   // Deep-link desde el banner de dominancia de "Otros" en ChartsTab — se
   // consume una sola vez al montar y se limpia, mismo patrón que tenía
@@ -191,16 +200,25 @@ export function Historial({
               <p className="text-ds-overline">{group.label}</p>
               <div className="mt-1">
                 {group.items.map((item) => (
-                  <FilaMovimiento
-                    key={item.id}
-                    description={item.description}
-                    date={item.date}
-                    amount={item.amount}
-                    type={item.type}
-                    currency={item.currency}
-                    category={item.type === 'expense' ? item.category : undefined}
-                    showRelativeDate={false}
-                  />
+                  <div key={item.id}>
+                    <FilaMovimiento
+                      description={item.description}
+                      date={item.date}
+                      amount={item.amount}
+                      type={item.type}
+                      currency={item.currency}
+                      category={item.type === 'expense' ? item.category : undefined}
+                      showRelativeDate={false}
+                      onClick={() => toggleExpanded(item.id)}
+                    />
+                    {expandedId === item.id && (
+                      <ExpansionDetalle
+                        movement={item}
+                        onEditMovement={onEditMovement}
+                        onDeleteMovement={onDeleteMovement}
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -220,4 +238,6 @@ Historial.propTypes = {
   setSelectedMonth: PropTypes.func.isRequired,
   initialCategoryFilter: PropTypes.string,
   onInitialFilterConsumed: PropTypes.func,
+  onEditMovement: PropTypes.func,
+  onDeleteMovement: PropTypes.func,
 };
