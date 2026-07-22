@@ -7,6 +7,7 @@ import {
 import { ChartContainer } from './ChartContainer';
 import { transformToSpendingByDay } from '../../utils/chartHelpers';
 import { formatCurrency } from '../../utils/formatters';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Mapa de colores por intensidad relativa
 const getBarColor = (value, maxValue) => {
@@ -44,6 +45,12 @@ export const SpendingByDayChart = ({ expenses }) => {
   const data = transformToSpendingByDay(expenses);
   const isEmpty = !expenses || expenses.length === 0;
   const maxValue = Math.max(...data.map(d => d.monto), 0);
+  // RC-1.1 — mismo motivo que MonthlyCashFlowChart: grid/ejes deben elegir
+  // color en JS según el tema activo. getBarColor (arriba) es intensidad de
+  // dato, no chrome — se deja igual en ambos temas.
+  const { isDark } = useTheme();
+  const gridStroke = isDark ? '#334155' : '#f0f0f0';
+  const axisTickColor = isDark ? '#64748b' : '#6b7280';
 
   return (
     <ChartContainer
@@ -55,15 +62,15 @@ export const SpendingByDayChart = ({ expenses }) => {
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
           <XAxis
             dataKey="dia"
-            tick={{ fontSize: 13, fill: '#6b7280', fontWeight: 500 }}
+            tick={{ fontSize: 13, fill: axisTickColor, fontWeight: 500 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: axisTickColor }}
             tickFormatter={v => `$${v >= 1000 ? `${(v/1000).toFixed(1)}k` : v}`}
             axisLine={false}
             tickLine={false}

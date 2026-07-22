@@ -11,8 +11,9 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key) => key }),
 }));
 
+const { toggleThemeMock } = vi.hoisted(() => ({ toggleThemeMock: vi.fn() }));
 vi.mock('../contexts/ThemeContext', () => ({
-  useTheme: () => ({ theme: 'light', setTheme: vi.fn() }),
+  useTheme: () => ({ theme: 'light', toggleTheme: toggleThemeMock }),
 }));
 
 vi.mock('../components/Auth/AccountSettingsModal', () => ({
@@ -117,5 +118,30 @@ describe('ProfilePage — toggle de revocación de consentimiento de IA', () => 
 
     expect(toggle).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByTestId('other-screen').textContent).toBe('true');
+  });
+});
+
+// RC-1.1 — el ítem de menú "Modo oscuro/claro" llamaba a setTheme, que
+// ThemeContext nunca expuso (solo expone toggleTheme), causando un
+// TypeError no capturado al hacer click y dejando el tema sin poder
+// cambiarse desde la única UI alcanzable de la app.
+describe('ProfilePage — RC-1.1: ítem de menú de tema', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+    upsertMock.mockResolvedValue({ data: null, error: null });
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
+  });
+
+  it('hacer click en el ítem de tema llama a toggleTheme, sin lanzar excepción', async () => {
+    render(
+      <AIProvider>
+        <ProfilePage />
+      </AIProvider>
+    );
+
+    const themeButton = (await screen.findByText('profile.dark_mode')).closest('button');
+    expect(() => themeButton.click()).not.toThrow();
+    expect(toggleThemeMock).toHaveBeenCalledTimes(1);
   });
 });

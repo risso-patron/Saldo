@@ -13,12 +13,19 @@ import {
 import { ChartContainer } from './ChartContainer';
 import { transformToBarData, CustomTooltip } from '../../utils/chartHelpers';
 import { formatCurrency } from '../../utils/formatters';
+import { useTheme } from '../../contexts/ThemeContext';
 
 /**
  * Gráfico de Barras - Top 5 Categorías de Gasto
  */
 export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
   const data = transformToBarData(categoryAnalysis, topN);
+  // RC-1.1 — Recharts no puede leer clases dark: de Tailwind en stroke/fill
+  // de sus primitivas SVG; estos colores deben elegirse en JS según el tema.
+  const { isDark } = useTheme();
+  const gridStroke = isDark ? '#334155' : '#f0f0f0';
+  const axisStroke = isDark ? '#64748b' : '#9ca3af';
+  const yTickFill = isDark ? '#cbd5e1' : '#374151';
 
   return (
     <ChartContainer
@@ -32,18 +39,18 @@ export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
           layout="vertical"
           margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={true} vertical={false} />
-          <XAxis 
-            type="number" 
+          <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={true} vertical={false} />
+          <XAxis
+            type="number"
             tick={{ fontSize: 12 }}
-            stroke="#9ca3af"
+            stroke={axisStroke}
             tickFormatter={(value) => `$${value}`}
           />
-          <YAxis 
-            type="category" 
+          <YAxis
+            type="category"
             dataKey="name"
-            tick={renderCustomYAxisTick}
-            stroke="#9ca3af"
+            tick={(props) => renderCustomYAxisTick(props, yTickFill)}
+            stroke={axisStroke}
             width={90}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -60,11 +67,11 @@ export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
                 className="hover:opacity-80 transition-opacity cursor-pointer"
               />
             ))}
-            <LabelList 
-              dataKey="monto" 
-              position="right" 
+            <LabelList
+              dataKey="monto"
+              position="right"
               formatter={(value) => formatCurrency(value)}
-              className="text-xs font-semibold fill-gray-700"
+              className="text-xs font-semibold fill-gray-700 dark:fill-slate-300"
             />
           </Bar>
         </BarChart>
@@ -76,7 +83,7 @@ export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
 /**
  * Tick personalizado del eje Y con iconos
  */
-const renderCustomYAxisTick = ({ x, y, payload }) => {
+const renderCustomYAxisTick = ({ x, y, payload }, fill) => {
   return (
     <g transform={`translate(${x},${y})`}>
       <text
@@ -84,7 +91,7 @@ const renderCustomYAxisTick = ({ x, y, payload }) => {
         y={0}
         dy={4}
         textAnchor="end"
-        fill="#374151"
+        fill={fill}
         className="text-sm font-medium"
       >
         {payload.value}

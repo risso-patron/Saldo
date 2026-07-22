@@ -25,7 +25,7 @@ export const ProfilePage = ({
   onShowAlert,
 }) => {
   const { user, signOut } = useAuth()
-  const { theme, setTheme } = useTheme()
+  const { theme, toggleTheme } = useTheme()
   const { hasConsent, consentLoaded, grantConsent, revokeConsent } = useAI()
   const { t } = useTranslation()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -105,7 +105,7 @@ export const ProfilePage = ({
       icon: theme === 'dark' ? Sun : Moon,
       label: theme === 'dark' ? t('profile.light_mode') : t('profile.dark_mode'),
       sub: theme === 'dark' ? t('profile.light_mode_sub') : t('profile.dark_mode_sub'),
-      action: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
+      action: toggleTheme,
     },
     {
       icon: Gear,

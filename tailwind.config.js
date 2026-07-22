@@ -26,52 +26,57 @@ export default {
         // Tokens semánticos "ds-*". Conviven con la paleta legacy de abajo
         // (primary-*, pastel-*, etc.) hasta que las pantallas migren — no
         // se tocan ni se borran los tokens viejos en esta fase.
+        //
+        // RC-1.1 — cada valor referencia una variable CSS (definida en
+        // src/index.css bajo :root / html.dark) en vez de un hex fijo, para
+        // que todo consumidor de ds-* responda automáticamente al cambio de
+        // tema sin tocar clases componente por componente.
         // ---------------------------------------------------------------
         ds: {
           bg: {
-            base: '#FAFAFA',
+            base: 'var(--ds-bg-base)',
           },
           surface: {
-            raised: '#FFFFFF',
-            sunken: '#F5F5F5',
-            inverse: '#1A1A1A',
+            raised: 'var(--ds-surface-raised)',
+            sunken: 'var(--ds-surface-sunken)',
+            inverse: 'var(--ds-surface-inverse)',
           },
           text: {
-            primary: '#1A1A1A',
-            secondary: '#6B6B6B',
-            tertiary: '#9E9E9E', // uso permitido solo en >=14px
-            disabled: '#C4C4C4',
+            primary: 'var(--ds-text-primary)',
+            secondary: 'var(--ds-text-secondary)',
+            tertiary: 'var(--ds-text-tertiary)', // uso permitido solo en >=14px
+            disabled: 'var(--ds-text-disabled)',
           },
           border: {
-            DEFAULT: '#E6E6E6',
-            separator: '#F0F0F0',
+            DEFAULT: 'var(--ds-border)',
+            separator: 'var(--ds-border-separator)',
           },
           accent: {
-            DEFAULT: '#3E5568', // action/primary — acento ÚNICO del sistema
-            hover: '#384d5f', // brightness 92% de #3E5568
-            tint: '#EEF1F4', // tenue / selección
+            DEFAULT: 'var(--ds-accent)', // action/primary — acento ÚNICO del sistema
+            hover: 'var(--ds-accent-hover)',
+            tint: 'var(--ds-accent-tint)', // tenue / selección
           },
           success: {
-            DEFAULT: '#37725A',
-            tint: '#EDF4F0',
+            DEFAULT: 'var(--ds-success)',
+            tint: 'var(--ds-success-tint)',
           },
           warning: {
-            DEFAULT: '#A97E38',
-            tint: '#F8F2E7',
+            DEFAULT: 'var(--ds-warning)',
+            tint: 'var(--ds-warning-tint)',
           },
           danger: {
-            DEFAULT: '#A14D44', // sin tenue definido en la Constitución — no inventar uno
+            DEFAULT: 'var(--ds-danger)', // sin tenue definido en la Constitución — no inventar uno
           },
           // Velos de interacción — Constitución: "Hover: velo neutro rgba(0,0,0,0.03)…
           // Pressed: el doble del hover" (rgba(0,0,0,0.06)). Únicos tokens de
           // interacción del sistema — reemplazan cualquier hover:bg-black/[...] a mano.
           interaction: {
-            hover: 'rgba(0,0,0,0.03)',
-            pressed: 'rgba(0,0,0,0.06)',
+            hover: 'var(--ds-interaction-hover)',
+            pressed: 'var(--ds-interaction-pressed)',
           },
           // Velo de modal (Constitución, Nivel 2 — Modal: "sobre velo rgba(0,0,0,0.24)").
           // Sin consumidor en Fase I — lo usará el Sheet en Fase II.
-          scrim: 'rgba(0,0,0,0.24)',
+          scrim: 'var(--ds-scrim)',
         },
         // Paleta Celeste Cielo Pastel (Nuevo Color Maestro)
         primary: {

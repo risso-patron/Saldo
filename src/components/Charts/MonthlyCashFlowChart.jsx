@@ -9,6 +9,7 @@ import { ChartContainer } from './ChartContainer';
 import { transformToMonthlyCashFlow, hasChartData } from '../../utils/chartHelpers';
 import { formatCurrency } from '../../utils/formatters';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CashFlowTooltip = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) return null;
@@ -38,6 +39,14 @@ export const MonthlyCashFlowChart = ({ incomes, expenses, months = 6 }) => {
   const data = transformToMonthlyCashFlow(incomes, expenses, months, i18n.language);
   const isEmpty = !hasChartData(incomes, expenses);
   const hasAnyData = data.some(d => d.ingresos > 0 || d.gastos > 0);
+  // RC-1.1 — Recharts no puede leer clases dark: en stroke/fill de sus
+  // primitivas SVG; el color del grid/ejes/línea de referencia debe elegirse
+  // en JS según el tema activo. Los colores de las series (ingresos/gastos/
+  // ahorro) son datos, no chrome — se dejan igual en ambos temas.
+  const { isDark } = useTheme();
+  const gridStroke = isDark ? '#334155' : '#f0f0f0';
+  const axisTickColor = isDark ? '#64748b' : '#6b7280';
+  const refLineStroke = isDark ? '#334155' : '#e5e7eb';
 
   return (
     <ChartContainer
@@ -49,10 +58,10 @@ export const MonthlyCashFlowChart = ({ incomes, expenses, months = 6 }) => {
     >
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
           <XAxis
             dataKey="mes"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: axisTickColor }}
             axisLine={false}
             tickLine={false}
           />
@@ -60,7 +69,7 @@ export const MonthlyCashFlowChart = ({ incomes, expenses, months = 6 }) => {
           <YAxis
             yAxisId="money"
             orientation="left"
-            tick={{ fontSize: 11, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: axisTickColor }}
             tickFormatter={v => `$${v >= 1000 ? `${(v/1000).toFixed(1)}k` : v}`}
             axisLine={false}
             tickLine={false}
@@ -82,8 +91,8 @@ export const MonthlyCashFlowChart = ({ incomes, expenses, months = 6 }) => {
             wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
             formatter={v => <span className="text-gray-600 dark:text-gray-300">{v}</span>}
           />
-          <ReferenceLine yAxisId="money" y={0} stroke="#e5e7eb" />
-          <ReferenceLine yAxisId="pct"   y={0} stroke="#e5e7eb" strokeDasharray="4 4" />
+          <ReferenceLine yAxisId="money" y={0} stroke={refLineStroke} />
+          <ReferenceLine yAxisId="pct"   y={0} stroke={refLineStroke} strokeDasharray="4 4" />
 
           <Bar yAxisId="money" dataKey="ingresos" name="Ingresos"  fill="#10b981" radius={[4,4,0,0]} maxBarSize={40} />
           <Bar yAxisId="money" dataKey="gastos"   name="Gastos"    fill="#f87171" radius={[4,4,0,0]} maxBarSize={40} />
