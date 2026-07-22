@@ -207,3 +207,75 @@ describe('FilaMovimiento (ds) — prop aditiva `onClick` Checkpoint IV-B (fila i
     expect(container.firstChild.className).toMatch(/hover:bg-ds-interaction-hover\b/);
   });
 });
+
+// Checkpoint RC-1.3 (A2) — nombre accesible contextual (docs/design/screens/
+// Saldo Historial.dc.html: "Café con Marta, restaurantes, 4 euros con 60 en
+// gasto, hoy — el importe siempre con contexto"). Antes de este checkpoint no
+// existía ningún aria-label: el nombre accesible era la concatenación
+// implícita de los <span> visibles (verificado en auditoría RC-1.3, ej.
+// "Gasto día -0Alimentación−USD 10.00").
+describe('FilaMovimiento (ds) — aria-label contextual Checkpoint RC-1.3 (A2)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 17)); // 17 jul 2026
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it('gasto con categoría, hoy: label = "descripción, categoría, importe en gasto, Hoy"', () => {
+    render(
+      <FilaMovimiento
+        description="Café con Marta"
+        date="2026-07-17"
+        amount={4.6}
+        type="expense"
+        category="Restaurantes"
+        showRelativeDate={false}
+      />
+    );
+    expect(screen.getByLabelText('Café con Marta, Restaurantes, USD 4.60 en gasto, Hoy')).toBeInTheDocument();
+  });
+
+  it('ingreso sin categoría, ayer: label = "descripción, importe en ingreso, Ayer" (sin categoría vacía colgando)', () => {
+    render(<FilaMovimiento description="Salario" date="2026-07-16" amount={1000} type="income" />);
+    expect(screen.getByLabelText('Salario, USD 1,000.00 en ingreso, Ayer')).toBeInTheDocument();
+  });
+
+  it('el label nunca incluye el signo "−" tipográfico (no todos los lectores de pantalla lo anuncian)', () => {
+    const { container } = render(
+      <FilaMovimiento description="Supermercado" date="2026-07-17" amount={45.5} type="expense" />
+    );
+    const label = container.firstChild.getAttribute('aria-label');
+    expect(label).not.toMatch(/−/);
+    expect(label).toMatch(/en gasto/);
+  });
+
+  it('incluye la fecha relativa en el label AUNQUE showRelativeDate sea false (visualmente redundante en Historial, no accesiblemente)', () => {
+    const { container } = render(
+      <FilaMovimiento
+        description="Café"
+        date="2026-07-17"
+        amount={5}
+        type="expense"
+        category="Alimentación"
+        showRelativeDate={false}
+      />
+    );
+    // La columna visual muestra la categoría (no la fecha), pero el label
+    // accesible incluye ambas: categoría Y fecha relativa.
+    expect(screen.queryByText('Hoy')).not.toBeInTheDocument();
+    expect(container.firstChild.getAttribute('aria-label')).toMatch(/Hoy$/);
+  });
+
+  it('el aria-label se aplica igual en modo <div> (Dashboard, sin onClick) y en modo <button> (Historial, con onClick)', () => {
+    const { container: divContainer } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" />
+    );
+    const { container: buttonContainer } = render(
+      <FilaMovimiento description="Alquiler" date="2026-07-17" amount={500} type="expense" onClick={() => {}} />
+    );
+    const divLabel = divContainer.firstChild.getAttribute('aria-label');
+    const buttonLabel = buttonContainer.firstChild.getAttribute('aria-label');
+    expect(divLabel).toMatch(/^Alquiler, .*en gasto, Hoy$/);
+    expect(divLabel).toBe(buttonLabel);
+  });
+});

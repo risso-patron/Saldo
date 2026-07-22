@@ -35,6 +35,32 @@ import { cn } from './cn';
 
 const MINUS_SIGN = '−';
 
+// Checkpoint RC-1.3 (A2) — nombre accesible contextual para lectores de
+// pantalla (docs/design/screens/Saldo Historial.dc.html: "Café con Marta,
+// restaurantes, 4 euros con 60 en gasto, hoy — el importe siempre con
+// contexto"). Concentra acá toda la lógica de armado del label en vez de
+// dispersarla en el JSX. "gasto"/"ingreso" hardcodeados en español: no existe
+// infraestructura i18n reutilizable para esto (las únicas claves existentes,
+// form.expense/form.income, son consumidas solo por BudgetForm.jsx y el
+// Shared/BottomNav.jsx legacy — ninguno de los dos montado desde App.jsx) y
+// el resto del módulo (TYPE_OPTIONS en Historial.jsx/NewMovementSheet.jsx) ya
+// hardcodea "Gasto"/"Ingreso" de la misma manera — se mantiene consistencia.
+// No incluye el signo "−": no todos los motores de TTS lo anuncian de forma
+// fiable, así que la palabra "gasto"/"ingreso" reemplaza esa función en vez
+// de duplicarla. Tampoco convierte el importe a palabras (p.ej. "cuatro
+// euros con sesenta") — los lectores de pantalla ya interpretan la cifra
+// formateada razonablemente bien; escribir un conversor a palabras por
+// moneda/locale sería una funcionalidad nueva, no parte de este ajuste.
+function buildAccessibleLabel({ description, category, formattedAmount, isExpense, relativeDate }) {
+  const typeWord = isExpense ? 'gasto' : 'ingreso';
+  return [
+    description,
+    category,
+    `${formattedAmount} en ${typeWord}`,
+    relativeDate,
+  ].filter(Boolean).join(', ');
+}
+
 export const FilaMovimiento = forwardRef(function FilaMovimiento({
   description,
   date,
@@ -51,14 +77,31 @@ export const FilaMovimiento = forwardRef(function FilaMovimiento({
 }, ref) {
   const { i18n } = useTranslation();
   const isExpense = type === 'expense';
+  // Checkpoint RC-1.3 (A2) — una sola fecha de referencia por render,
+  // reutilizada tanto por la columna media visual (si aplica) como por el
+  // label accesible (que la necesita SIEMPRE, sin importar showRelativeDate:
+  // la fecha visualmente redundante en Historial —ya está en la cabecera del
+  // GrupoDía— no debería ser también accesiblemente redundante).
+  const now = new Date();
 
   // Mismo helper que ExpenseList.jsx (formatCurrency(item.amount, item.currency
   // || 'USD')) — consistencia de moneda en toda la app. Math.abs() porque el
   // signo lo controla esta fila (regla del "−" tipográfico), no formatCurrency.
   const formattedAmount = formatCurrency(Math.abs(Number(amount) || 0), currency);
 
-  const middleColumnContent = category
-    ?? (showRelativeDate ? formatRelativeDate(date, i18n.language, new Date()) : null);
+  // Checkpoint RC-1.3 (A2) — calculada una sola vez: alimenta tanto la
+  // columna media visual (cuando showRelativeDate lo pide) como el label
+  // accesible (que la necesita siempre, ver comentario de `now` arriba).
+  const relativeDate = formatRelativeDate(date, i18n.language, now);
+  const middleColumnContent = category ?? (showRelativeDate ? relativeDate : null);
+
+  const accessibleLabel = buildAccessibleLabel({
+    description,
+    category,
+    formattedAmount,
+    isExpense,
+    relativeDate,
+  });
 
   // Checkpoint IV-B — prop aditiva `onClick` (default undefined, preserva
   // EXACTAMENTE el comportamiento de Dashboard, que no la pasa): cuando se
@@ -73,6 +116,7 @@ export const FilaMovimiento = forwardRef(function FilaMovimiento({
     <Wrapper
       ref={ref}
       type={onClick ? 'button' : undefined}
+      aria-label={accessibleLabel}
       onClick={onClick}
       tabIndex={tabIndex}
       onKeyDown={onKeyDown}
