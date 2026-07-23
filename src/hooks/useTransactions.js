@@ -131,42 +131,51 @@ export const useTransactions = () => {
   }, [user?.id, refreshTransactions]);
 
   // ── Helpers internos ──────────────────────────────────────────────────────
+  // RC-1.7/C1: las 5 funciones de sync devuelven { error } (nunca lanzan) para
+  // que cada llamador decida cómo revertir su propio cambio optimista y
+  // notificar — la reversión es distinta según qué se mutó, así que vive en
+  // el call site, no acá.
   const syncInsert = useCallback(async (tx) => {
-    if (!user) return;
+    if (!user) return { error: null };
     const { error } = await supabase.from('transactions').insert(toSupabase(tx, user.id));
     if (error) console.error('Supabase insert error:', error.message);
+    return { error };
   }, [user]);
 
   const syncUpdate = useCallback(async (tx) => {
-    if (!user) return;
+    if (!user) return { error: null };
     const { error } = await supabase
       .from('transactions')
       .update(toSupabase(tx, user.id))
       .eq('id', tx.id)
       .eq('user_id', user.id);
     if (error) console.error('Supabase update error:', error.message);
+    return { error };
   }, [user]);
 
   const syncDelete = useCallback(async (id) => {
-    if (!user) return;
+    if (!user) return { error: null };
     const { error } = await supabase
       .from('transactions')
       .delete()
       .eq('id', id)
       .eq('user_id', user.id);
     if (error) console.error('Supabase delete error:', error.message);
+    return { error };
   }, [user]);
 
   const syncDeleteMultiple = useCallback(async (ids) => {
-    if (!user || !ids.length) return;
+    if (!user || !ids.length) return { error: null };
     const { error } = await supabase.from('transactions').delete().in('id', ids).eq('user_id', user.id);
     if (error) console.error('Supabase delete multiple error:', error.message);
+    return { error };
   }, [user]);
 
   const syncUpdateMultiple = useCallback(async (updates) => {
-    if (!user || !updates.length) return;
+    if (!user || !updates.length) return { error: null };
     const { error } = await supabase.from('transactions').upsert(updates.map(tx => toSupabase(tx, user.id)));
     if (error) console.error('Supabase update multiple error:', error.message);
+    return { error };
   }, [user]);
 
   // ── Operación reversible (Checkpoint IV-C) ────────────────────────────────
@@ -208,11 +217,25 @@ export const useTransactions = () => {
   const finalizePendingOperation = useCallback((pending) => {
     if (!pending) return;
     if (pending.kind === 'delete') {
-      syncDelete(pending.movement.id);
+      // RC-1.7/C1: si Supabase rechaza la baja, restaurar el movimiento en su
+      // posición original (misma técnica que undoPendingOperation ya usa
+      // para su propio revert intencional) — el índice se acota al tamaño
+      // actual del array por si otras altas/bajas ocurrieron mientras tanto.
+      syncDelete(pending.movement.id).then(({ error }) => {
+        if (!error) return;
+        const restore = (prev) => {
+          const next = [...prev];
+          next.splice(Math.min(pending.index, next.length), 0, pending.movement);
+          return next;
+        };
+        if (pending.movement.type === 'income') setIncomes(restore);
+        else setExpenses(restore);
+        showAlert('error', 'No se pudo eliminar el movimiento. Se restauró.');
+      });
       markSaved();
     }
     // kind 'create': no-op — el alta ya se sincronizó al crearse.
-  }, [syncDelete, markSaved]);
+  }, [syncDelete, markSaved, showAlert]);
 
   const confirmPendingOperation = useCallback(() => {
     finalizePendingOperation(pendingOperation);
@@ -235,12 +258,22 @@ export const useTransactions = () => {
       // kind 'create': compensar — ya estaba sincronizado, hay que
       // removerlo de verdad y avisarle a Supabase (mismo efecto que el
       // `undoAddMovement` de III-B, ahora como rama de un único coordinador).
-      removeFromLocalState(pendingOperation.movement);
-      syncDelete(pendingOperation.movement.id);
+      const movement = pendingOperation.movement;
+      removeFromLocalState(movement);
+      // RC-1.7/C1: si Supabase rechaza el borrado compensatorio, el
+      // movimiento sigue existiendo en el servidor — hay que devolverlo al
+      // estado local (sin índice guardado para este caso, se reinserta al
+      // final, igual que como se agregó originalmente).
+      syncDelete(movement.id).then(({ error }) => {
+        if (!error) return;
+        if (movement.type === 'income') setIncomes(prev => [...prev, movement]);
+        else setExpenses(prev => [...prev, movement]);
+        showAlert('error', 'No se pudo deshacer correctamente: el movimiento sigue existiendo.');
+      });
       markSaved();
     }
     setPendingOperation(null);
-  }, [pendingOperation, removeFromLocalState, syncDelete, markSaved]);
+  }, [pendingOperation, removeFromLocalState, syncDelete, markSaved, showAlert]);
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
@@ -273,7 +306,15 @@ export const useTransactions = () => {
       finalizePendingOperation(pendingOperation);
       setPendingOperation({ kind: 'create', movement: newIncome });
     }
-    syncInsert(newIncome);
+    // RC-1.7/C1: si Supabase rechaza el alta, revertir el agregado optimista
+    // y, si el Toast de "Deshacer" todavía apunta a este mismo movimiento,
+    // limpiarlo (no tiene sentido ofrecer deshacer algo que nunca se guardó).
+    syncInsert(newIncome).then(({ error }) => {
+      if (!error) return;
+      setIncomes(prev => prev.filter(i => i.id !== newIncome.id));
+      setPendingOperation(prev => (prev?.kind === 'create' && prev.movement.id === newIncome.id) ? null : prev);
+      showAlert('error', 'No se pudo guardar el ingreso. Se deshizo el cambio.');
+    });
     markSaved();
     return { success: true, movement: newIncome };
   }, [showAlert, syncInsert, markSaved, pendingOperation, finalizePendingOperation]);
@@ -307,7 +348,13 @@ export const useTransactions = () => {
       finalizePendingOperation(pendingOperation);
       setPendingOperation({ kind: 'create', movement: newExpense });
     }
-    syncInsert(newExpense);
+    // RC-1.7/C1: mismo revert que addIncome — ver comentario ahí.
+    syncInsert(newExpense).then(({ error }) => {
+      if (!error) return;
+      setExpenses(prev => prev.filter(e => e.id !== newExpense.id));
+      setPendingOperation(prev => (prev?.kind === 'create' && prev.movement.id === newExpense.id) ? null : prev);
+      showAlert('error', 'No se pudo guardar el gasto. Se deshizo el cambio.');
+    });
     markSaved();
     return { success: true, movement: newExpense };
   }, [showAlert, syncInsert, markSaved, pendingOperation, finalizePendingOperation]);
@@ -335,17 +382,27 @@ export const useTransactions = () => {
       return false;
     }
 
-    let updated;
-    setIncomes(prev => prev.map(income => {
-      if (income.id !== id) return income;
-      updated = { ...income, ...updates, amount: parseFloat(updates.amount) };
-      return updated;
-    }));
+    // RC-1.7/C1 (ampliado): `previous`/`updated` se calculan ACÁ, a partir de
+    // `incomes` (closure, por eso está en las deps de este useCallback — mismo
+    // patrón que ya usa deleteMovement) — no dentro del callback funcional de
+    // `setIncomes`. Ese patrón anterior era un bug real preexistente: React no
+    // garantiza invocar el updater de forma síncrona, así que leer la variable
+    // en la línea siguiente la encontraba siempre `undefined`, y `syncUpdate`
+    // JAMÁS se llegaba a invocar (el update nunca se sincronizaba con Supabase).
+    const previous = incomes.find(income => income.id === id);
+    if (!previous) return false;
+    const updated = { ...previous, ...updates, amount: parseFloat(updates.amount) };
+
+    setIncomes(prev => prev.map(income => income.id === id ? updated : income));
     showAlert('success', 'Ingreso actualizado');
-    if (updated) syncUpdate(updated);
+    syncUpdate(updated).then(({ error }) => {
+      if (!error) return;
+      setIncomes(prev => prev.map(income => income.id === id ? previous : income));
+      showAlert('error', 'No se pudo actualizar el ingreso. Se restauró el valor anterior.');
+    });
     markSaved();
     return true;
-  }, [showAlert, syncUpdate, markSaved]);
+  }, [incomes, showAlert, syncUpdate, markSaved]);
 
   const updateExpense = useCallback((id, updates) => {
     const validation = validateTransaction(updates, true, EXPENSE_CATEGORIES);
@@ -354,30 +411,48 @@ export const useTransactions = () => {
       return false;
     }
 
-    let updated;
-    setExpenses(prev => prev.map(expense => {
-      if (expense.id !== id) return expense;
-      updated = { ...expense, ...updates, amount: parseFloat(updates.amount) };
-      return updated;
-    }));
+    // RC-1.7/C1 (ampliado) — ver comentario en updateIncome.
+    const previous = expenses.find(expense => expense.id === id);
+    if (!previous) return false;
+    const updated = { ...previous, ...updates, amount: parseFloat(updates.amount) };
+
+    setExpenses(prev => prev.map(expense => expense.id === id ? updated : expense));
     showAlert('success', 'Gasto actualizado');
-    if (updated) syncUpdate(updated);
+    syncUpdate(updated).then(({ error }) => {
+      if (!error) return;
+      setExpenses(prev => prev.map(expense => expense.id === id ? previous : expense));
+      showAlert('error', 'No se pudo actualizar el gasto. Se restauró el valor anterior.');
+    });
     markSaved();
     return true;
-  }, [showAlert, syncUpdate, markSaved]);
+  }, [expenses, showAlert, syncUpdate, markSaved]);
 
   // --- CRM BULK ACTIONS ---
   const removeMultiple = useCallback((ids) => {
-    setIncomes(prev => prev.filter(i => !ids.includes(i.id)));
-    setExpenses(prev => prev.filter(e => !ids.includes(e.id)));
-    syncDeleteMultiple(ids);
+    // RC-1.7/C1: se capturan los objetos completos eliminados (no solo los
+    // ids) dentro del propio callback funcional, para poder revertir con
+    // precisión si Supabase rechaza el borrado.
+    let removedIncomes = [];
+    let removedExpenses = [];
+    setIncomes(prev => {
+      removedIncomes = prev.filter(i => ids.includes(i.id));
+      return prev.filter(i => !ids.includes(i.id));
+    });
+    setExpenses(prev => {
+      removedExpenses = prev.filter(e => ids.includes(e.id));
+      return prev.filter(e => !ids.includes(e.id));
+    });
+    syncDeleteMultiple(ids).then(({ error }) => {
+      if (!error) return;
+      if (removedIncomes.length) setIncomes(prev => [...prev, ...removedIncomes]);
+      if (removedExpenses.length) setExpenses(prev => [...prev, ...removedExpenses]);
+      showAlert('error', `No se pudieron eliminar ${ids.length} transacciones. Se restauraron.`);
+    });
     markSaved();
     showAlert('success', `${ids.length} transacciones eliminadas.`);
   }, [syncDeleteMultiple, markSaved, showAlert]);
 
   const categorizeMultiple = useCallback((ids, newCategory) => {
-    let updatedTxsForSync = [];
-    
     setIncomes(prev => prev.map(inc => {
       if (ids.includes(inc.id)) {
         console.warn('Attempted to categorize an income, ignoring.');
@@ -386,21 +461,33 @@ export const useTransactions = () => {
       return inc;
     }));
 
-    setExpenses(prev => prev.map(exp => {
-      if (ids.includes(exp.id)) {
-        const updated = { ...exp, category: newCategory };
-        updatedTxsForSync.push(updated);
-        return updated;
-      }
-      return exp;
-    }));
+    // RC-1.7/C1 (ampliado) — mismo fix de fondo que updateIncome/updateExpense:
+    // `previousExpenses`/`updatedTxsForSync` se calculan ACÁ, a partir de
+    // `expenses` (closure, por eso está en las deps), no dentro del callback
+    // funcional de `setExpenses`. El patrón anterior (capturar via .push()
+    // dentro del updater y leer el array en la línea siguiente) tenía el mismo
+    // bug preexistente que updateIncome: el `if` nunca era verdadero, y
+    // syncUpdateMultiple JAMÁS se llegaba a invocar.
+    const previousExpenses = expenses.filter(exp => ids.includes(exp.id));
+    const updatedTxsForSync = previousExpenses.map(exp => ({ ...exp, category: newCategory }));
 
     if (updatedTxsForSync.length > 0) {
-      syncUpdateMultiple(updatedTxsForSync);
+      setExpenses(prev => prev.map(exp => {
+        const found = updatedTxsForSync.find(u => u.id === exp.id);
+        return found || exp;
+      }));
+      syncUpdateMultiple(updatedTxsForSync).then(({ error }) => {
+        if (!error) return;
+        setExpenses(prev => prev.map(exp => {
+          const original = previousExpenses.find(p => p.id === exp.id);
+          return original || exp;
+        }));
+        showAlert('error', `No se pudo recategorizar ${updatedTxsForSync.length} gastos. Se restauraron.`);
+      });
       markSaved();
       showAlert('success', `${updatedTxsForSync.length} gastos movidos a ${newCategory}.`);
     }
-  }, [syncUpdateMultiple, markSaved, showAlert]);
+  }, [expenses, syncUpdateMultiple, markSaved, showAlert]);
 
   const clearAll = useCallback(() => {
     setIncomes([]);

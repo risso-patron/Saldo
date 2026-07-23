@@ -1,3 +1,4 @@
+import { createElement, StrictMode } from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { useTransactions } from './useTransactions';
 import { useAuth } from '../contexts/AuthContext';
@@ -56,6 +57,24 @@ async function flushInitialLoad() {
     await Promise.resolve();
   });
 }
+
+// Drena microtasks Y el macrotask queue (setTimeout(0)) — necesario para las
+// cadenas .then() encadenadas tras un fire-and-forget (syncInsert/syncUpdate/
+// etc. son async y su .then() en el call site agrega otro salto más sobre lo
+// que ya cubre flushInitialLoad).
+async function flushAsync() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+}
+
+// RC-1.7/C1: en updateIncome/updateExpense/removeMultiple/categorizeMultiple
+// el valor previo a revertir se captura asignando una variable del closure
+// externo DENTRO del callback funcional de setState — StrictMode invoca ese
+// callback dos veces por render para detectar impurezas. Envolver con
+// StrictMode fuerza esa doble invocación real en el test, en vez de confiar
+// solo en el razonamiento de que "buscar por id es determinístico".
+const strictWrapper = ({ children }) => createElement(StrictMode, null, children);
 
 describe('useTransactions — options.notification y contrato de retorno (Checkpoint III-B)', () => {
   beforeEach(() => {
@@ -442,5 +461,247 @@ describe('useTransactions — syncError/lastSyncedAt (Checkpoint IV-F.2)', () =>
     });
 
     expect(chain.select).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('useTransactions — reversión ante fallo de sync (RC-1.7/C1)', () => {
+  beforeEach(() => {
+    localStorage.getItem.mockReturnValue(null);
+    vi.mocked(useAuth).mockReturnValue({ user: { id: 'user-1' } });
+  });
+
+  it('addIncome: si syncInsert falla, revierte el alta optimista y muestra el error', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+
+    let returned;
+    act(() => {
+      returned = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD');
+    });
+    expect(result.current.incomes.some((i) => i.id === returned.movement.id)).toBe(true);
+
+    await flushAsync();
+
+    expect(result.current.incomes.some((i) => i.id === returned.movement.id)).toBe(false);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo guardar el ingreso. Se deshizo el cambio.' });
+  });
+
+  it('addExpense: si syncInsert falla, revierte el alta optimista y muestra el error', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+
+    let returned;
+    act(() => {
+      returned = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD');
+    });
+    await flushAsync();
+
+    expect(result.current.expenses.some((e) => e.id === returned.movement.id)).toBe(false);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo guardar el gasto. Se deshizo el cambio.' });
+  });
+
+  it('addIncome (notification "toast"): si syncInsert falla mientras el Toast de "Deshacer" sigue activo, limpia pendingOperation', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+
+    let returned;
+    act(() => {
+      returned = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD', { notification: 'toast' });
+    });
+    expect(result.current.pendingOperation).toEqual({ kind: 'create', movement: returned.movement });
+
+    await flushAsync();
+
+    expect(result.current.pendingOperation).toBeNull();
+    expect(result.current.incomes.some((i) => i.id === returned.movement.id)).toBe(false);
+  });
+
+  it('addIncome (notification "toast"): si el pendingOperation ya cambió a otra operación antes de que syncInsert falle, no lo toca', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    let first;
+    act(() => {
+      first = result.current.addIncome('Uno', 100, '2026-07-01', 'USD', { notification: 'toast' });
+    });
+
+    supabase.from.mockReturnValue(okChain);
+    let second;
+    act(() => {
+      second = result.current.addIncome('Dos', 200, '2026-07-01', 'USD', { notification: 'toast' });
+    });
+    expect(result.current.pendingOperation).toEqual({ kind: 'create', movement: second.movement });
+
+    await flushAsync();
+
+    expect(result.current.pendingOperation).toEqual({ kind: 'create', movement: second.movement });
+    expect(result.current.incomes.some((i) => i.id === first.movement.id)).toBe(false);
+  });
+
+  it('updateIncome: si syncUpdate falla, restaura exactamente el valor previo (verificado con StrictMode — doble invocación del updater de setState)', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions(), { wrapper: strictWrapper });
+    await flushInitialLoad();
+
+    let income;
+    act(() => {
+      income = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD').movement;
+    });
+    const originalSnapshot = { ...income };
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    act(() => {
+      result.current.updateIncome(income.id, { description: 'Sueldo editado', amount: 2000, date: income.date });
+    });
+    expect(result.current.incomes.find((i) => i.id === income.id).description).toBe('Sueldo editado');
+
+    await flushAsync();
+
+    expect(result.current.incomes.find((i) => i.id === income.id)).toEqual(originalSnapshot);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo actualizar el ingreso. Se restauró el valor anterior.' });
+  });
+
+  it('updateExpense: si syncUpdate falla, restaura exactamente el valor previo', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    let expense;
+    act(() => {
+      expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement;
+    });
+    const originalSnapshot = { ...expense };
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    act(() => {
+      result.current.updateExpense(expense.id, { description: 'Super editado', category: 'Alimentación', amount: 80, date: expense.date });
+    });
+    await flushAsync();
+
+    expect(result.current.expenses.find((e) => e.id === expense.id)).toEqual(originalSnapshot);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo actualizar el gasto. Se restauró el valor anterior.' });
+  });
+
+  it('confirmPendingOperation (venció el Toast de baja): si syncDelete falla, restaura el movimiento en su posición original', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    let first, second, third;
+    act(() => { first = result.current.addExpense('Uno', 'Alimentación', 10, '2026-07-01', 'USD').movement; });
+    act(() => { second = result.current.addExpense('Dos', 'Alimentación', 20, '2026-07-01', 'USD').movement; });
+    act(() => { third = result.current.addExpense('Tres', 'Alimentación', 30, '2026-07-01', 'USD').movement; });
+
+    act(() => {
+      result.current.deleteMovement(second); // índice 1
+    });
+    expect(result.current.expenses.map((e) => e.id)).toEqual([first.id, third.id]);
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    act(() => {
+      result.current.confirmPendingOperation();
+    });
+    await flushAsync();
+
+    expect(result.current.expenses.map((e) => e.id)).toEqual([first.id, second.id, third.id]);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo eliminar el movimiento. Se restauró.' });
+  });
+
+  it('undoPendingOperation (compensando un alta): si syncDelete falla, el movimiento vuelve a aparecer y se avisa que sigue existiendo', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions());
+    await flushInitialLoad();
+
+    let income;
+    act(() => {
+      income = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD', { notification: 'toast' }).movement;
+    });
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    act(() => {
+      result.current.undoPendingOperation();
+    });
+    expect(result.current.incomes.some((i) => i.id === income.id)).toBe(false);
+
+    await flushAsync();
+
+    expect(result.current.incomes.some((i) => i.id === income.id)).toBe(true);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo deshacer correctamente: el movimiento sigue existiendo.' });
+  });
+
+  it('removeMultiple: si syncDeleteMultiple falla, restaura los ingresos y gastos eliminados (verificado con StrictMode)', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions(), { wrapper: strictWrapper });
+    await flushInitialLoad();
+
+    let income, expense;
+    act(() => { income = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD').movement; });
+    act(() => { expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement; });
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    act(() => {
+      result.current.removeMultiple([income.id, expense.id]);
+    });
+    expect(result.current.incomes.some((i) => i.id === income.id)).toBe(false);
+    expect(result.current.expenses.some((e) => e.id === expense.id)).toBe(false);
+
+    await flushAsync();
+
+    expect(result.current.incomes.some((i) => i.id === income.id)).toBe(true);
+    expect(result.current.expenses.some((e) => e.id === expense.id)).toBe(true);
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudieron eliminar 2 transacciones. Se restauraron.' });
+  });
+
+  it('categorizeMultiple: si syncUpdateMultiple falla, restaura la categoría original (verificado con StrictMode)', async () => {
+    const okChain = makeSupabaseChain();
+    supabase.from.mockReturnValue(okChain);
+    const { result } = renderHook(() => useTransactions(), { wrapper: strictWrapper });
+    await flushInitialLoad();
+
+    let expense;
+    act(() => {
+      expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement;
+    });
+
+    const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+    supabase.from.mockReturnValue(failChain);
+    act(() => {
+      result.current.categorizeMultiple([expense.id], 'Transporte');
+    });
+    expect(result.current.expenses.find((e) => e.id === expense.id).category).toBe('Transporte');
+
+    await flushAsync();
+
+    expect(result.current.expenses.find((e) => e.id === expense.id).category).toBe('Alimentación');
+    expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo recategorizar 1 gastos. Se restauraron.' });
   });
 });
