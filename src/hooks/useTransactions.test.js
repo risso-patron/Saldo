@@ -705,3 +705,262 @@ describe('useTransactions — reversión ante fallo de sync (RC-1.7/C1)', () => 
     expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo recategorizar 1 gastos. Se restauraron.' });
   });
 });
+
+describe('useTransactions — Deshacer en editar/importar/categorizar (RC-1.7/A4)', () => {
+  beforeEach(() => {
+    localStorage.getItem.mockReturnValue(null);
+    vi.mocked(useAuth).mockReturnValue({ user: { id: 'user-1' } });
+  });
+
+  describe('updateIncome/updateExpense con notification: "toast"', () => {
+    it('updateIncome: NO llama showAlert y arranca una operación reversible de tipo "update"', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let income;
+      act(() => {
+        income = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD').movement;
+      });
+      act(() => {
+        result.current.showAlert(null); // limpia el alert de la creación legacy
+      });
+
+      act(() => {
+        result.current.updateIncome(income.id, { description: 'Sueldo editado', amount: 1200, date: income.date }, { notification: 'toast' });
+      });
+
+      expect(result.current.alert).toBeNull();
+      expect(result.current.pendingOperation.kind).toBe('update');
+      expect(result.current.pendingOperation.movement).toMatchObject({ id: income.id, description: 'Sueldo editado', amount: 1200 });
+      expect(result.current.pendingOperation.previous).toMatchObject({ id: income.id, description: 'Sueldo', amount: 1000 });
+      expect(result.current.pendingOperationMessage).toBe('Ingreso actualizado');
+    });
+
+    it('updateExpense: mismo comportamiento, mensaje "Gasto actualizado"', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let expense;
+      act(() => {
+        expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement;
+      });
+
+      act(() => {
+        result.current.updateExpense(expense.id, { description: 'Super editado', category: 'Alimentación', amount: 80, date: expense.date }, { notification: 'toast' });
+      });
+
+      expect(result.current.pendingOperation.kind).toBe('update');
+      expect(result.current.pendingOperationMessage).toBe('Gasto actualizado');
+    });
+
+    it('undoPendingOperation en un "update": restaura el valor previo local y re-sincroniza contra Supabase', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let income;
+      act(() => {
+        income = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD').movement;
+      });
+      act(() => {
+        result.current.updateIncome(income.id, { description: 'Sueldo editado', amount: 1200, date: income.date }, { notification: 'toast' });
+      });
+      expect(result.current.incomes.find((i) => i.id === income.id).amount).toBe(1200);
+      chain.update.mockClear();
+
+      act(() => {
+        result.current.undoPendingOperation();
+      });
+
+      expect(result.current.pendingOperation).toBeNull();
+      expect(result.current.incomes.find((i) => i.id === income.id)).toMatchObject({ description: 'Sueldo', amount: 1000 });
+      expect(chain.update).toHaveBeenCalledTimes(1);
+    });
+
+    it('si Supabase rechaza el update, limpia el pendingOperation si todavía apunta al mismo movimiento', async () => {
+      const okChain = makeSupabaseChain();
+      supabase.from.mockReturnValue(okChain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let income;
+      act(() => {
+        income = result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD').movement;
+      });
+
+      const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+      supabase.from.mockReturnValue(failChain);
+      act(() => {
+        result.current.updateIncome(income.id, { description: 'Sueldo editado', amount: 1200, date: income.date }, { notification: 'toast' });
+      });
+      expect(result.current.pendingOperation?.kind).toBe('update');
+
+      await flushAsync();
+
+      expect(result.current.pendingOperation).toBeNull();
+      expect(result.current.incomes.find((i) => i.id === income.id).amount).toBe(1000);
+      expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo actualizar el ingreso. Se restauró el valor anterior.' });
+    });
+  });
+
+  describe('addBulkTransactions con notification: "toast"', () => {
+    it('NO llama showAlert y arranca una operación reversible de tipo "bulkCreate"', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      act(() => {
+        result.current.addBulkTransactions([
+          { type: 'income', description: 'Uno', amount: 10, date: '2026-07-01' },
+          { type: 'expense', description: 'Dos', category: 'Alimentación', amount: 20, date: '2026-07-01' },
+        ], { notification: 'toast' });
+      });
+
+      expect(result.current.alert).toBeNull();
+      expect(result.current.pendingOperation.kind).toBe('bulkCreate');
+      expect(result.current.pendingOperation.movements).toHaveLength(2);
+      expect(result.current.pendingOperationMessage).toBe('2 transacciones importadas');
+    });
+
+    it('undoPendingOperation en un "bulkCreate": remueve todos los movimientos importados y compensa contra Supabase', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      act(() => {
+        result.current.addBulkTransactions([
+          { type: 'income', description: 'Uno', amount: 10, date: '2026-07-01' },
+          { type: 'expense', description: 'Dos', category: 'Alimentación', amount: 20, date: '2026-07-01' },
+        ], { notification: 'toast' });
+      });
+      expect(result.current.incomes).toHaveLength(1);
+      expect(result.current.expenses).toHaveLength(1);
+      chain.delete.mockClear();
+
+      act(() => {
+        result.current.undoPendingOperation();
+      });
+
+      expect(result.current.pendingOperation).toBeNull();
+      expect(result.current.incomes).toHaveLength(0);
+      expect(result.current.expenses).toHaveLength(0);
+      expect(chain.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('si Supabase rechaza el borrado compensatorio, restaura los movimientos importados', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      act(() => {
+        result.current.addBulkTransactions([
+          { type: 'income', description: 'Uno', amount: 10, date: '2026-07-01' },
+        ], { notification: 'toast' });
+      });
+
+      const failChain = makeSupabaseChain({ data: null, error: { message: 'network down' } });
+      supabase.from.mockReturnValue(failChain);
+      act(() => {
+        result.current.undoPendingOperation();
+      });
+      expect(result.current.incomes).toHaveLength(0);
+
+      await flushAsync();
+
+      expect(result.current.incomes).toHaveLength(1);
+      expect(result.current.alert).toEqual({ type: 'error', message: 'No se pudo deshacer correctamente: algunas transacciones siguen existiendo.' });
+    });
+  });
+
+  describe('categorizeMultiple con notification: "toast"', () => {
+    it('NO llama showAlert y arranca una operación reversible de tipo "categorizeMultiple"', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let expense;
+      act(() => {
+        expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement;
+      });
+
+      act(() => {
+        result.current.categorizeMultiple([expense.id], 'Transporte', { notification: 'toast' });
+      });
+
+      expect(result.current.pendingOperation.kind).toBe('categorizeMultiple');
+      expect(result.current.pendingOperation.updates).toHaveLength(1);
+      expect(result.current.pendingOperation.previous[0]).toMatchObject({ id: expense.id, category: 'Alimentación' });
+      expect(result.current.pendingOperationMessage).toBe('1 gastos recategorizados');
+    });
+
+    it('undoPendingOperation en un "categorizeMultiple": restaura la categoría previa y re-sincroniza', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let expense;
+      act(() => {
+        expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement;
+      });
+      act(() => {
+        result.current.categorizeMultiple([expense.id], 'Transporte', { notification: 'toast' });
+      });
+      expect(result.current.expenses.find((e) => e.id === expense.id).category).toBe('Transporte');
+      chain.upsert.mockClear();
+
+      act(() => {
+        result.current.undoPendingOperation();
+      });
+
+      expect(result.current.pendingOperation).toBeNull();
+      expect(result.current.expenses.find((e) => e.id === expense.id).category).toBe('Alimentación');
+      expect(chain.upsert).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('pendingOperationMessage — cobertura de los 5 kinds', () => {
+    it('sin pendingOperation, el mensaje es un string vacío', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+      expect(result.current.pendingOperationMessage).toBe('');
+    });
+
+    it('kind "create" (vía notification toast de addIncome): "Movimiento añadido"', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+      act(() => {
+        result.current.addIncome('Sueldo', 1000, '2026-07-01', 'USD', { notification: 'toast' });
+      });
+      expect(result.current.pendingOperationMessage).toBe('Movimiento añadido');
+    });
+
+    it('kind "delete": "Movimiento eliminado"', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+      let expense;
+      act(() => {
+        expense = result.current.addExpense('Super', 'Alimentación', 50, '2026-07-01', 'USD').movement;
+      });
+      act(() => {
+        result.current.deleteMovement(expense);
+      });
+      expect(result.current.pendingOperationMessage).toBe('Movimiento eliminado');
+    });
+  });
+});

@@ -162,10 +162,12 @@ export function NewMovementSheet({
     // repetidas. Edición actualiza el movimiento existente (movement.id);
     // creación sigue el flujo de siempre.
     if (isEditMode) {
+      // RC-1.7/A4: 'toast' arranca una operación reversible (Deshacer),
+      // mismo mecanismo que ya usa la creación (III-C.2) en vez del Alert.
       const success =
         activeType === 'income'
-          ? onUpdateIncome(movement.id, { description, amount, date, currency })
-          : onUpdateExpense(movement.id, { description, category, amount, date, currency });
+          ? onUpdateIncome(movement.id, { description, amount, date, currency }, { notification: 'toast' })
+          : onUpdateExpense(movement.id, { description, category, amount, date, currency }, { notification: 'toast' });
 
       if (success) onClose();
       return;

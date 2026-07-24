@@ -254,6 +254,56 @@ export const useTransactions = () => {
       };
       if (movement.type === 'income') setIncomes(restore);
       else setExpenses(restore);
+    } else if (pendingOperation.kind === 'update') {
+      // RC-1.7/A4: revertir al valor previo localmente y re-sincronizar
+      // (compensar) — el update ya se sincronizó de forma inmediata al
+      // ejecutarse, mismo criterio que 'create'.
+      const { movement, previous } = pendingOperation;
+      if (movement.type === 'income') {
+        setIncomes(prev => prev.map(i => i.id === movement.id ? previous : i));
+      } else {
+        setExpenses(prev => prev.map(e => e.id === movement.id ? previous : e));
+      }
+      syncUpdate(previous).then(({ error }) => {
+        if (!error) return;
+        showAlert('error', 'No se pudo deshacer correctamente: el valor no se restauró en el servidor.');
+      });
+      markSaved();
+    } else if (pendingOperation.kind === 'bulkCreate') {
+      // RC-1.7/A4: remover todos los movimientos importados y compensar
+      // contra Supabase (mismo patrón que la compensación de 'create', a
+      // escala de lote).
+      const { movements } = pendingOperation;
+      const incomeMovements = movements.filter(m => m.type === 'income');
+      const expenseMovements = movements.filter(m => m.type === 'expense');
+      if (incomeMovements.length) {
+        const incomeIds = incomeMovements.map(m => m.id);
+        setIncomes(prev => prev.filter(i => !incomeIds.includes(i.id)));
+      }
+      if (expenseMovements.length) {
+        const expenseIds = expenseMovements.map(m => m.id);
+        setExpenses(prev => prev.filter(e => !expenseIds.includes(e.id)));
+      }
+      syncDeleteMultiple(movements.map(m => m.id)).then(({ error }) => {
+        if (!error) return;
+        if (incomeMovements.length) setIncomes(prev => [...prev, ...incomeMovements]);
+        if (expenseMovements.length) setExpenses(prev => [...prev, ...expenseMovements]);
+        showAlert('error', 'No se pudo deshacer correctamente: algunas transacciones siguen existiendo.');
+      });
+      markSaved();
+    } else if (pendingOperation.kind === 'categorizeMultiple') {
+      // RC-1.7/A4: restaurar la categoría previa de cada gasto y
+      // re-sincronizar (compensar).
+      const { previous } = pendingOperation;
+      setExpenses(prev => prev.map(exp => {
+        const original = previous.find(p => p.id === exp.id);
+        return original || exp;
+      }));
+      syncUpdateMultiple(previous).then(({ error }) => {
+        if (!error) return;
+        showAlert('error', 'No se pudo deshacer correctamente: la categoría no se restauró en el servidor.');
+      });
+      markSaved();
     } else {
       // kind 'create': compensar — ya estaba sincronizado, hay que
       // removerlo de verdad y avisarle a Supabase (mismo efecto que el
@@ -273,7 +323,28 @@ export const useTransactions = () => {
       markSaved();
     }
     setPendingOperation(null);
-  }, [pendingOperation, removeFromLocalState, syncDelete, markSaved, showAlert]);
+  }, [pendingOperation, removeFromLocalState, syncDelete, syncUpdate, syncUpdateMultiple, syncDeleteMultiple, markSaved, showAlert]);
+
+  // RC-1.7/A4: mensaje del Toast centralizado acá (no en App.jsx) — App.jsx
+  // no debe conocer la forma interna de cada `kind` de pendingOperation,
+  // solo renderizar. Antes de A4 solo existían 'create'/'delete'.
+  const pendingOperationMessage = useMemo(() => {
+    if (!pendingOperation) return '';
+    switch (pendingOperation.kind) {
+      case 'delete':
+        return 'Movimiento eliminado';
+      case 'create':
+        return 'Movimiento añadido';
+      case 'update':
+        return pendingOperation.movement.type === 'income' ? 'Ingreso actualizado' : 'Gasto actualizado';
+      case 'bulkCreate':
+        return `${pendingOperation.movements.length} transacciones importadas`;
+      case 'categorizeMultiple':
+        return `${pendingOperation.updates.length} gastos recategorizados`;
+      default:
+        return '';
+    }
+  }, [pendingOperation]);
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
@@ -375,7 +446,11 @@ export const useTransactions = () => {
     setPendingOperation({ kind: 'delete', movement, index });
   }, [incomes, expenses, pendingOperation, finalizePendingOperation, removeFromLocalState]);
 
-  const updateIncome = useCallback((id, updates) => {
+  // `options.notification`: 'legacy' (default, showAlert) | 'toast'
+  // (RC-1.7/A4 — arranca una operación reversible, mismo mecanismo que
+  // addIncome/addExpense usan para 'create').
+  const updateIncome = useCallback((id, updates, options = {}) => {
+    const { notification = 'legacy' } = options;
     const validation = validateTransaction(updates);
     if (!validation.isValid) {
       showAlert('error', Object.values(validation.errors)[0]);
@@ -394,17 +469,27 @@ export const useTransactions = () => {
     const updated = { ...previous, ...updates, amount: parseFloat(updates.amount) };
 
     setIncomes(prev => prev.map(income => income.id === id ? updated : income));
-    showAlert('success', 'Ingreso actualizado');
+    if (notification === 'legacy') showAlert('success', 'Ingreso actualizado');
+    if (notification === 'toast') {
+      finalizePendingOperation(pendingOperation);
+      setPendingOperation({ kind: 'update', movement: updated, previous });
+    }
     syncUpdate(updated).then(({ error }) => {
       if (!error) return;
       setIncomes(prev => prev.map(income => income.id === id ? previous : income));
       showAlert('error', 'No se pudo actualizar el ingreso. Se restauró el valor anterior.');
+      // RC-1.7/A4: si el Toast de Deshacer todavía apunta a este mismo
+      // update, limpiarlo — no tiene sentido ofrecer deshacer algo que el
+      // propio sync ya revirtió (mismo criterio que addIncome/addExpense).
+      setPendingOperation(prev => (prev?.kind === 'update' && prev.movement.id === updated.id) ? null : prev);
     });
     markSaved();
     return true;
-  }, [incomes, showAlert, syncUpdate, markSaved]);
+  }, [incomes, showAlert, syncUpdate, markSaved, pendingOperation, finalizePendingOperation]);
 
-  const updateExpense = useCallback((id, updates) => {
+  // `options.notification` — ver comentario en updateIncome.
+  const updateExpense = useCallback((id, updates, options = {}) => {
+    const { notification = 'legacy' } = options;
     const validation = validateTransaction(updates, true, EXPENSE_CATEGORIES);
     if (!validation.isValid) {
       showAlert('error', Object.values(validation.errors)[0]);
@@ -417,15 +502,20 @@ export const useTransactions = () => {
     const updated = { ...previous, ...updates, amount: parseFloat(updates.amount) };
 
     setExpenses(prev => prev.map(expense => expense.id === id ? updated : expense));
-    showAlert('success', 'Gasto actualizado');
+    if (notification === 'legacy') showAlert('success', 'Gasto actualizado');
+    if (notification === 'toast') {
+      finalizePendingOperation(pendingOperation);
+      setPendingOperation({ kind: 'update', movement: updated, previous });
+    }
     syncUpdate(updated).then(({ error }) => {
       if (!error) return;
       setExpenses(prev => prev.map(expense => expense.id === id ? previous : expense));
       showAlert('error', 'No se pudo actualizar el gasto. Se restauró el valor anterior.');
+      setPendingOperation(prev => (prev?.kind === 'update' && prev.movement.id === updated.id) ? null : prev);
     });
     markSaved();
     return true;
-  }, [expenses, showAlert, syncUpdate, markSaved]);
+  }, [expenses, showAlert, syncUpdate, markSaved, pendingOperation, finalizePendingOperation]);
 
   // --- CRM BULK ACTIONS ---
   const removeMultiple = useCallback((ids) => {
@@ -452,7 +542,12 @@ export const useTransactions = () => {
     showAlert('success', `${ids.length} transacciones eliminadas.`);
   }, [syncDeleteMultiple, markSaved, showAlert]);
 
-  const categorizeMultiple = useCallback((ids, newCategory) => {
+  // `options.notification` — ver comentario en updateIncome. Sin consumidor
+  // de UI en vivo hoy (Checkpoint IV-A, bulk actions descartadas por el PO)
+  // — se agrega igual para que la función misma cumpla E7 (Reversible por
+  // defecto) tal como lo hacen el resto de las acciones de este hook.
+  const categorizeMultiple = useCallback((ids, newCategory, options = {}) => {
+    const { notification = 'legacy' } = options;
     setIncomes(prev => prev.map(inc => {
       if (ids.includes(inc.id)) {
         console.warn('Attempted to categorize an income, ignoring.');
@@ -485,9 +580,13 @@ export const useTransactions = () => {
         showAlert('error', `No se pudo recategorizar ${updatedTxsForSync.length} gastos. Se restauraron.`);
       });
       markSaved();
-      showAlert('success', `${updatedTxsForSync.length} gastos movidos a ${newCategory}.`);
+      if (notification === 'legacy') showAlert('success', `${updatedTxsForSync.length} gastos movidos a ${newCategory}.`);
+      if (notification === 'toast') {
+        finalizePendingOperation(pendingOperation);
+        setPendingOperation({ kind: 'categorizeMultiple', updates: updatedTxsForSync, previous: previousExpenses });
+      }
     }
-  }, [expenses, syncUpdateMultiple, markSaved, showAlert]);
+  }, [expenses, syncUpdateMultiple, markSaved, showAlert, pendingOperation, finalizePendingOperation]);
 
   const clearAll = useCallback(() => {
     setIncomes([]);
@@ -502,7 +601,9 @@ export const useTransactions = () => {
     }
   }, [user, showAlert]);
 
-  const addBulkTransactions = useCallback((transactions) => {
+  // `options.notification` — ver comentario en updateIncome.
+  const addBulkTransactions = useCallback((transactions, options = {}) => {
+    const { notification = 'legacy' } = options;
     const newIncomes = [];
     const newExpenses = [];
     let errorCount = 0;
@@ -537,10 +638,17 @@ export const useTransactions = () => {
 
     const total = newIncomes.length + newExpenses.length;
     if (total > 0) {
-      showAlert('success', `${total} transacciones importadas exitosamente`);
+      if (notification === 'legacy') showAlert('success', `${total} transacciones importadas exitosamente`);
+      if (notification === 'toast') {
+        finalizePendingOperation(pendingOperation);
+        setPendingOperation({ kind: 'bulkCreate', movements: [...newIncomes, ...newExpenses] });
+      }
       markSaved();
 
-      // Sync batch a Supabase en background
+      // Sync batch a Supabase en background — RC-1.7/A4 agrega la
+      // capacidad de deshacer (arriba); el auto-revert ante fallo de red de
+      // este upsert queda fuera de este alcance (mismo criterio ya
+      // establecido para clearAll en RC-1.7/C1).
       if (user) {
         const rows = [
           ...newIncomes.map(tx => toSupabase(tx, user.id)),
@@ -554,7 +662,7 @@ export const useTransactions = () => {
     }
 
     return { imported: total, errors: errorCount, total: transactions.length };
-  }, [user, showAlert]);
+  }, [user, showAlert, pendingOperation, finalizePendingOperation]);
 
   // ── Cálculos memoizados (Normalizados a la Moneda Principal) ─────────────
   
@@ -600,6 +708,7 @@ export const useTransactions = () => {
     updateIncome,
     updateExpense,
     pendingOperation,
+    pendingOperationMessage,
     deleteMovement,
     confirmPendingOperation,
     undoPendingOperation,
