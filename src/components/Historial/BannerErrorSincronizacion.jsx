@@ -19,7 +19,7 @@ export function BannerErrorSincronizacion({ lastSyncedAt, onRetrySync }) {
     : null;
 
   return (
-    <div className="bg-ds-warning-tint rounded-ds-surface px-[18px] py-3.5">
+    <div role="status" className="bg-ds-warning-tint rounded-ds-surface px-[18px] py-3.5">
       <p className="text-ds-caption text-ds-text-primary">
         No pudimos actualizar desde tu banco.
         {formattedDate ? ` Lo que ves es del ${formattedDate}.` : ''}{' '}
