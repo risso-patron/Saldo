@@ -54,6 +54,7 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 .directory
+*.stackdump
 
 # IDEs adicionales
 .fleet/
