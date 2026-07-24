@@ -4,13 +4,18 @@ import { useEffect } from 'react';
 /**
  * Componente Alert para mostrar mensajes de éxito/error
  */
-export const Alert = ({ type = 'success', message, onClose, className = '', children }) => {
+export const Alert = ({ type = 'success', message, onClose, className = '', children, autoDismiss = true }) => {
+  // RC-1.7/A1+M4: autoDismiss=false cuando el descarte lo maneja un
+  // coordinador externo (App.jsx, vía useFeedbackQueue) — evita el
+  // temporizador duplicado. Default true preserva el comportamiento actual
+  // para LoginForm/RegisterForm/ForgotPasswordForm, que usan este
+  // componente de forma independiente, sin coordinador.
   useEffect(() => {
-    if (onClose) {
+    if (onClose && autoDismiss) {
       const timer = setTimeout(onClose, 3000);
       return () => clearTimeout(timer);
     }
-  }, [onClose]);
+  }, [onClose, autoDismiss]);
 
   const styles = {
     success: 'bg-green-100 border-green-500 text-green-800',
@@ -53,4 +58,5 @@ Alert.propTypes = {
   onClose: PropTypes.func,
   className: PropTypes.string,
   children: PropTypes.node,
+  autoDismiss: PropTypes.bool,
 };

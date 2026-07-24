@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
+import { useFeedbackQueue, FEEDBACK_DURATIONS } from './hooks/useFeedbackQueue';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { STORAGE_KEYS } from './constants/categories';
 import { useFilters } from './hooks/useFilters';
@@ -178,16 +179,40 @@ function AppContent() {
     syncError, lastSyncedAt,
   } = useTransactions();
 
-  const [welcomeBanner, setWelcomeBanner] = useState(null);
+  // RC-1.7/A1 — coordinador único del sistema de feedback puramente visual
+  // (alert, saludo diario, logro desbloqueado, banner de bienvenida). El
+  // Toast de Deshacer (pendingOperation, arriba) NO pasa por acá — conserva
+  // su propia autoridad de dominio; solo se le da prioridad pausando este
+  // coordinador mientras esté activo (efecto más abajo).
+  const feedbackQueue = useFeedbackQueue();
+  const hasPendingOperation = pendingOperation !== null;
+  useEffect(() => {
+    if (hasPendingOperation) feedbackQueue.pause();
+    else feedbackQueue.resume();
+  }, [hasPendingOperation, feedbackQueue.pause, feedbackQueue.resume]);
+
+  // Puente entre el `alert` de useTransactions.js (sin cambios en su API
+  // externa — showAlert/alert siguen igual para todos sus consumidores) y
+  // el coordinador: ya no hay un setTimeout propio acá ni en useTransactions
+  // (RC-1.7/M4) — el coordinador es la única autoridad de cuándo se
+  // descarta.
+  useEffect(() => {
+    if (alert) {
+      feedbackQueue.enqueue('alert', alert, FEEDBACK_DURATIONS.alert, () => showAlert(null));
+    }
+  }, [alert, feedbackQueue.enqueue, showAlert]);
+
   const lastShownUserId = useRef(null);
   useEffect(() => {
     if (user && !loading && lastShownUserId.current !== user.id) {
       lastShownUserId.current = user.id;
       const count = (incomes?.length ?? 0) + (expenses?.length ?? 0);
-      setWelcomeBanner(count);
-      setTimeout(() => setWelcomeBanner(null), 4000);
+      // RC-1.7/A1: la visibilidad y el descarte del banner de bienvenida
+      // pasan enteramente al coordinador — ya no hay estado local propio
+      // que sincronizar (antes `welcomeBanner`, con su propio setTimeout).
+      feedbackQueue.enqueue('welcomeBanner', { count }, FEEDBACK_DURATIONS.welcomeBanner);
     }
-  }, [user?.id, loading, incomes.length, expenses.length]);
+  }, [user?.id, loading, incomes.length, expenses.length, feedbackQueue.enqueue]);
 
   // Detectar regreso desde Stripe Checkout
   useEffect(() => {
@@ -338,9 +363,26 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-ds-bg-base">
       {showMigration && <MigrationDialog onClose={() => setShowMigration(false)} onComplete={(count) => { showAlert('success', `${count} transacciones migradas`); setShowMigration(false); refreshTransactions(); }} />}
-      {alert && <Alert type={alert.type} message={alert.message} onClose={() => showAlert(null)} />}
+      {/* RC-1.7/A1+M4: el Alert renderizado acá está coordinado por
+          feedbackQueue — autoDismiss=false porque el coordinador ya es la
+          única autoridad de descarte (evita el temporizador duplicado que
+          tenía Alert.jsx por su cuenta). */}
+      {feedbackQueue.activeItem?.type === 'alert' && (
+        <Alert
+          type={feedbackQueue.activeItem.payload.type}
+          message={feedbackQueue.activeItem.payload.message}
+          onClose={feedbackQueue.dismissActive}
+          autoDismiss={false}
+        />
+      )}
       <ConfirmDialog isOpen={confirmDialog.isOpen} title={confirmDialog.title} message={confirmDialog.message} confirmLabel={confirmDialog.confirmLabel} variant={confirmDialog.variant} onConfirm={() => confirmDialog.onConfirm?.()} onCancel={closeConfirm} />
-      <AchievementNotifications achievements={achievements.newAchievements} onRemove={achievements.removeNewAchievement} />
+      <AchievementNotifications
+        achievements={achievements.newAchievements}
+        onRemove={achievements.removeNewAchievement}
+        enqueue={feedbackQueue.enqueue}
+        activeItem={feedbackQueue.activeItem}
+        dismissActive={feedbackQueue.dismissActive}
+      />
 
       <div className="flex h-screen overflow-hidden bg-ds-bg-base">
         <DSSidebar activeTab={activeTab} onTabSelect={setActiveTab} onOpenOmnibar={() => setIsOmnibarOpen(true)} />
@@ -366,16 +408,20 @@ function AppContent() {
               </div>
             </DSTopBar>
 
-            {welcomeBanner !== null && (
+            {feedbackQueue.activeItem?.type === 'welcomeBanner' && (
               <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-2.5 mb-6 animate-fade-in-slide">
                 <CheckCircle size={18} className="text-emerald-500" />
-                <p className="text-[11px] sm:text-sm font-bold text-emerald-800 dark:text-emerald-300">{t('app.welcome_banner', { count: welcomeBanner })}</p>
-                <button onClick={() => setWelcomeBanner(null)} className="ml-auto text-emerald-400 p-1"><X size={14} /></button>
+                <p className="text-[11px] sm:text-sm font-bold text-emerald-800 dark:text-emerald-300">{t('app.welcome_banner', { count: feedbackQueue.activeItem.payload.count })}</p>
+                <button onClick={feedbackQueue.dismissActive} className="ml-auto text-emerald-400 p-1"><X size={14} /></button>
               </div>
             )}
 
             <main className="space-y-4 sm:space-y-10 pb-32">
-              <DailyOnboardingToast /> <DailyReminder />
+              <DailyOnboardingToast
+                enqueue={feedbackQueue.enqueue}
+                isActive={feedbackQueue.activeItem?.type === 'dailyOnboarding'}
+                onDismiss={feedbackQueue.dismissActive}
+              /> <DailyReminder />
               <Omnibar isOpen={isOmnibarOpen} onClose={() => setIsOmnibarOpen(false)} allTransactions={allTransactions} onNavigate={setActiveTab} onClearAll={handleClearAllTransactions} transactionCount={incomes.length + expenses.length} onOpenNewMovementWithDraft={handleOpenNewMovementWithDraft} />
               {/* Checkpoint III-A: SIEMPRE montado (no condicionado por tab) —
                   solo `isOpen` controla si Sheet renderiza algo, así el borrador

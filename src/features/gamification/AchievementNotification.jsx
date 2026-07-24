@@ -1,6 +1,8 @@
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { Trophy } from '@phosphor-icons/react';
+import { FEEDBACK_DURATIONS } from '../../hooks/useFeedbackQueue';
 
 /**
  * Notificación que aparece cuando se desbloquea un logro
@@ -60,13 +62,14 @@ export const AchievementNotification = ({ achievement, onClose }) => {
         </button>
       </div>
       
-      {/* Barra de progreso animada */}
+      {/* Barra de progreso animada — puramente visual. El descarte real (a
+          los mismos 5s, FEEDBACK_DURATIONS.achievement) lo maneja el
+          coordinador (RC-1.7/A1+M4) para no duplicar el temporizador. */}
       <motion.div
         className="absolute bottom-0 left-0 h-1 bg-white/30 rounded-b-xl"
         initial={{ width: '100%' }}
         animate={{ width: '0%' }}
         transition={{ duration: 5, ease: 'linear' }}
-        onAnimationComplete={onClose}
       />
     </motion.div>
   );
@@ -84,19 +87,41 @@ AchievementNotification.propTypes = {
 };
 
 /**
- * Contenedor para mostrar múltiples notificaciones apiladas
+ * Contenedor de notificaciones de logro.
+ *
+ * RC-1.7/A1+A3: antes renderizaba TODO `achievements` apilado a la vez
+ * (violaba "uno a la vez; nunca apilan" de la Design Constitution). Ahora
+ * encola cada logro nuevo en el coordinador compartido (`enqueue`) y
+ * renderiza únicamente el que el coordinador indica como activo — mismo
+ * componente, mismos estilos/animación, solo cambia CUÁNDO se muestra.
+ *
+ * Siempre opera sobre `achievements[0]` (nunca por índice capturado de
+ * antemano): como este componente es el único que remueve de esa lista, el
+ * frente del array es siempre el próximo a procesar, sin riesgo de
+ * desincronizarse si se desbloquean varios logros a la vez.
  */
-export const AchievementNotifications = ({ achievements, onRemove }) => {
+export const AchievementNotifications = ({ achievements, onRemove, enqueue, activeItem, dismissActive }) => {
+  const queuedIdRef = useRef(null);
+
+  useEffect(() => {
+    const front = achievements[0] ?? null;
+    if (front && queuedIdRef.current !== front.id) {
+      queuedIdRef.current = front.id;
+      enqueue('achievement', front, FEEDBACK_DURATIONS.achievement, () => onRemove(0));
+    }
+    if (!front) {
+      queuedIdRef.current = null;
+    }
+  }, [achievements, enqueue, onRemove]);
+
+  const active = activeItem?.type === 'achievement' ? activeItem.payload : null;
+
   return (
     <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-3">
       <AnimatePresence>
-        {achievements.map((achievement, index) => (
-          <AchievementNotification
-            key={achievement.id}
-            achievement={achievement}
-            onClose={() => onRemove(index)}
-          />
-        ))}
+        {active && (
+          <AchievementNotification key={active.id} achievement={active} onClose={dismissActive} />
+        )}
       </AnimatePresence>
     </div>
   );
@@ -113,4 +138,10 @@ AchievementNotifications.propTypes = {
     })
   ).isRequired,
   onRemove: PropTypes.func.isRequired,
+  enqueue: PropTypes.func.isRequired,
+  activeItem: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    payload: PropTypes.object,
+  }),
+  dismissActive: PropTypes.func.isRequired,
 };
