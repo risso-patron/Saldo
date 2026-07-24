@@ -6,22 +6,39 @@ import { Card } from '../../components/Shared/Card';
 import { Button } from '../../components/Shared/Button';
 import { GoalProgress } from './GoalProgress';
 import { RocketWebP, TrophyWebP } from '../../components/Shared/WebPAnimation';
+import { useSubscription } from '../../hooks/useSubscription';
+import { UpgradeModal } from '../../components/Subscription/UpgradeModal';
+
+// RC-1.6/C1: límite de metas para el plan Free (PricingPlans.jsx: "Hasta 3
+// metas financieras" / PRO: "Metas financieras ilimitadas").
+const FREE_GOALS_LIMIT = 3;
 
 /**
  * Componente para gestionar metas financieras
  */
 export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal }) => {
+  const { hasFeature } = useSubscription();
   const [showForm, setShowForm] = useState(false);
   const [goalName, setGoalName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState('');
   const [targetDate, setTargetDate] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!goalName.trim() || !targetAmount || !targetDate) return;
+
+    // RC-1.6/C1: Feature gate — crear una meta que supere el límite Free es
+    // exclusivo de PRO (edición/eliminación/visualización de metas ya
+    // existentes no forman parte de este hallazgo, mismo criterio que el
+    // gate de tarjetas en CreditCardManager.jsx).
+    if (!hasFeature('unlimited_goals') && goals.length >= FREE_GOALS_LIMIT) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
     const newGoal = {
       id: Date.now(),
@@ -230,6 +247,14 @@ export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal }
           </AnimatePresence>
         </div>
       </Card>
+
+      {showUpgradeModal && (
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          feature="unlimited_goals"
+        />
+      )}
     </>
   );
 };
