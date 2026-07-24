@@ -13,6 +13,16 @@ vi.mock('./MonthlyCashFlowChart', () => ({ MonthlyCashFlowChart: () => null }));
 vi.mock('./SpendingByDayChart', () => ({ SpendingByDayChart: () => null }));
 vi.mock('./CategoryBarChart', () => ({ CategoryBarChart: () => null }));
 
+// RC-1.6/C1 (pieza 3/3): ChartsTab ahora consume useSubscription para gatear
+// MonthlyCashFlowChart/SpendingByDayChart — PRO por defecto acá para no
+// alterar el comportamiento de los tests preexistentes de este archivo
+// (ninguno es sobre el gate). El gate en sí se cubre en su propio describe,
+// más abajo, con hasFeatureMock controlado por test.
+const { hasFeatureMock } = vi.hoisted(() => ({ hasFeatureMock: vi.fn(() => true) }));
+vi.mock('../../hooks/useSubscription', () => ({
+  useSubscription: () => ({ hasFeature: hasFeatureMock }),
+}));
+
 const baseProps = {
   filteredIncomes: [],
   filteredExpenses: [],
@@ -21,6 +31,10 @@ const baseProps = {
 };
 
 describe('ChartsTab — CTA de reclasificación en el banner de dominancia (HAL-001 parte 2)', () => {
+  beforeEach(() => {
+    hasFeatureMock.mockReturnValue(true);
+  });
+
   it('cuando "Otros" domina, muestra un CTA que llama a onReclassifyOtros al hacer click', () => {
     const onReclassifyOtros = vi.fn();
     const categoryAnalysis = [
@@ -44,5 +58,40 @@ describe('ChartsTab — CTA de reclasificación en el banner de dominancia (HAL-
     render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} onReclassifyOtros={onReclassifyOtros} />);
 
     expect(screen.queryByRole('button', { name: /reclasificar/i })).not.toBeInTheDocument();
+  });
+});
+
+// RC-1.6/C1 (pieza 3/3) — MonthlyCashFlowChart y SpendingByDayChart son PRO
+// (decisión de producto, ver docs/technical/MONETIZATION_STRATEGY.md
+// actualizado); BalanceDonutChart y CategoryBarChart permanecen libres para
+// todos. Mismo patrón de gate ya usado en CreditCardManager/GoalManager.
+describe('ChartsTab — gate de gráficos avanzados (RC-1.6/C1, pieza 3/3)', () => {
+  const categoryAnalysis = [{ category: 'Vivienda', amount: 600, percentage: 100 }];
+
+  it('Free: los 2 gráficos PRO muestran el badge "Función PRO" en vez del gráfico real', () => {
+    hasFeatureMock.mockReturnValue(false);
+    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
+
+    expect(screen.getAllByText('Función PRO')).toHaveLength(2);
+    expect(screen.getByText('Flujo de Caja Mensual')).toBeInTheDocument();
+    expect(screen.getByText('Gastos por Día de la Semana')).toBeInTheDocument();
+  });
+
+  it('Free: hacer click en "Actualizar" abre UpgradeModal con feature="advanced_charts"', () => {
+    hasFeatureMock.mockReturnValue(false);
+    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Actualizar' })[0]);
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByText('📊 Gráficos Avanzados')).toBeInTheDocument();
+  });
+
+  it('PRO: no muestra ningún badge "Función PRO" ni modal', () => {
+    hasFeatureMock.mockReturnValue(true);
+    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
+
+    expect(screen.queryByText('Función PRO')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

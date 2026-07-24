@@ -29,7 +29,7 @@ Budget Calculator usa un modelo **Freemium** con 3 planes:
 - 🔒 Export a CSV
 - 🔒 Export a PDF
 - 🔒 Análisis con IA (Claude AI)
-- 🔒 Gráficos avanzados (comparativos, tendencias, predictivos)
+- 🔒 Gráficos avanzados (flujo de caja mensual, gastos por día de la semana)
 - 🔒 Gestión de tarjetas de crédito
 - 🔒 Metas financieras ilimitadas (solo 3 en free)
 - 🔒 Predicciones de gastos
@@ -51,11 +51,12 @@ Budget Calculator usa un modelo **Freemium** con 3 planes:
 - Categorización inteligente
 
 ### 📊 Gráficos Avanzados
-1. **Balance Donut Chart**: Visualización de proporción ingresos/gastos
-2. **Category Bar Chart**: Gastos por categoría en barras
-3. **Trend Line Chart**: Evolución temporal de balance
-4. **Comparative Chart**: Comparación mes a mes
-5. **Predictive Chart**: Predicciones de gastos futuros
+<!-- RC-1.6/C1 (pieza 3/3): clasificación vigente para los 4 gráficos
+     actualmente implementados en ChartsTab.jsx. Balance Donut Chart y
+     Category Bar Chart son Gratuito (ver "QUÉ FUNCIONA GRATIS" arriba) —
+     no pertenecen a esta lista. -->
+1. **Monthly Cash Flow Chart**: Ingresos, gastos y balance de los últimos 6 meses
+2. **Spending By Day Chart**: Gasto agrupado por día de la semana
 
 ### 💳 Tarjetas de Crédito
 - Gestión de múltiples tarjetas

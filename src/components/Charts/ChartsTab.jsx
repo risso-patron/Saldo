@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   PiggyBank, TrendDown, CalendarBlank, Coins,
@@ -11,6 +11,47 @@ import { CategoryBarChart } from './CategoryBarChart';
 import { formatCurrency, formatPercentageSafe } from '../../utils/formatters';
 import { transformToSpendingByDay } from '../../utils/chartHelpers';
 import { getCategoryDominance } from '../../utils/calculations';
+import { useSubscription } from '../../hooks/useSubscription';
+import { UpgradeModal } from '../Subscription/UpgradeModal';
+
+// ─── Gráfico bloqueado (PRO) ─────────────────────────────────────────────────
+// RC-1.6/C1 (pieza 3/3): mismo badge "Función PRO" ya usado en
+// ExportManager.jsx, aplicado a un gráfico completo en vez de a un botón de
+// acción — MonthlyCashFlowChart/SpendingByDayChart no tienen una acción que
+// interceptar (se renderizan siempre), así que el gate ocurre al momento de
+// decidir qué renderizar, no dentro de esos componentes (sin tocarlos).
+const LockedChart = ({ title, height, onUpgradeClick }) => (
+  <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-white/40 dark:border-white/5 rounded-2xl p-5 shadow-sm">
+    <p className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">{title}</p>
+    <div className={`${height} w-full flex items-center justify-center`}>
+      <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800 max-w-xs">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🔒</span>
+            <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+              Función PRO
+            </span>
+          </div>
+          <button
+            onClick={onUpgradeClick}
+            className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full font-semibold transition-colors"
+          >
+            Actualizar
+          </button>
+        </div>
+        <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">
+          Desbloquea este gráfico con el plan PRO desde $4.99/mes
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+LockedChart.propTypes = {
+  title: PropTypes.string.isRequired,
+  height: PropTypes.string.isRequired,
+  onUpgradeClick: PropTypes.func.isRequired,
+};
 
 // ─── KPI Card ────────────────────────────────────────────────────────────────
 
@@ -56,6 +97,12 @@ export const ChartsTab = ({
   categoryAnalysis,
   onReclassifyOtros,
 }) => {
+  // RC-1.6/C1 (pieza 3/3): MonthlyCashFlowChart y SpendingByDayChart son PRO
+  // (definición de producto — ver docs/technical/MONETIZATION_STRATEGY.md).
+  // BalanceDonutChart y CategoryBarChart permanecen libres para todos.
+  const { hasFeature } = useSubscription();
+  const hasAdvancedCharts = hasFeature('advanced_charts');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // ── KPI 1: Tasa de ahorro del período seleccionado ──
   const savingRate = useMemo(() => {
@@ -172,16 +219,39 @@ export const ChartsTab = ({
         />
       </div>
 
-      {/* ── Fila 2: Flujo mensual full-width ───────────────────────────────── */}
-      <MonthlyCashFlowChart
-        incomes={filteredIncomes}
-        expenses={filteredExpenses}
-        months={6}
-      />
+      {/* ── Fila 2: Flujo mensual full-width (PRO) ──────────────────────────── */}
+      {hasAdvancedCharts ? (
+        <MonthlyCashFlowChart
+          incomes={filteredIncomes}
+          expenses={filteredExpenses}
+          months={6}
+        />
+      ) : (
+        <LockedChart
+          title="Flujo de Caja Mensual"
+          height="h-[250px] sm:h-80"
+          onUpgradeClick={() => setShowUpgradeModal(true)}
+        />
+      )}
 
-      {/* ── Fila 3: Gastos por día ──────────────────────────────────────────── */}
-      <SpendingByDayChart expenses={filteredExpenses} />
+      {/* ── Fila 3: Gastos por día (PRO) ─────────────────────────────────────── */}
+      {hasAdvancedCharts ? (
+        <SpendingByDayChart expenses={filteredExpenses} />
+      ) : (
+        <LockedChart
+          title="Gastos por Día de la Semana"
+          height="h-[200px] sm:h-72"
+          onUpgradeClick={() => setShowUpgradeModal(true)}
+        />
+      )}
 
+      {showUpgradeModal && (
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          feature="advanced_charts"
+        />
+      )}
     </div>
   );
 };
