@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { PricingPlans } from './PricingPlans';
+import { useModalA11y } from '../../hooks/useModalA11y';
 
 /**
  * Modal que se muestra cuando un usuario free intenta usar una función premium
  */
 export const UpgradeModal = ({ isOpen, onClose, feature }) => {
   const [showPricing, setShowPricing] = useState(false);
+  const dialogRef = useRef(null);
+  // RC-1.7/A5: Escape, trampa de Tab, foco inicial y retorno de foco —
+  // mismo comportamiento que Sheet.jsx/ConfirmDialog.jsx, sin cambiar la
+  // estructura visual de este modal.
+  useModalA11y(isOpen, onClose, dialogRef);
 
   if (!isOpen) return null;
 
@@ -59,11 +65,19 @@ export const UpgradeModal = ({ isOpen, onClose, feature }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="upgrade-modal-title"
+        tabIndex={-1}
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+      >
         {/* Header con gradiente */}
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white relative">
           <button
             onClick={onClose}
+            aria-label="Cerrar"
             className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +87,7 @@ export const UpgradeModal = ({ isOpen, onClose, feature }) => {
 
           <div className="text-center">
             <div className="text-6xl mb-3">{featureInfo.icon}</div>
-            <h3 className="text-2xl font-bold">{featureInfo.title}</h3>
+            <h3 id="upgrade-modal-title" className="text-2xl font-bold">{featureInfo.title}</h3>
           </div>
         </div>
 

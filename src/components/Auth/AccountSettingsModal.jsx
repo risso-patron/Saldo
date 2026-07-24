@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { 
   User, 
@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
 import BudgetLogo from '../Shared/BudgetLogo'
+import { useModalA11y } from '../../hooks/useModalA11y'
 
 // Selección curada de emojis para avatares Premium
 const AVATAR_OPTIONS = [
@@ -29,6 +30,11 @@ export const AccountSettingsModal = ({ isOpen, onClose, onShowAlert }) => {
   const { user, updateProfile, updatePassword } = useAuth()
   const [activeTab, setActiveTab] = useState('profile')
   const [loading, setLoading] = useState(false)
+  const dialogRef = useRef(null)
+  // RC-1.7/A5: Escape, trampa de Tab, foco inicial y retorno de foco —
+  // mismo comportamiento que Sheet.jsx/ConfirmDialog.jsx, sin cambiar la
+  // estructura visual de este modal.
+  useModalA11y(isOpen, onClose, dialogRef)
   
   // States for Profile Form
   const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '')
@@ -131,7 +137,12 @@ export const AccountSettingsModal = ({ isOpen, onClose, onShowAlert }) => {
       {/* Centering wrapper */}
       <div className="flex min-h-full items-center justify-center py-12">
         {/* Modal Container */}
-        <motion.div 
+        <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="account-settings-modal-title"
+          tabIndex={-1}
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           className="relative w-full max-w-3xl bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-white/20 dark:border-white/5 overflow-hidden flex flex-col md:flex-row min-h-[550px] max-h-[90vh]"
@@ -142,7 +153,7 @@ export const AccountSettingsModal = ({ isOpen, onClose, onShowAlert }) => {
             <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center">
               <IdentificationCard size={24} weight="light" className="text-primary-500" />
             </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tighter">Ajustes</h2>
+            <h2 id="account-settings-modal-title" className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tighter">Ajustes</h2>
           </div>
 
           <nav className="space-y-2 flex-1">
@@ -173,8 +184,9 @@ export const AccountSettingsModal = ({ isOpen, onClose, onShowAlert }) => {
 
         {/* Content Area */}
         <div className="flex-1 p-8 md:p-12 overflow-y-auto custom-scrollbar relative">
-          <button 
+          <button
             onClick={onClose}
+            aria-label="Cerrar"
             className="absolute top-8 right-8 text-slate-300 hover:text-slate-500 dark:hover:text-white transition-colors p-2"
           >
             <X size={24} weight="bold" />
