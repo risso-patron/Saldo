@@ -122,7 +122,14 @@ export const ProfilePage = ({
   ]
 
   const handleSignOut = async () => {
-    await signOut()
+    // RC-1.7/A6: signOut() ya devuelve { error } (AuthContext.jsx) — antes se
+    // descartaba, dejando un fallo silencioso sin ningún feedback al usuario.
+    // Mismo formato de mensaje ya usado por AccountSettingsModal.jsx para
+    // errores de este dominio (auth), no el de sync de transacciones.
+    const { error } = await signOut()
+    if (error) {
+      onShowAlert('error', `Error al cerrar sesión: ${error}`)
+    }
   }
 
   return (

@@ -41,8 +41,9 @@ vi.mock('../lib/supabase', () => ({
   supabase: { from: fromMock },
 }));
 
+const { signOutMock } = vi.hoisted(() => ({ signOutMock: vi.fn() }));
 vi.mock('../contexts/AuthContext', () => ({
-  useAuth: () => ({ user: { id: 'user-1' }, signOut: vi.fn() }),
+  useAuth: () => ({ user: { id: 'user-1' }, signOut: signOutMock }),
 }));
 
 vi.mock('../hooks/useSubscription', () => ({
@@ -143,5 +144,56 @@ describe('ProfilePage — RC-1.1: ítem de menú de tema', () => {
     const themeButton = (await screen.findByText('profile.dark_mode')).closest('button');
     expect(() => themeButton.click()).not.toThrow();
     expect(toggleThemeMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+// RC-1.7/A6 — handleSignOut descartaba el { error } que signOut() (AuthContext.jsx)
+// ya devuelve, dejando un fallo silencioso sin ningún feedback al usuario. Mismo
+// formato de mensaje que AccountSettingsModal.jsx ya usa para errores de este
+// dominio (auth): `Error al <acción>: ${error}`.
+describe('ProfilePage — RC-1.7/A6: logout silencioso', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+    upsertMock.mockResolvedValue({ data: null, error: null });
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
+  });
+
+  it('si signOut() falla, muestra el error vía onShowAlert en vez de fallar en silencio', async () => {
+    signOutMock.mockResolvedValue({ error: 'Network request failed' });
+    const onShowAlert = vi.fn();
+
+    render(
+      <AIProvider>
+        <ProfilePage onShowAlert={onShowAlert} />
+      </AIProvider>
+    );
+
+    const signOutButton = (await screen.findByText('profile.sign_out')).closest('button');
+    await act(async () => {
+      signOutButton.click();
+    });
+
+    expect(signOutMock).toHaveBeenCalledTimes(1);
+    expect(onShowAlert).toHaveBeenCalledWith('error', 'Error al cerrar sesión: Network request failed');
+  });
+
+  it('si signOut() tiene éxito, no muestra ninguna alerta', async () => {
+    signOutMock.mockResolvedValue({ error: null });
+    const onShowAlert = vi.fn();
+
+    render(
+      <AIProvider>
+        <ProfilePage onShowAlert={onShowAlert} />
+      </AIProvider>
+    );
+
+    const signOutButton = (await screen.findByText('profile.sign_out')).closest('button');
+    await act(async () => {
+      signOutButton.click();
+    });
+
+    expect(signOutMock).toHaveBeenCalledTimes(1);
+    expect(onShowAlert).not.toHaveBeenCalled();
   });
 });
