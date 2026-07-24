@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import { useRef } from 'react';
+import { useModalA11y } from '../../hooks/useModalA11y';
 
 /**
  * Modal de confirmación accesible — reemplaza window.confirm()
- * Soporta Escape para cancelar, focus automático en "Cancelar" (opción segura)
+ * Soporta Escape para cancelar, trampa de foco y focus automático en
+ * "Cancelar" (opción segura) vía useModalA11y (RC-1.7/M2).
  */
 export const ConfirmDialog = ({
   isOpen,
@@ -15,20 +17,14 @@ export const ConfirmDialog = ({
   onConfirm,
   onCancel,
 }) => {
-  // Cerrar con Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onCancel();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onCancel]);
+  const dialogRef = useRef(null);
+  useModalA11y(isOpen, onCancel, dialogRef);
 
   if (!isOpen) return null;
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
@@ -69,9 +65,9 @@ export const ConfirmDialog = ({
 
         {/* Botones */}
         <div className="flex gap-3">
-          {/* Cancelar: autoFocus → opción segura por defecto */}
+          {/* Cancelar: primer botón enfocable del diálogo → foco inicial vía
+              useModalA11y (opción segura por defecto) */}
           <button
-            autoFocus
             onClick={onCancel}
             className="flex-1 px-5 py-3 rounded-lg font-medium border-2 border-primary-500
               text-primary-600 dark:text-primary-400 dark:border-primary-600
