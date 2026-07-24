@@ -191,6 +191,8 @@ Un relevamiento documental exhaustivo (búsqueda en `docs/release/RC-1.md`, `doc
 
 Consistente con la regla ya vigente desde la regularización de RC-1.6: ningún hallazgo puede recibir un identificador oficial hasta que su descripción completa haya sido persistida en el repositorio.
 
+**C1 — implementado y commiteado (`a34da36`).** `TransactionPreviewTable.jsx` usaba color permanente para distinguir "Total Ingresos" de "Total Gastos" (`bg-emerald-50`/`text-emerald-700`/`border-emerald-100`/`bg-emerald-500` para el primero, `bg-rose-50`/`text-rose-700`/`border-rose-100`/`bg-rose-500` para el segundo), violando la regla ya establecida en `Saldo Design Constitution.dc.html` ("los gastos se distinguen por signo y posición, nunca por rojo") y ya aplicada en `FilaMovimiento.jsx` (`MINUS_SIGN = '−'`, color neutro). Ambas tarjetas ahora comparten el mismo tratamiento neutro (slate: `bg-slate-50`/`text-slate-900`/`border-slate-100`/`bg-slate-600`), y "Total Gastos" antepone el mismo carácter tipográfico `−` (U+2212, idéntico al usado en `FilaMovimiento.jsx`) en vez de color — "Total Ingresos" queda sin signo, mismo criterio que esa fila (solo el gasto lleva signo explícito). Alcance estrictamente acotado a las dos tarjetas "Total Ingresos"/"Total Gastos" — "Balance Neto" (indigo, tercera categoría no relacionada con ingreso/gasto), los montos por fila de la tabla y el resto del componente quedan sin cambios. Sin tocar `A1`, `A2`, `FilaMovimiento.jsx`, `ImportManager.jsx` ni ningún otro archivo. Evidencia: 1 test nuevo (`TransactionPreviewTable.test.jsx`, no existía archivo dedicado antes: confirma "$1000.00" sin signo en Total Ingresos y "−$300.00" con el signo tipográfico en Total Gastos), suite completa en verde (62 archivos / 701 tests), build en verde, y validación en navegador real (Herramientas → Importar CSV con 1 ingreso + 1 gasto): ambas tarjetas visualmente idénticas salvo etiqueta y signo, "Balance Neto" intacto, montos por fila de la tabla sin cambios, sin errores de consola.
+
 Prioridad:
 🟡 Media
 
@@ -306,7 +308,7 @@ Estado:
 | RC-1.1 | `91ee9ba` | ✅ Cerrado |
 | RC-1.2 | — (sin commit de implementación; auditoría cerrada, D1 pendiente de decisión de producto) | 🟡 Auditoría cerrada |
 | RC-1.3 | `730d42a` (A2 — nombre accesible; A1 fuera de alcance, resto documentado/diferido) | 🟡 Auditoría cerrada — parcial |
-| RC-1.4 | — (sin commit de implementación; D2 pendiente de decisión de producto — bloquea únicamente C2; M1–M5/B1–B6 retirados por pérdida de trazabilidad documental; alcance implementable restante: C1, A1, A2) | 🟡 Auditoría cerrada |
+| RC-1.4 | `a34da36` (C1 — colores permanentes en totales de importación); D2 pendiente de decisión de producto — bloquea únicamente C2; M1–M5/B1–B6 retirados por pérdida de trazabilidad documental; resto — A1, A2 — sin commit todavía | 🟡 En progreso |
 | RC-1.5 | — (sin commit de implementación; auditoría cerrada, sin decisión de producto pendiente) | 🟡 Auditoría cerrada |
 | RC-1.6 | `868f840` (C1 pieza 1/3 — tarjetas de crédito), `ab32c10` (C1 pieza 2/3 — límite de metas), `6216dd7` (C1 pieza 3/3 — gráficos avanzados, C1 completo); A4/M3 clasificado como deuda de integración; A1–A3/M1–M6/B1–B4 retirados por pérdida de trazabilidad documental (ver detalle arriba) | ✅ Finalizado en lo implementable |
 | RC-1.7 | `ed2342c` (C1), `a447fac` (A1 + A3 + M1 + M4), `930bbf1` (A5), `e03b866` (A4), `505d87c` (A6), `8fd4e87` (M2), `52fcf1b` (M3); M6 diferido a Fase 3/RC-1.6 (ver detalle arriba); resto — B1–B3 — sin commit todavía | 🟡 En progreso |
