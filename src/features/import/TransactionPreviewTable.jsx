@@ -76,31 +76,37 @@ export default function TransactionPreviewTable({ transactions, onUpdateTransact
       </div>
 
       {/* 📊 RESUMEN DINÁMICO DE TOTALES */}
+      {/* RC-1.4/C1: sin color permanente asociado a ingreso/gasto -- misma
+          regla ya aplicada en FilaMovimiento.jsx ("el signo tipográfico
+          distingue, nunca el rojo"). Ambas tarjetas comparten el mismo
+          tratamiento neutro (slate); el signo "−" (MINUS_SIGN, mismo
+          caracter que FilaMovimiento.jsx) y la etiqueta son lo único que
+          distingue Total Gastos de Total Ingresos. */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="p-5 rounded-[1.5rem] bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <div className="p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/40 border-2 border-slate-100 dark:border-slate-800 flex items-center gap-4">
+          <div className="w-12 h-12 bg-slate-600 dark:bg-slate-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-slate-500/20">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
           </div>
           <div>
-            <p className="text-xs font-black text-emerald-800 dark:text-emerald-400 uppercase tracking-widest">Total Ingresos</p>
-            <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+            <p className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Total Ingresos</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white">
               ${incomes.toFixed(2)}
             </p>
           </div>
         </div>
 
-        <div className="p-5 rounded-[1.5rem] bg-rose-50 dark:bg-rose-950/20 border-2 border-rose-100 dark:border-rose-900/30 flex items-center gap-4">
-          <div className="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+        <div className="p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/40 border-2 border-slate-100 dark:border-slate-800 flex items-center gap-4">
+          <div className="w-12 h-12 bg-slate-600 dark:bg-slate-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-slate-500/20">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </div>
           <div>
-            <p className="text-xs font-black text-rose-800 dark:text-rose-400 uppercase tracking-widest">Total Gastos</p>
-            <p className="text-2xl font-black text-rose-700 dark:text-rose-300">
-              ${expenses.toFixed(2)}
+            <p className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Total Gastos</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white">
+              −${expenses.toFixed(2)}
             </p>
           </div>
         </div>
