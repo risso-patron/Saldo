@@ -141,6 +141,7 @@ describe('ExportManager — coherencia interna del documento exportado', () => {
     );
 
     fireEvent.click(screen.getByText('📊 Exportar CSV'));
+    fireEvent.click(screen.getByRole('button', { name: 'Exportar' }));
     await vi.waitFor(() => expect(exportToCSV).toHaveBeenCalled());
 
     const [csvIncomes, csvExpenses] = exportToCSV.mock.calls[0];
@@ -158,6 +159,7 @@ describe('ExportManager — coherencia interna del documento exportado', () => {
     );
 
     fireEvent.click(screen.getByText('📄 Exportar PDF'));
+    fireEvent.click(screen.getByRole('button', { name: 'Exportar' }));
     await vi.waitFor(() => expect(exportToPDF).toHaveBeenCalled());
 
     const [pdfIncomes, pdfExpenses] = exportToPDF.mock.calls[0];
@@ -175,6 +177,7 @@ describe('ExportManager — coherencia interna del documento exportado', () => {
     );
 
     fireEvent.click(screen.getByText('📄 Exportar PDF'));
+    fireEvent.click(screen.getByRole('button', { name: 'Exportar' }));
     await vi.waitFor(() => expect(exportToPDF).toHaveBeenCalled());
 
     const [, , categoryAnalysis] = exportToPDF.mock.calls[0];
@@ -207,10 +210,80 @@ describe('ExportManager — coherencia interna del documento exportado', () => {
     expect(screen.getByText(/1 transacciones/)).toBeInTheDocument();
 
     expect(() => fireEvent.click(screen.getByText('📄 Exportar PDF'))).not.toThrow();
+    fireEvent.click(screen.getByRole('button', { name: 'Exportar' }));
     await vi.waitFor(() => expect(exportToPDF).toHaveBeenCalled());
 
     const [, pdfExpenses, categoryAnalysis] = exportToPDF.mock.calls[0];
     expect(pdfExpenses).toEqual([]);
     expect(categoryAnalysis).toEqual([]);
+  });
+});
+
+// RC-1.4/A1 — exportar (CSV o PDF) ejecutaba la exportación real
+// directamente al hacer click, sin ningún paso de confirmación. Ahora
+// reutiliza ConfirmDialog.jsx (ya con accesibilidad completa desde
+// RC-1.7/M2) antes de ejecutar la exportación real.
+describe('ExportManager — confirmación antes de exportar (RC-1.4/A1)', () => {
+  const incomes = [{ id: 'i1', description: 'Sueldo', amount: 1000, date: '2026-03-01' }];
+  const expenses = [{ id: 'e1', description: 'Renta', amount: 500, date: '2026-03-05', category: 'Vivienda' }];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('click en "Exportar CSV" abre el diálogo de confirmación en vez de exportar de inmediato', () => {
+    render(
+      <PeriodProvider>
+        <ExportManager incomes={incomes} expenses={expenses} />
+      </PeriodProvider>
+    );
+
+    fireEvent.click(screen.getByText('📊 Exportar CSV'));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(exportToCSV).not.toHaveBeenCalled();
+  });
+
+  it('cancelar el diálogo NO ejecuta la exportación', () => {
+    render(
+      <PeriodProvider>
+        <ExportManager incomes={incomes} expenses={expenses} />
+      </PeriodProvider>
+    );
+
+    fireEvent.click(screen.getByText('📊 Exportar CSV'));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(exportToCSV).not.toHaveBeenCalled();
+  });
+
+  it('confirmar el diálogo ejecuta la exportación real', async () => {
+    render(
+      <PeriodProvider>
+        <ExportManager incomes={incomes} expenses={expenses} />
+      </PeriodProvider>
+    );
+
+    fireEvent.click(screen.getByText('📊 Exportar CSV'));
+    fireEvent.click(screen.getByRole('button', { name: 'Exportar' }));
+
+    await vi.waitFor(() => expect(exportToCSV).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('lo mismo aplica a "Exportar PDF" — confirmación previa, luego exportToPDF', async () => {
+    render(
+      <PeriodProvider>
+        <ExportManager incomes={incomes} expenses={expenses} />
+      </PeriodProvider>
+    );
+
+    fireEvent.click(screen.getByText('📄 Exportar PDF'));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(exportToPDF).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Exportar' }));
+    await vi.waitFor(() => expect(exportToPDF).toHaveBeenCalledTimes(1));
   });
 });

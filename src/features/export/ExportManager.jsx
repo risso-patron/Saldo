@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { Card } from '../../components/Shared/Card';
 import { Button } from '../../components/Shared/Button';
+import { ConfirmDialog } from '../../components/Shared/ConfirmDialog';
 import { exportToCSV, exportToPDF } from './exportUtils';
 import { useSubscription } from '../../hooks/useSubscription';
 import { usePeriod } from '../../contexts/PeriodContext';
@@ -16,6 +17,11 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
   const { dateRange: globalDateRange } = usePeriod();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [blockedFeature, setBlockedFeature] = useState(null);
+  // RC-1.4/A1: 'csv' | 'pdf' | null -- también controla si ConfirmDialog está
+  // abierto (isOpen = pendingExport !== null). Se pide confirmación recién
+  // después de pasar el gate de plan (si no tiene acceso, sigue mostrando el
+  // UpgradeModal existente, sin cambios).
+  const [pendingExport, setPendingExport] = useState(null);
 
   // El rango por defecto MUST coincidir con el período activo del dashboard
   // (spec "ExportManager usa el rango activo del dashboard"). El usuario
@@ -58,19 +64,33 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
   const filterTransactionsByDateRange = (transactions) =>
     filterByDateRange(transactions, dateRange.start, dateRange.end);
 
-  const handleExportCSV = async () => {
-    // Feature gate: Solo PRO puede exportar
+  // RC-1.4/A1: los botones ahora piden confirmación antes de ejecutar la
+  // exportación real -- el gate de plan se evalúa primero (sin cambios), la
+  // confirmación ocurre solo si el usuario ya tiene acceso a la feature.
+  const handleExportCSVClick = () => {
     if (!hasFeature('export_csv')) {
       setBlockedFeature('export_csv');
       setShowUpgradeModal(true);
       return;
     }
+    setPendingExport('csv');
+  };
 
+  const handleExportPDFClick = () => {
+    if (!hasFeature('export_pdf')) {
+      setBlockedFeature('export_pdf');
+      setShowUpgradeModal(true);
+      return;
+    }
+    setPendingExport('pdf');
+  };
+
+  const executeExportCSV = async () => {
     setExporting(true);
     try {
       const filteredIncomes = filterTransactionsByDateRange(incomes);
       const filteredExpenses = filterTransactionsByDateRange(expenses);
-      
+
       await exportToCSV(filteredIncomes, filteredExpenses, dateRange);
       onExport?.();
     } catch (error) {
@@ -81,14 +101,7 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
     }
   };
 
-  const handleExportPDF = async () => {
-    // Feature gate: Solo PRO puede exportar
-    if (!hasFeature('export_pdf')) {
-      setBlockedFeature('export_pdf');
-      setShowUpgradeModal(true);
-      return;
-    }
-
+  const executeExportPDF = async () => {
     setExporting(true);
     try {
       const filteredIncomes = filterTransactionsByDateRange(incomes);
@@ -123,6 +136,13 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
     } finally {
       setExporting(false);
     }
+  };
+
+  const handleConfirmExport = () => {
+    const type = pendingExport;
+    setPendingExport(null);
+    if (type === 'csv') executeExportCSV();
+    else if (type === 'pdf') executeExportPDF();
   };
 
   // Calcular número de transacciones en el rango
@@ -187,7 +207,7 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Button
-              onClick={handleExportCSV}
+              onClick={handleExportCSVClick}
               disabled={exporting || filteredCount === 0}
               className="w-full bg-green-600 hover:bg-green-700"
             >
@@ -206,7 +226,7 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
 
           <div>
             <Button
-              onClick={handleExportPDF}
+              onClick={handleExportPDFClick}
               disabled={exporting || filteredCount === 0}
               className="w-full bg-red-600 hover:bg-red-700"
             >
@@ -270,6 +290,17 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
           feature={blockedFeature}
         />
       )}
+
+      {/* RC-1.4/A1: confirmación antes de exportar */}
+      <ConfirmDialog
+        isOpen={pendingExport !== null}
+        title={pendingExport === 'pdf' ? 'Exportar a PDF' : 'Exportar a CSV'}
+        message={`¿Exportar ${filteredCount} transacciones a ${pendingExport === 'pdf' ? 'PDF' : 'CSV'}?`}
+        confirmLabel="Exportar"
+        variant="default"
+        onConfirm={handleConfirmExport}
+        onCancel={() => setPendingExport(null)}
+      />
     </Card>
   );
 };
