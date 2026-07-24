@@ -2,19 +2,32 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Card } from '../Shared/Card';
 import { Button } from '../Shared/Button';
+import { useSubscription } from '../../hooks/useSubscription';
+import { UpgradeModal } from '../Subscription/UpgradeModal';
 
 /**
  * Componente para gestionar tarjetas de crédito
  */
 export const CreditCardManager = ({ creditCards, onAddCard, onUpdateDebt, onRemoveCard }) => {
+  const { hasFeature } = useSubscription();
   const [cardName, setCardName] = useState('');
   const [creditLimit, setCreditLimit] = useState('');
   const [currentDebt, setCurrentDebt] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const handleAddCard = (e) => {
     e.preventDefault();
     if (!cardName.trim() || !creditLimit || parseFloat(creditLimit) <= 0) {
+      return;
+    }
+
+    // RC-1.6/C1: Feature gate — crear una tarjeta nueva es exclusivo de PRO
+    // (gestionar las ya existentes -- editar deuda, eliminar, visualizar --
+    // no forma parte de este hallazgo, mismo criterio que el gate de
+    // exportación en ExportManager.jsx).
+    if (!hasFeature('credit_cards')) {
+      setShowUpgradeModal(true);
       return;
     }
 
@@ -206,6 +219,14 @@ export const CreditCardManager = ({ creditCards, onAddCard, onUpdateDebt, onRemo
           </form>
         )}
       </div>
+
+      {showUpgradeModal && (
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          feature="credit_cards"
+        />
+      )}
     </Card>
   );
 };
