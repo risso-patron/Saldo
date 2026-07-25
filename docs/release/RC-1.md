@@ -73,13 +73,13 @@ Commit final
 
 # Decisiones de producto pendientes (fuera del alcance inmediato de RC-1)
 
-## D1 — ¿Debe "description" ser un campo opcional en movimientos?
+## D1 — ¿Debe "description" ser un campo opcional en movimientos? — ✅ Resuelta
 
 Origen:
 Auditoría técnica completa de RC-1.2 (Nuevo Movimiento). Hallazgo crítico (C1 del informe de auditoría): con un importe válido y una descripción vacía o de menos de 3 caracteres, guardar falla en silencio — sin mensaje de error, sin toast, sin cierre de la hoja. Contradice la Constitución de Diseño ("el único campo obligatorio es la cifra" / "un gasto a medias es un gasto válido").
 
 Estado:
-Pendiente de decisión de producto.
+✅ Resuelta — el PO decidió que `description` debe ser **obligatoria**, no opcional (de las 3 preguntas planteadas abajo en "Decisiones pendientes del PO", se resolvió únicamente para el punto de enforcement de creación/edición manual — ver "Resolución" al final de esta sección para el detalle exacto de alcance).
 
 Por qué se saca del alcance inmediato de RC-1:
 Una investigación de impacto arquitectónico posterior demostró que "description obligatoria" no es una validación aislada de un solo archivo, sino una regla de dominio distribuida en múltiples puntos de enforcement independientes entre sí, y que relajarla sin más introduce un riesgo real de pérdida silenciosa de datos. Por eso C1 deja de tratarse como una corrección puntual de Nuevo Movimiento y pasa a ser una decisión de arquitectura/producto propia.
@@ -100,8 +100,8 @@ Decisiones pendientes del PO antes de poder implementar:
 2. ¿Se corrige el filtro de migración antes, junto con, o como condición previa al resto del cambio?
 3. ¿Este tema se resuelve en una fase futura dentro de RC-1, o se convierte en un ítem de arquitectura de producto independiente, fuera del ciclo de Release Candidate?
 
-Resolución prevista:
-Ninguna todavía. Queda registrada para que el PO decida el alcance real del cambio antes de aprobar cualquier implementación. No bloquea el cierre de RC-1.2 en lo que respecta al resto de sus hallazgos (A1, A2, M1–M4, B1–B4 del informe de auditoría), que siguen en alcance para una futura fase de implementación, sujeta a aprobación separada.
+Resolución:
+El PO decidió mantener `description` **obligatoria** — no se relaja la validación en ninguno de los 4 puntos de enforcement identificados arriba, por lo que las preguntas 1 y 2 (alcance de la relajación, corrección del filtro de migración) quedan sin objeto: no hay relajación que coordinar ni riesgo de pérdida de datos en la migración que mitigar, porque el comportamiento exigente se conserva tal cual. Pregunta 3 queda resuelta: el tema se resolvió dentro del propio ciclo de RC-1, en la Fase 5 (RC-1.2). Con la obligatoriedad confirmada, lo que quedaba roto no era la regla en sí sino su comunicación al usuario: `NewMovementSheet.jsx` no validaba `description` del lado del cliente, y `useTransactions.js` silenciaba el error de validación cuando `notification: 'toast'` — ambos corregidos e implementados como RC-1.2/C1 (`f8ae378`, ver detalle en la sección `## RC-1.2 — Nuevo Movimiento`). El impacto secundario identificado arriba (gráfico "Top comercios", tests de `validators.test.js`) queda sin efecto — al no relajarse la validación, ninguno de los dos requiere cambios.
 
 ---
 
@@ -336,7 +336,7 @@ Estado:
 | RC-1.4 | `a34da36` (C1 — colores permanentes en totales de importación), `2cecd69` (A1 — confirmación antes de exportar); A2 cerrado documentalmente sin cambio de código (ya resuelto por RC-1.7/A4); alcance independiente de D2 completo (C1, A1, A2); D2 pendiente de decisión de producto — bloquea únicamente C2; M1–M5/B1–B6 retirados por pérdida de trazabilidad documental | ✅ Alcance independiente de D2 completo |
 | RC-1.5 | `ca24cc0` (hallazgo funcional — formatCurrency/exportUtils siguen el idioma activo); resto de hallazgos clasificados como implementación diferida a una fase posterior al RC | ✅ Alcance del roadmap completo |
 | RC-1.6 | `868f840` (C1 pieza 1/3 — tarjetas de crédito), `ab32c10` (C1 pieza 2/3 — límite de metas), `6216dd7` (C1 pieza 3/3 — gráficos avanzados, C1 completo); A4/M3 clasificado como deuda de integración; A1–A3/M1–M6/B1–B4 retirados por pérdida de trazabilidad documental (ver detalle arriba) | ✅ Finalizado en lo implementable |
-| RC-1.7 | `ed2342c` (C1), `a447fac` (A1 + A3 + M1 + M4), `930bbf1` (A5), `e03b866` (A4), `505d87c` (A6), `8fd4e87` (M2), `52fcf1b` (M3); M6 diferido a Fase 3/RC-1.6 (ver detalle arriba); resto — B1–B3 — sin commit todavía | 🟡 En progreso |
+| RC-1.7 | `ed2342c` (C1), `a447fac` (A1 + A3 + M1 + M4), `930bbf1` (A5), `e03b866` (A4), `505d87c` (A6), `8fd4e87` (M2), `52fcf1b` (M3); M6 diferido a Fase 3/RC-1.6 (ver detalle arriba); B1–B3 retirados por falta de contenido recuperable (ver detalle arriba) | ✅ Finalizado en lo implementable |
 | RC-1.8 | `c9c4168` (Fase 1 del roadmap — 10 hallazgos de código muerto/huérfano eliminados) | ✅ Cerrado |
 
 ---
@@ -413,3 +413,29 @@ La fase de auditoría de RC-1 (RC-1.1 a RC-1.8, incluida la Revisión Final de C
 - **D1** y **D2** permanecen **abiertas como decisiones de producto pendientes** — no bloquean el cierre documental de RC-1, solo bloquean, respectivamente, RC-1.2/C1 y RC-1.4/C2 dentro del roadmap.
 - Las **deudas de integración** ya registradas (`docs/design/integration-debt.md`) continúan documentadas como tales y **fuera del alcance de RC-1** en los casos que corresponde (A3 de RC-1.4, A4/M3 de RC-1.6).
 - El trabajo posterior a esta fase pasa a ejecutarse siguiendo el **Roadmap de implementación (orden recomendado)** aprobado arriba.
+
+*(Nota de consistencia: este registro documenta el estado tal como estaba al momento del cierre de la fase de auditoría, antes de comenzar la implementación — D1 aparece acá como "abierta" porque en ese momento todavía lo estaba. Su resolución posterior está documentada en la sección "## D1" y en el resumen ejecutivo a continuación; este bloque se conserva sin editar como registro histórico.)*
+
+---
+
+# Resumen ejecutivo — cierre del roadmap de implementación
+
+El roadmap de implementación de RC-1 (Fases 0 a 6, aprobado en la sección "Roadmap de implementación" arriba) queda **con su alcance implementable completo** en las seis fases. Cada fase fue cerrada siguiendo el proceso de micro-release acordado (implementación → tests → build → validación en navegador real → documentación → commit), con evidencia registrada en la sección correspondiente de este documento.
+
+| Fase | Ticket | Estado final | Commits |
+|------|--------|--------------|---------|
+| Fase 0 | Prerrequisitos administrativos (D1, D2) | 🟡 Parcial — D1 ✅ resuelta, D2 ⏳ abierta (ver detalle abajo) | — |
+| Fase 1 | RC-1.8 — Código muerto y componentes huérfanos | ✅ Cerrado | `c9c4168` |
+| Fase 2 | RC-1.7 — Toasts y sistema de feedback | ✅ Finalizado en lo implementable | `ed2342c`, `a447fac`, `930bbf1`, `e03b866`, `505d87c`, `8fd4e87`, `52fcf1b` |
+| Fase 3 | RC-1.6 — Paywall | ✅ Finalizado en lo implementable | `868f840`, `ab32c10`, `6216dd7` |
+| Fase 4 | RC-1.4 — Herramientas | ✅ Alcance independiente de D2 completo (C2 sigue bloqueado por D2) | `a34da36`, `2cecd69` |
+| Fase 5 | RC-1.2 — Nuevo Movimiento | ✅ Alcance implementable completo | `f8ae378`, `aff709f` |
+| Fase 6 | RC-1.5 — Internacionalización (bug de locale) | ✅ Alcance del roadmap completo | `ca24cc0` |
+
+**Única decisión de producto que sigue abierta: D2** (gobernanza del catálogo de categorías — ver sección "## D2" arriba). Bloquea exclusivamente **RC-1.4/C2** (categorías del picker de revisión de importación inconsistentes con `EXPENSE_CATEGORIES`); no bloquea ningún otro hallazgo, fase, ni el cierre del resto de RC-1. D1 (única otra decisión de producto que había quedado pendiente) fue resuelta durante la Fase 5 — ver sección "## D1" para el detalle completo de la resolución.
+
+Hallazgos retirados formalmente por pérdida de trazabilidad documental durante el ciclo (sin contenido recuperable en ningún lugar del proyecto, ver el detalle de cada regularización en la sección del ticket correspondiente): RC-1.2/B1–B4, RC-1.4/M1–M5 y B1–B6, RC-1.6/A1–A3, M1–M6 y B1–B4, RC-1.7/M6 (diferido, no retirado) y B1–B3.
+
+Deudas de integración registradas fuera del alcance de RC-1 (`docs/design/integration-debt.md`): RC-1.4/A3, RC-1.6/A4-M3.
+
+Trabajo explícitamente diferido a una fase posterior al Release Candidate, fuera del roadmap de RC-1: la migración de textos hardcodeados a i18n en las pantallas activas de la app (RC-1.5, infraestructura ya funcional, cobertura real ~90% solo en `ProfilePage.jsx`).
