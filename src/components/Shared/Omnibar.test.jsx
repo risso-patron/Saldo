@@ -68,3 +68,87 @@ describe('Omnibar — sección "Nuevo Movimiento" (Checkpoint III-C.3)', () => {
     expect(props.onClose).toHaveBeenCalled();
   });
 });
+
+// UX-001 — la sección "Utilidades" (Moneda + Vaciar datos locales) se oculta
+// mientras hay una búsqueda activa (isQuerying), y reaparece al vaciar el
+// input. No participaba del índice de teclado antes del cambio y sigue sin
+// participar (ahora, directamente, ni se monta mientras se busca).
+describe('Omnibar — sección "Utilidades" se oculta durante la búsqueda (UX-001)', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('Omnibar recién abierto (sin búsqueda): "Utilidades" está visible', () => {
+    renderOmnibar();
+    expect(screen.getByText('Utilidades')).toBeInTheDocument();
+    expect(screen.getByText('Moneda')).toBeInTheDocument();
+  });
+
+  it('al escribir cualquier texto, "Utilidades" desaparece', () => {
+    renderOmnibar();
+    const input = screen.getByPlaceholderText('Busca transacciones o navega...');
+    fireEvent.change(input, { target: { value: 'netflix' } });
+
+    expect(screen.queryByText('Utilidades')).not.toBeInTheDocument();
+    expect(screen.queryByText('Moneda')).not.toBeInTheDocument();
+  });
+
+  it('al vaciar el input tras haber escrito, "Utilidades" reaparece', () => {
+    renderOmnibar();
+    const input = screen.getByPlaceholderText('Busca transacciones o navega...');
+    fireEvent.change(input, { target: { value: 'netflix' } });
+    expect(screen.queryByText('Utilidades')).not.toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: '' } });
+    expect(screen.getByText('Utilidades')).toBeInTheDocument();
+  });
+
+  it('"Vaciar datos locales" desaparece junto con Moneda al buscar (mismo bloque, mismo destino)', () => {
+    renderOmnibar({ transactionCount: 5 });
+    expect(screen.getByText('Vaciar datos locales')).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('Busca transacciones o navega...');
+    fireEvent.change(input, { target: { value: 'netflix' } });
+
+    expect(screen.queryByText('Vaciar datos locales')).not.toBeInTheDocument();
+  });
+
+  it('regresión: Atajos de Navegación y Transacciones Encontradas siguen funcionando igual mientras se busca', () => {
+    renderOmnibar({
+      allTransactions: [
+        { id: 'tx-1', description: 'Netflix mensual', category: 'Entretenimiento', amount: 15, type: 'expense', date: '2026-07-01' },
+      ],
+    });
+    const input = screen.getByPlaceholderText('Busca transacciones o navega...');
+    fireEvent.change(input, { target: { value: 'netflix' } });
+
+    expect(screen.getByText('Transacciones Encontradas')).toBeInTheDocument();
+    expect(screen.getByText('Netflix mensual')).toBeInTheDocument();
+    // "Utilidades" sigue sin aparecer aunque sí haya resultados de búsqueda.
+    expect(screen.queryByText('Utilidades')).not.toBeInTheDocument();
+  });
+
+  it('regresión (pedido explícito del PO): cerrar y volver a abrir el Omnibar restablece searchTerm y "Utilidades" vuelve a mostrarse', () => {
+    const { rerender, props } = renderOmnibar();
+    const input = screen.getByPlaceholderText('Busca transacciones o navega...');
+    fireEvent.change(input, { target: { value: 'netflix' } });
+    expect(screen.queryByText('Utilidades')).not.toBeInTheDocument();
+
+    // Cerrar (isOpen=false -> el componente retorna null)
+    rerender(
+      <CurrencyProvider>
+        <Omnibar {...props} isOpen={false} />
+      </CurrencyProvider>
+    );
+    expect(screen.queryByPlaceholderText('Busca transacciones o navega...')).not.toBeInTheDocument();
+
+    // Reabrir (isOpen=true -> el useEffect de apertura resetea searchTerm)
+    rerender(
+      <CurrencyProvider>
+        <Omnibar {...props} isOpen={true} />
+      </CurrencyProvider>
+    );
+
+    expect(screen.getByPlaceholderText('Busca transacciones o navega...')).toHaveValue('');
+    expect(screen.getByText('Utilidades')).toBeInTheDocument();
+    expect(screen.getByText('Moneda')).toBeInTheDocument();
+  });
+});

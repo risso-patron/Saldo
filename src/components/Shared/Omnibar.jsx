@@ -250,25 +250,32 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
           {/* Utilidades — moneda y borrado de datos locales no tienen
               superficie propia en el shell nuevo (Fase I-C); quedan acá como
               resolución provisional (deuda registrada). No participan del
-              índice de navegación por teclado (flechas/Enter). */}
-          <div className="mt-6">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-3 mb-2 block">
-              Utilidades
-            </span>
-            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800">
-              <span className="font-bold text-sm text-slate-700 dark:text-slate-300">Moneda</span>
-              <CurrencySelector />
+              índice de navegación por teclado (flechas/Enter). UX-001: se
+              ocultan mientras hay una búsqueda activa (isQuerying) — al
+              escribir, el contexto de uso pasa de "navegar" a "buscar", y
+              estos controles no son resultados de búsqueda. Vuelven a
+              aparecer al vaciar el input, exactamente igual que al abrir el
+              Omnibar por primera vez. */}
+          {!isQuerying && (
+            <div className="mt-6">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-3 mb-2 block">
+                Utilidades
+              </span>
+              <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800">
+                <span className="font-bold text-sm text-slate-700 dark:text-slate-300">Moneda</span>
+                <CurrencySelector />
+              </div>
+              {onClearAll && transactionCount > 0 && (
+                <button
+                  onClick={() => { onClearAll(); onClose(); }}
+                  className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-colors text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+                >
+                  <Database size={20} weight="fill" />
+                  <span className="font-bold">Vaciar datos locales</span>
+                </button>
+              )}
             </div>
-            {onClearAll && transactionCount > 0 && (
-              <button
-                onClick={() => { onClearAll(); onClose(); }}
-                className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-colors text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"
-              >
-                <Database size={20} weight="fill" />
-                <span className="font-bold">Vaciar datos locales</span>
-              </button>
-            )}
-          </div>
+          )}
 
         </div>
         
