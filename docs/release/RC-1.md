@@ -30,7 +30,7 @@ Diagnóstico → Propuesta → Aprobación → Implementación → Evidencia →
 | 🟡 Media | 6 | 6 | 0 |
 | 🔵 Baja | 1 | 0 | 1 |
 
-Nota sobre "Media": RC-1.2, RC-1.3, RC-1.4, RC-1.5, RC-1.6 y RC-1.7 tienen su etapa de auditoría cerrada (ver detalle en cada ticket), pero ninguno cuenta como "Resuelto" en esta tabla porque los seis conservan alcance remanente (RC-1.2: bloqueado por D1, decisión de producto pendiente; RC-1.3: hallazgos M4/M5/M6 pendientes de decisión de diseño; RC-1.4: bloqueado únicamente por D2, decisión de producto pendiente, y solo para C2 — A3 fue clasificado como deuda de integración, no como decisión de producto, ver `docs/design/integration-debt.md`; M1–M5/B1–B6 retirados por pérdida de trazabilidad documental; alcance implementable restante: C1, A1, A2; RC-1.5: sin decisión de producto pendiente, con la adopción de i18n diferida a una fase posterior al Release Candidate; RC-1.6: hallazgo A4/M3 clasificado como deuda de integración, no como decisión de producto, ver `docs/design/integration-debt.md`; C1 implementado; A1–A3/M1–M6/B1–B4 retirados por pérdida de trazabilidad documental (ver detalle en la sección del ticket); RC-1.7: 4 hallazgos con revisión editorial de clasificación aplicada — todo hallazgo con descripción recuperable ya fue implementado (C1, A1, A3, A4, A5, A6, M1, M2, M3, M4); M6 diferido a Fase 3/RC-1.6 por decisión del PO; B1–B3 sin contenido recuperable en este documento ni en memoria, cerrados sin acción). En los seis, la auditoría está cerrada pero la implementación todavía no fue realizada en su totalidad. RC-1.3/A2 y RC-1.7 (salvo M6/B1–B3, ver detalle) son los que más avanzaron en implementación efectiva.
+Nota sobre "Media": RC-1.2, RC-1.3, RC-1.4, RC-1.5, RC-1.6 y RC-1.7 tienen su etapa de auditoría cerrada (ver detalle en cada ticket), pero ninguno cuenta como "Resuelto" en esta tabla porque los seis conservan alcance remanente (RC-1.2: D1 resuelta (description obligatorio) — C1 desbloqueado, A2 definida (orden alfabético), M1 confirmado sin acción, B1–B4 retirados por pérdida de trazabilidad documental, implementación de C1/A2 pendiente de aprobación separada; RC-1.3: hallazgos M4/M5/M6 pendientes de decisión de diseño; RC-1.4: bloqueado únicamente por D2, decisión de producto pendiente, y solo para C2 — A3 fue clasificado como deuda de integración, no como decisión de producto, ver `docs/design/integration-debt.md`; M1–M5/B1–B6 retirados por pérdida de trazabilidad documental; alcance implementable restante: C1, A1, A2; RC-1.5: sin decisión de producto pendiente, con la adopción de i18n diferida a una fase posterior al Release Candidate; RC-1.6: hallazgo A4/M3 clasificado como deuda de integración, no como decisión de producto, ver `docs/design/integration-debt.md`; C1 implementado; A1–A3/M1–M6/B1–B4 retirados por pérdida de trazabilidad documental (ver detalle en la sección del ticket); RC-1.7: 4 hallazgos con revisión editorial de clasificación aplicada — todo hallazgo con descripción recuperable ya fue implementado (C1, A1, A3, A4, A5, A6, M1, M2, M3, M4); M6 diferido a Fase 3/RC-1.6 por decisión del PO; B1–B3 sin contenido recuperable en este documento ni en memoria, cerrados sin acción). En los seis, la auditoría está cerrada pero la implementación todavía no fue realizada en su totalidad. RC-1.3/A2 y RC-1.7 (salvo M6/B1–B3, ver detalle) son los que más avanzaron en implementación efectiva.
 
 ---
 
@@ -157,7 +157,21 @@ Ninguna todavía. Queda registrada para que el PO defina la política única del
 ## RC-1.2 — Nuevo Movimiento
 
 Estado:
-🟡 Auditoría cerrada — implementación pendiente. Hallazgo crítico (C1: falla silenciosa de guardado con descripción inválida) reclasificado y sacado de alcance — ver "D1" en Decisiones de producto pendientes, arriba (bloquea D1 hasta que el PO decida el alcance real del cambio). Resto de hallazgos (A1 — atajo ⌘Z ausente; A2 — orden de categorías sugeridas; M1 — chip "Hoy" visible en estado vacío; M2/M3 — fecha/cuenta no editables en creación, ya documentados como deuda de Fase III; M4 — integration-debt.md desactualizado tras RC-1.1; B1–B4 — code smells menores) permanecen en alcance de RC-1.2 para una futura fase de implementación, pendientes de aprobación separada.
+🟡 Auditoría cerrada — implementación pendiente. **D1 resuelta** (el PO decidió: `description` debe ser obligatorio, no opcional) — **C1 queda desbloqueado**, pendiente de implementación (luz verde separada). **A2** (orden de categorías sugeridas) definida por el PO: orden alfabético — pasa a implementable. **M1** confirmado, sin acción — ver detalle abajo. **B1–B4 retirados** por pérdida de trazabilidad documental — ver "Regularización documental" a continuación. M2/M3 (fecha/cuenta no editables en creación) siguen sin acción, ya documentados como deuda de Fase III — no son hallazgos accionables. M4 (integration-debt.md desactualizado tras RC-1.1) fuera del alcance de esta fase (no forma parte del roadmap de Fase 5), sin verificar.
+
+### Regularización documental — retiro de B1–B4 (RC-1.2)
+
+Mismo relevamiento y mismo criterio ya aplicado a M1–M5/B1–B6 de RC-1.4: `docs/release/RC-1.md` solo registra la etiqueta de grupo "code smells menores" (sin descripción individual, archivo, severidad ni evidencia recuperable para B1, B2, B3 o B4 por separado) — no hay ninguna otra fuente en el proyecto con más detalle.
+
+**Decisión de ingeniería (PO):**
+- El contenido original de estos 4 ítems **no es recuperable** a nivel individual.
+- Los identificadores **B1–B4 de RC-1.2 quedan formalmente retirados**.
+- Estos identificadores **no deben reutilizarse** como referencia para trabajo futuro, ni reconstruirse por inferencia a partir del estado actual del código.
+- Cualquier mejora futura sobre "code smells" de Nuevo Movimiento deberá originarse en una **auditoría nueva, con numeración propia y documentación persistida desde el inicio**.
+
+Consistente con la regla vigente desde la regularización de RC-1.6/RC-1.4: ningún hallazgo puede recibir un identificador oficial hasta que su descripción completa haya sido persistida en el repositorio.
+
+**M1 — confirmado, sin acción.** El chip "Hoy" se renderiza incondicionalmente en modo creación (`NewMovementSheet.jsx`), contradiciendo literalmente el spec de diseño ("Inicial (vacío)... sin chips: aparecen cuando hay algo que adivinar"). Verificado contra el código actual: esto es una **decisión deliberada y ya aprobada en Checkpoint IV-B** (comentario inline explícito: *"en modo creación, el chip fijo 'Hoy' de siempre"*), no un descuido. El PO confirmó que esa decisión se mantiene vigente — **no se revierte Checkpoint IV-B**. Sin cambio de código.
 
 Prioridad:
 🟡 Media
@@ -312,7 +326,7 @@ Estado:
 | Ticket | Commit | Estado |
 |---------|--------|--------|
 | RC-1.1 | `91ee9ba` | ✅ Cerrado |
-| RC-1.2 | — (sin commit de implementación; auditoría cerrada, D1 pendiente de decisión de producto) | 🟡 Auditoría cerrada |
+| RC-1.2 | — (sin commit de implementación; D1 resuelta — C1 desbloqueado, A2 definida (orden alfabético), ambos pendientes de implementación; M1 confirmado sin acción; B1–B4 retirados por pérdida de trazabilidad documental) | 🟡 Auditoría cerrada |
 | RC-1.3 | `730d42a` (A2 — nombre accesible; A1 fuera de alcance, resto documentado/diferido) | 🟡 Auditoría cerrada — parcial |
 | RC-1.4 | `a34da36` (C1 — colores permanentes en totales de importación), `2cecd69` (A1 — confirmación antes de exportar); A2 cerrado documentalmente sin cambio de código (ya resuelto por RC-1.7/A4); alcance independiente de D2 completo (C1, A1, A2); D2 pendiente de decisión de producto — bloquea únicamente C2; M1–M5/B1–B6 retirados por pérdida de trazabilidad documental | ✅ Alcance independiente de D2 completo |
 | RC-1.5 | — (sin commit de implementación; auditoría cerrada, sin decisión de producto pendiente) | 🟡 Auditoría cerrada |
