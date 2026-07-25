@@ -9,6 +9,7 @@ import { AISuggestedCategory } from './AISuggestedCategory';
 import { useAI } from '../../contexts/AIContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
+import { suggestExpenseCategory } from '../../core/categorizationEngine';
 import { validateAmount, validateDescription } from '../../utils/validators';
 import { readDraft, writeDraft, clearDraft } from '../../utils/newMovementDraft';
 
@@ -152,6 +153,23 @@ export function NewMovementSheet({
     setShowCategorySelect(false);
   };
 
+  // HAL-001 parte 3 — sugerencia LOCAL (categorizeWithRules, sin IA), solo
+  // cuando la IA no está disponible/consentida y la categoría actual es
+  // "Otros". Cálculo síncrono derivado, no un useEffect: sin debounce, sin
+  // llamada de red, nada que cancelar. No usa `suggestedCategory` (ese
+  // estado es del flujo de IA) — aceptar esta sugerencia solo llama a
+  // setCategory(), nunca setSuggestedCategory(), para mantener ambos
+  // conceptos separados (ajuste explícito del PO al aprobar el plan).
+  const ruleSuggestion =
+    activeType === 'expense' && category === 'Otros' && !(ai.canUseAI && ai.hasConsent)
+      ? suggestExpenseCategory(description)
+      : null;
+
+  const handleAcceptRuleSuggestion = () => {
+    if (!ruleSuggestion) return;
+    setCategory(ruleSuggestion.category);
+  };
+
   const isAmountValid = validateAmount(amount).isValid;
   // RC-1.2/C1: misma validación central que useTransactions.js ya exige
   // (validateDescription — 3-100 caracteres), ahora también client-side.
@@ -282,6 +300,13 @@ export function NewMovementSheet({
               {ai.canUseAI && ai.hasConsent ? (
                 <AISuggestedCategory
                   category={suggestedCategory}
+                  onChangeClick={() => setShowCategorySelect(true)}
+                />
+              ) : ruleSuggestion ? (
+                <AISuggestedCategory
+                  source="rules"
+                  category={ruleSuggestion.category}
+                  onAcceptClick={handleAcceptRuleSuggestion}
                   onChangeClick={() => setShowCategorySelect(true)}
                 />
               ) : (

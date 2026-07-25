@@ -14,17 +14,40 @@ import PropTypes from 'prop-types';
 // pantalla detecta el CAMBIO de contenido en vez de la aparición/desaparición
 // de todo un nodo — más confiable. El contenido visible adentro sigue siendo
 // condicional: mismo resultado visual que antes (nada visible sin category).
+//
+// HAL-001 parte 3 — prop `source` ('ai' default | 'rules'), retrocompatible:
+// sin pasarla, comportamiento y texto idénticos a como era antes de esta
+// prop. 'rules' nunca debe mencionar IA en su texto (principio de SALDO: no
+// simular capacidades inteligentes inexistentes). `onAcceptClick`, si se
+// pasa, vuelve el badge de categoría clickeable para aceptar la sugerencia
+// directamente — usado solo por el camino 'rules' (el camino 'ai' aplica su
+// sugerencia por otro mecanismo, ya existente, sin tocar acá).
 
-export function AISuggestedCategory({ category, onChangeClick }) {
+const SOURCE_LABELS = {
+  ai: 'Categoría sugerida:',
+  rules: 'Podría ser:',
+};
+
+export function AISuggestedCategory({ category = null, source = 'ai', onAcceptClick = null, onChangeClick }) {
   return (
     <div aria-live="polite">
       {category && (
         <div className="flex items-center gap-2">
           <Sparkles width={14} height={14} strokeWidth={1.5} className="text-ds-text-tertiary" aria-hidden="true" />
-          <span className="text-ds-caption text-ds-text-secondary">Categoría sugerida:</span>
-          <span className="bg-ds-surface-sunken rounded-ds-control px-2.5 py-0.5 text-ds-caption font-medium text-ds-text-primary">
-            {category}
-          </span>
+          <span className="text-ds-caption text-ds-text-secondary">{SOURCE_LABELS[source]}</span>
+          {onAcceptClick ? (
+            <button
+              type="button"
+              onClick={onAcceptClick}
+              className="bg-ds-surface-sunken rounded-ds-control px-2.5 py-0.5 text-ds-caption font-medium text-ds-text-primary hover:bg-ds-interaction-hover transition-colors duration-ds-fast ease-ds"
+            >
+              {category}
+            </button>
+          ) : (
+            <span className="bg-ds-surface-sunken rounded-ds-control px-2.5 py-0.5 text-ds-caption font-medium text-ds-text-primary">
+              {category}
+            </span>
+          )}
           <button
             type="button"
             onClick={onChangeClick}
@@ -40,9 +63,7 @@ export function AISuggestedCategory({ category, onChangeClick }) {
 
 AISuggestedCategory.propTypes = {
   category: PropTypes.string,
+  source: PropTypes.oneOf(['ai', 'rules']),
+  onAcceptClick: PropTypes.func,
   onChangeClick: PropTypes.func.isRequired,
-};
-
-AISuggestedCategory.defaultProps = {
-  category: null,
 };

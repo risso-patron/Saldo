@@ -638,5 +638,90 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
         expect(JSON.parse(localStorage.getItem(STORAGE_KEY)).description).toBe('Borrador viejo');
       });
     });
+
+    // HAL-001 parte 3 — sugerencia LOCAL (categorizeWithRules, sin IA) al
+    // editar un gasto categorizado como "Otros". El describe padre ya deja
+    // useAIMock en {canUseAI: false, hasConsent: false} por defecto (beforeEach
+    // del describe raíz) — exactamente el escenario "sin IA" que activa esta
+    // sugerencia.
+    describe('HAL-001 parte 3 — sugerencia de categoría por reglas locales (sin IA)', () => {
+      const otrosMovement = {
+        id: 'exp-otros-1',
+        type: 'expense',
+        description: 'Viaje en Uber al aeropuerto',
+        amount: 25,
+        category: 'Otros',
+        date: '2026-07-20',
+        currency: 'USD',
+      };
+
+      it('gasto en "Otros" con descripción que matchea una regla: aparece el chip "Podría ser: Transporte"', () => {
+        renderEditSheet(otrosMovement);
+
+        expect(screen.getByText('Podría ser:')).toBeInTheDocument();
+        expect(screen.getByText('Transporte')).toBeInTheDocument();
+        expect(screen.queryByText('Categoría sugerida:')).not.toBeInTheDocument();
+      });
+
+      it('gasto en "Otros" con descripción sin match de regla: no aparece ningún chip, sigue el botón "Elegir categoría"', () => {
+        renderEditSheet({ ...otrosMovement, description: 'Movimiento sin descripción reconocible xyz123' });
+
+        expect(screen.queryByText('Podría ser:')).not.toBeInTheDocument();
+        expect(screen.getByText('Elegir categoría')).toBeInTheDocument();
+      });
+
+      it('gasto que YA tiene una categoría distinta de "Otros" no muestra sugerencia de reglas, aunque la descripción matchee', () => {
+        renderEditSheet({ ...otrosMovement, category: EXPENSE_CATEGORIES[2].value });
+
+        expect(screen.queryByText('Podría ser:')).not.toBeInTheDocument();
+      });
+
+      it('clic en el chip sugerido acepta la categoría: se guarda con la categoría sugerida, sin necesidad de abrir el <select> a mano', async () => {
+        const user = userEvent.setup();
+        const { onUpdateExpense } = renderEditSheet(otrosMovement);
+
+        await user.click(screen.getByText('Transporte'));
+        expect(screen.queryByText('Podría ser:')).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: 'Guardar' }));
+        expect(onUpdateExpense).toHaveBeenCalledWith(
+          otrosMovement.id,
+          expect.objectContaining({ category: 'Transporte' }),
+          expect.anything()
+        );
+      });
+
+      it('clic en "Cambiar" (con sugerencia visible) abre el <select> nativo, permitiendo elegir una categoría distinta a la sugerida', async () => {
+        const user = userEvent.setup();
+        renderEditSheet(otrosMovement);
+
+        await user.click(screen.getByText('Cambiar'));
+
+        const select = screen.getByLabelText('Categoría');
+        expect(select).toBeInTheDocument();
+        expect(select).toHaveValue('Otros');
+      });
+
+      it('guardar sin interactuar con la sugerencia conserva "Otros" — nunca se aplica sola', async () => {
+        const user = userEvent.setup();
+        const { onUpdateExpense } = renderEditSheet(otrosMovement);
+
+        expect(screen.getByText('Podría ser:')).toBeInTheDocument();
+        await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+        expect(onUpdateExpense).toHaveBeenCalledWith(
+          otrosMovement.id,
+          expect.objectContaining({ category: 'Otros' }),
+          expect.anything()
+        );
+      });
+
+      it('con IA habilitada y consentida, nunca aparece el chip de reglas — solo el de IA (sin mezcla)', () => {
+        useAIMock.mockReturnValue({ canUseAI: true, hasConsent: true, suggestCategory: vi.fn().mockResolvedValue({}) });
+        renderEditSheet(otrosMovement);
+
+        expect(screen.queryByText('Podría ser:')).not.toBeInTheDocument();
+      });
+    });
   });
 });

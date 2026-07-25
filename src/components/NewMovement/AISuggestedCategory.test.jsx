@@ -82,3 +82,67 @@ describe('AISuggestedCategory — presentación pura (Checkpoint III-A)', () => 
     expect(html).not.toMatch(/violet/);
   });
 });
+
+// HAL-001 parte 3 — prop `source`, retrocompatible. 'rules' nunca debe decir
+// "IA" en su texto (principio de SALDO: no simular capacidades inteligentes
+// inexistentes). `onAcceptClick` vuelve el chip de categoría clickeable.
+describe('AISuggestedCategory — prop source (HAL-001 parte 3)', () => {
+  it('sin pasar source, el texto es el mismo de siempre ("Categoría sugerida:") — retrocompatibilidad', () => {
+    render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
+    expect(screen.getByText('Categoría sugerida:')).toBeInTheDocument();
+  });
+
+  it('source="rules" usa un texto distinto, sin la palabra "IA" ni "inteligente"', () => {
+    const { container } = render(<AISuggestedCategory category="Transporte" source="rules" onChangeClick={vi.fn()} />);
+    expect(screen.queryByText('Categoría sugerida:')).not.toBeInTheDocument();
+    const label = container.querySelector('span.text-ds-text-secondary');
+    expect(label).not.toBeNull();
+    expect(label.textContent.length).toBeGreaterThan(0);
+    expect(label.textContent.toLowerCase()).not.toMatch(/\bia\b|inteligen/);
+  });
+
+  it('source="ai" (explícito) preserva el texto "Categoría sugerida:"', () => {
+    render(<AISuggestedCategory category="Alimentación" source="ai" onChangeClick={vi.fn()} />);
+    expect(screen.getByText('Categoría sugerida:')).toBeInTheDocument();
+  });
+
+  it('sin onAcceptClick, el chip de categoría es un <span> no interactivo (comportamiento actual, sin cambios)', () => {
+    render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
+    const chip = screen.getByText('Alimentación');
+    expect(chip.tagName).toBe('SPAN');
+  });
+
+  it('con onAcceptClick, el chip de categoría es un <button> clickeable que lo dispara', async () => {
+    const user = userEvent.setup();
+    const onAcceptClick = vi.fn();
+    render(
+      <AISuggestedCategory
+        category="Transporte"
+        source="rules"
+        onAcceptClick={onAcceptClick}
+        onChangeClick={vi.fn()}
+      />
+    );
+    const chip = screen.getByText('Transporte');
+    expect(chip.tagName).toBe('BUTTON');
+    await user.click(chip);
+    expect(onAcceptClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('con onAcceptClick, "Cambiar" sigue funcionando de forma independiente (no se pisan)', async () => {
+    const user = userEvent.setup();
+    const onAcceptClick = vi.fn();
+    const onChangeClick = vi.fn();
+    render(
+      <AISuggestedCategory
+        category="Transporte"
+        source="rules"
+        onAcceptClick={onAcceptClick}
+        onChangeClick={onChangeClick}
+      />
+    );
+    await user.click(screen.getByText('Cambiar'));
+    expect(onChangeClick).toHaveBeenCalledTimes(1);
+    expect(onAcceptClick).not.toHaveBeenCalled();
+  });
+});
