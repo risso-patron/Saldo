@@ -1,12 +1,13 @@
-// Categorías de gastos
+// Categorías de gastos — orden alfabético (RC-1.2/A2); "Otros" queda fija al
+// final como categoría catch-all, fuera del orden alfabético estricto.
 export const EXPENSE_CATEGORIES = [
-  { value: 'Vivienda', label: 'Vivienda', icon: '' },
   { value: 'Alimentación', label: 'Alimentación', icon: '' },
-  { value: 'Transporte', label: 'Transporte', icon: '' },
+  { value: 'Educación', label: 'Educación', icon: '' },
   { value: 'Entretenimiento', label: 'Entretenimiento', icon: '' },
   { value: 'Salud', label: 'Salud', icon: '' },
-  { value: 'Educación', label: 'Educación', icon: '' },
   { value: 'Servicios', label: 'Servicios', icon: '' },
+  { value: 'Transporte', label: 'Transporte', icon: '' },
+  { value: 'Vivienda', label: 'Vivienda', icon: '' },
   { value: 'Otros', label: 'Otros', icon: '' },
 ];
 
