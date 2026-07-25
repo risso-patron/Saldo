@@ -4,6 +4,8 @@
 
 **Estado:** 🟡 En progreso
 
+> Este ciclo fue congelado como línea base oficial en `docs/release/BR-1.md` (BR-1, 2026-07-25). Ver ese documento para el estado certificado del producto; este documento conserva el detalle completo de la auditoría y su implementación.
+
 **Objetivo del Release**
 
 Cerrar todos los problemas detectados durante la auditoría funcional del Release Candidate sin incorporar nuevas funcionalidades.
