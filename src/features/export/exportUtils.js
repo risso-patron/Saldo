@@ -2,22 +2,24 @@ import Papa from 'papaparse';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { sanitizeCSVCell } from './csvSecurity';
+import { getFormatLocale } from '../../utils/formatters';
 
 /**
  * Exportar transacciones a CSV
  */
 export const exportToCSV = (incomes, expenses, dateRange) => {
+  const locale = getFormatLocale();
   // Combinar y formatear datos
   const allTransactions = [
     ...incomes.map(i => ({
-      Fecha: new Date(i.date).toLocaleDateString('es-ES'),
+      Fecha: new Date(i.date).toLocaleDateString(locale),
       Tipo: 'Ingreso',
       Descripción: sanitizeCSVCell(i.description),
       Categoría: '-',
       Monto: i.amount,
     })),
     ...expenses.map(e => ({
-      Fecha: new Date(e.date).toLocaleDateString('es-ES'),
+      Fecha: new Date(e.date).toLocaleDateString(locale),
       Tipo: 'Gasto',
       Descripción: sanitizeCSVCell(e.description),
       Categoría: sanitizeCSVCell(e.category),
@@ -50,7 +52,8 @@ export const exportToCSV = (incomes, expenses, dateRange) => {
  */
 export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, dateRange, _includeCharts) => {
   const doc = new jsPDF();
-  
+  const locale = getFormatLocale();
+
   // Configuración de colores
   const primaryColor = [99, 102, 241]; // Indigo
   const successColor = [16, 185, 129]; // Green
@@ -68,7 +71,7 @@ export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, d
   doc.setFontSize(12);
   doc.setFont(undefined, 'normal');
   doc.text(
-    `Periodo: ${new Date(dateRange.start).toLocaleDateString('es-ES')} - ${new Date(dateRange.end).toLocaleDateString('es-ES')}`,
+    `Periodo: ${new Date(dateRange.start).toLocaleDateString(locale)} - ${new Date(dateRange.end).toLocaleDateString(locale)}`,
     105,
     30,
     { align: 'center' }
@@ -169,14 +172,14 @@ export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, d
   // Preparar datos
   const transactionData = [
     ...incomes.map(i => [
-      new Date(i.date).toLocaleDateString('es-ES'),
+      new Date(i.date).toLocaleDateString(locale),
       'Ingreso',
       i.description,
       '-',
       `$${i.amount.toFixed(2)}`,
     ]),
     ...expenses.map(e => [
-      new Date(e.date).toLocaleDateString('es-ES'),
+      new Date(e.date).toLocaleDateString(locale),
       'Gasto',
       e.description,
       e.category,
@@ -220,7 +223,7 @@ export const exportToPDF = async (incomes, expenses, categoryAnalysis, totals, d
       { align: 'center' }
     );
     doc.text(
-      `Generado el ${new Date().toLocaleDateString('es-ES')}`,
+      `Generado el ${new Date().toLocaleDateString(locale)}`,
       14,
       290
     );

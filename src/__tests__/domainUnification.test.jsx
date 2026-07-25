@@ -26,7 +26,11 @@ import { supabase } from '../lib/supabase';
 // expira de verdad (fake timers, mismo mecanismo que Toast.jsx usa en
 // producción) — nunca en el momento del clic.
 
-vi.mock('react-i18next', () => ({
+// RC-1.5: formatCurrency ahora importa src/i18n/index.js (getFormatLocale),
+// que registra initReactI18next en el singleton real — debe conservarse al
+// mockear este módulo, o la inicialización de i18n lanza en import.
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: () => ({ i18n: { language: 'es' } }),
 }));
 

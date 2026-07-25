@@ -10,7 +10,11 @@ import { DashboardHome } from './DashboardHome';
 // propia — estos tests validan el ensamblado, no recalculan lógica que ya
 // está cubierta en dashboardCalculations.test.js.
 
-vi.mock('react-i18next', () => ({
+// RC-1.5: formatCurrency ahora importa src/i18n/index.js (getFormatLocale),
+// que registra initReactI18next en el singleton real — debe conservarse al
+// mockear este módulo, o la inicialización de i18n lanza en import.
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: () => ({ i18n: { language: 'es' } }),
 }));
 

@@ -9,7 +9,11 @@ import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { Historial } from './Historial';
 import { useIsDesktop, useIsMobileRow } from '../../hooks/useMediaQuery';
 
-vi.mock('react-i18next', () => ({
+// RC-1.5: formatCurrency ahora importa src/i18n/index.js (getFormatLocale),
+// que registra initReactI18next en el singleton real — debe conservarse al
+// mockear este módulo, o la inicialización de i18n lanza en import.
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: () => ({ i18n: { language: 'es' } }),
 }));
 

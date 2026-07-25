@@ -1,5 +1,6 @@
 
-import { formatCurrency, formatDate, formatPercentageSafe } from '../utils/formatters'
+import { formatCurrency, formatDate, formatPercentageSafe, getFormatLocale } from '../utils/formatters'
+import i18n from '../i18n'
 
 // Tests OBJETIVO (P0 #2, HAL-004 — deben quedar en ROJO hasta implementar).
 // Convención: 0 real se distingue SIEMPRE de un positivo chico redondeado —
@@ -70,6 +71,53 @@ describe('formatCurrency', () => {
     expect(formatCurrency('abc')).toBe('$0.00')
     expect(formatCurrency(NaN)).toBe('$0.00')
     expect(formatCurrency(undefined)).toBe('$0.00')
+  })
+})
+
+// RC-1.5: formatCurrency (y exportUtils.js, vía el mismo getFormatLocale)
+// deben seguir el idioma activo de i18next en vez de un locale fijo.
+describe('getFormatLocale — RC-1.5, mapeo idioma i18n -> locale de formato', () => {
+  const originalLanguage = i18n.language
+
+  afterEach(async () => {
+    await i18n.changeLanguage(originalLanguage)
+  })
+
+  it('es -> es-419', () => {
+    expect(getFormatLocale('es')).toBe('es-419')
+  })
+
+  it('en -> en-US', () => {
+    expect(getFormatLocale('en')).toBe('en-US')
+  })
+
+  it('fr -> fr-FR', () => {
+    expect(getFormatLocale('fr')).toBe('fr-FR')
+  })
+
+  it('idioma desconocido cae a es-419 (mismo fallback que i18next: fallbackLng es "es")', () => {
+    expect(getFormatLocale('de')).toBe('es-419')
+  })
+
+  it('sin argumento, usa el idioma activo de i18n.language', async () => {
+    await i18n.changeLanguage('fr')
+    expect(getFormatLocale()).toBe('fr-FR')
+  })
+
+  it('formatCurrency sigue el idioma activo: en produce agrupación en-US (coma de miles)', async () => {
+    await i18n.changeLanguage('en')
+    expect(formatCurrency(1234.56)).toContain('1,234.56')
+  })
+
+  it('formatCurrency sigue el idioma activo: fr produce agrupación fr-FR (espacio de miles, coma decimal)', async () => {
+    await i18n.changeLanguage('fr')
+    const result = formatCurrency(1234.56)
+    expect(result).toMatch(/1\s234,56/)
+  })
+
+  it('formatCurrency sigue el idioma activo: es produce el formato es-419 ya usado antes de RC-1.5', async () => {
+    await i18n.changeLanguage('es')
+    expect(formatCurrency(1234.56)).toContain('1,234.56')
   })
 })
 

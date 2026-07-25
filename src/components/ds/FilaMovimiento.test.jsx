@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FilaMovimiento } from './FilaMovimiento';
+import i18n from '../../i18n';
 
 // Fase II — Integración del Dashboard (Saldo Design Constitution v1.2).
 // Fuente: docs/design/screens/Saldo Dashboard.dc.html.
@@ -8,9 +9,25 @@ import { FilaMovimiento } from './FilaMovimiento';
 // importes — gastos con signo "−" tipográfico (U+2212, NUNCA el guion ASCII),
 // ingresos sin signo, ambos con el mismo color neutro.
 
-vi.mock('react-i18next', () => ({
+// RC-1.5: formatCurrency ahora importa src/i18n/index.js (getFormatLocale),
+// que registra initReactI18next en el singleton real — debe conservarse al
+// mockear este módulo, o la inicialización de i18n lanza en import.
+vi.mock('react-i18next', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: () => ({ i18n: { language: 'es' } }),
 }));
+
+// RC-1.5: formatCurrency ahora resuelve el locale de formato desde el
+// idioma activo REAL de i18n (i18n.language), no desde el mock de
+// useTranslation() de arriba. Los asserts de este archivo dependen del
+// comportamiento de ICU específico de 'es-419' (código de moneda como
+// texto, "EUR"/"USD", en vez de símbolo) — sin fijarlo, el idioma detectado
+// por defecto en jsdom (navigator 'en-US' -> 'en') haría que ICU use
+// símbolo ("€"/"$") y estos tests fallarían por un motivo ajeno a lo que
+// verifican.
+beforeAll(async () => {
+  await i18n.changeLanguage('es');
+});
 
 describe('FilaMovimiento (ds) — Saldo Design Constitution v1.2', () => {
   beforeEach(() => {
@@ -23,9 +40,9 @@ describe('FilaMovimiento (ds) — Saldo Design Constitution v1.2', () => {
   });
 
   it('gasto: muestra el signo "−" tipográfico (U+2212), nunca el guion ASCII "-"', () => {
-    // formatCurrency() usa locale 'es-419' internamente (igual que
-    // ExpenseList.jsx) independientemente de i18n.language — decimal con
-    // punto en este entorno ICU ("45.50"), no coma.
+    // formatCurrency() usa el locale es-419 (idioma activo fijado a 'es'
+    // arriba, RC-1.5) — decimal con punto en este entorno ICU ("45.50"),
+    // no coma.
     render(<FilaMovimiento description="Supermercado" date="2026-07-17" amount={45.5} type="expense" />);
     expect(screen.getByText(/−.*45\.50/)).toBeInTheDocument();
     expect(screen.queryByText(/^-45\.50/)).not.toBeInTheDocument();

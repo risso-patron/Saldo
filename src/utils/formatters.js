@@ -1,3 +1,18 @@
+import i18n from '../i18n';
+
+// RC-1.5: mapeo idioma activo (i18next) -> locale de formato (Intl). es-419
+// ya era la convención de facto para moneda en el resto de la app (ver
+// CurrencyContext.jsx, dashboardCalculations.js); en-US/fr-FR se eligieron
+// por ser el único precedente sin conflicto para cada idioma (PO, RC-1.5).
+const FORMAT_LOCALE_MAP = {
+  es: 'es-419',
+  en: 'en-US',
+  fr: 'fr-FR',
+};
+
+export const getFormatLocale = (language = i18n.language) =>
+  FORMAT_LOCALE_MAP[language] ?? FORMAT_LOCALE_MAP.es;
+
 /**
  * Formatea un número como moneda en dólares
  * @param {number} amount - Cantidad a formatear
@@ -7,10 +22,10 @@ export const formatCurrency = (amount, currencyCode = 'USD') => {
   if (typeof amount !== 'number' || isNaN(amount)) {
     return '$0.00';
   }
-  
+
   const safeCode = currencyCode === 'PAB' ? 'USD' : currencyCode;
   try {
-    let formatted = new Intl.NumberFormat('es-419', {
+    let formatted = new Intl.NumberFormat(getFormatLocale(), {
       style: 'currency',
       currency: safeCode,
       minimumFractionDigits: 2,
