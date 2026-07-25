@@ -145,14 +145,14 @@ describe('useTransactions — options.notification y contrato de retorno (Checkp
       expect(result.current.pendingOperation).toEqual({ kind: 'create', movement: returned.movement });
     });
 
-    it('con notification "toast" y datos inválidos NO llama showAlert ni arranca operación reversible', () => {
+    it('RC-1.2/C1: con notification "toast" y datos inválidos SÍ llama showAlert (línea de defensa), sin arrancar operación reversible', () => {
       const { result } = renderHook(() => useTransactions());
 
       act(() => {
         result.current.addIncome('', 0, '2026-07-01', 'USD', { notification: 'toast' });
       });
 
-      expect(result.current.alert).toBeNull();
+      expect(result.current.alert).toEqual({ type: 'error', message: 'La descripción es requerida' });
       expect(result.current.pendingOperation).toBeNull();
     });
   });
@@ -211,14 +211,14 @@ describe('useTransactions — options.notification y contrato de retorno (Checkp
       expect(result.current.pendingOperation).toEqual({ kind: 'create', movement: returned.movement });
     });
 
-    it('con notification "toast" y datos inválidos NO llama showAlert ni arranca operación reversible', () => {
+    it('RC-1.2/C1: con notification "toast" y datos inválidos SÍ llama showAlert (línea de defensa), sin arrancar operación reversible', () => {
       const { result } = renderHook(() => useTransactions());
 
       act(() => {
         result.current.addExpense('', 'CategoríaInexistente', 0, '2026-07-01', 'USD', { notification: 'toast' });
       });
 
-      expect(result.current.alert).toBeNull();
+      expect(result.current.alert).toEqual({ type: 'error', message: 'La descripción es requerida' });
       expect(result.current.pendingOperation).toBeNull();
     });
   });

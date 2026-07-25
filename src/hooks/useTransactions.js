@@ -357,7 +357,12 @@ export const useTransactions = () => {
     const { notification = 'legacy' } = options;
     const validation = validateTransaction({ description, amount, date });
     if (!validation.isValid) {
-      if (notification === 'legacy') showAlert('error', Object.values(validation.errors)[0]);
+      // RC-1.2/C1: el error se muestra sin importar el modo de notificación
+      // — línea de defensa adicional (la validación client-side de
+      // NewMovementSheet.jsx debería prevenir llegar acá con 'toast', pero
+      // ningún fallo de validación que sí llegue debe quedar mudo). Mismo
+      // criterio ya usado en updateIncome/updateExpense.
+      showAlert('error', Object.values(validation.errors)[0]);
       return { success: false, movement: null };
     }
 
@@ -398,7 +403,8 @@ export const useTransactions = () => {
       EXPENSE_CATEGORIES
     );
     if (!validation.isValid) {
-      if (notification === 'legacy') showAlert('error', Object.values(validation.errors)[0]);
+      // RC-1.2/C1 — ver comentario en addIncome.
+      showAlert('error', Object.values(validation.errors)[0]);
       return { success: false, movement: null };
     }
 

@@ -9,7 +9,7 @@ import { AISuggestedCategory } from './AISuggestedCategory';
 import { useAI } from '../../contexts/AIContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { EXPENSE_CATEGORIES } from '../../constants/categories';
-import { validateAmount } from '../../utils/validators';
+import { validateAmount, validateDescription } from '../../utils/validators';
 import { readDraft, writeDraft, clearDraft } from '../../utils/newMovementDraft';
 
 // Checkpoint III-A (Saldo Design Constitution v1.2) — orquestación del flujo
@@ -88,12 +88,18 @@ export function NewMovementSheet({
   const [suggestedCategory, setSuggestedCategory] = useState(null);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [amountError, setAmountError] = useState(null);
+  // RC-1.2/C1: mismo patrón que amountError — validación client-side de
+  // description reutilizando validateDescription (misma regla que ya exige
+  // el hook, no una regla nueva), para que el submit se bloquee y el error
+  // se vea en vez de fallar en silencio.
+  const [descriptionError, setDescriptionError] = useState(null);
 
   // Checkpoint III-C.1 — modo ráfaga (Ctrl/Cmd+Enter): ref al <input> real
   // detrás de NumericFormat (react-number-format expone el nodo DOM vía
   // `getInputRef`, no vía forwardRef directo) para poder devolverle el foco
   // tras guardar-y-reabrir vacío, o tras un intento fallido de guardado.
   const amountInputRef = useRef(null);
+  const descriptionInputRef = useRef(null);
 
   // Sugerencia de IA — mismo patrón de invocación que BudgetForm.jsx
   // (handleGetCategorySuggestion) con el debounce de 800ms que ya usa
@@ -136,6 +142,7 @@ export function NewMovementSheet({
     setSuggestedCategory(null);
     setShowCategorySelect(false);
     setAmountError(null);
+    setDescriptionError(null);
   };
 
   const handleCategorySelect = (e) => {
@@ -146,6 +153,10 @@ export function NewMovementSheet({
   };
 
   const isAmountValid = validateAmount(amount).isValid;
+  // RC-1.2/C1: misma validación central que useTransactions.js ya exige
+  // (validateDescription — 3-100 caracteres), ahora también client-side.
+  const descriptionValidation = validateDescription(description);
+  const isDescriptionValid = descriptionValidation.isValid;
 
   const handleSubmit = (e, { burst = false } = {}) => {
     e?.preventDefault?.();
@@ -156,6 +167,16 @@ export function NewMovementSheet({
       return;
     }
     setAmountError(null);
+
+    // RC-1.2/C1: mismo patrón que el chequeo de importe de arriba — bloquea
+    // el submit y muestra el error en vez de fallar en silencio (antes, con
+    // notification:'toast', useTransactions.js no mostraba nada).
+    if (!isDescriptionValid) {
+      setDescriptionError(descriptionValidation.error);
+      descriptionInputRef.current?.focus();
+      return;
+    }
+    setDescriptionError(null);
 
     // Checkpoint IV-B — Punto de contacto 3/5 del modo edición: único punto
     // de despacho calculado a partir de isEditMode, sin re-verificaciones
@@ -252,6 +273,8 @@ export function NewMovementSheet({
             placeholder={activeType === 'income' ? '¿De donde viene el dinero?' : '¿En qué se usó el dinero?'}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            error={descriptionError}
+            ref={descriptionInputRef}
           />
 
           {activeType === 'expense' && (
@@ -334,7 +357,7 @@ export function NewMovementSheet({
 
         <div className="mt-10 flex items-center justify-between">
           <span className="text-ds-caption text-ds-text-tertiary">Esc para cerrar — lo escrito se conserva</span>
-          <Button type="submit" variant="primary" disabled={!isAmountValid}>
+          <Button type="submit" variant="primary" disabled={!isAmountValid || !isDescriptionValid}>
             {isEditMode ? 'Guardar' : 'Añadir'}
           </Button>
         </div>

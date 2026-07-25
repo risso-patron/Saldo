@@ -75,7 +75,7 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
     expect(amountInput).toHaveValue('42,50');
   });
 
-  it('"Añadir" está deshabilitado sin importe válido y habilitado con uno válido', async () => {
+  it('"Añadir" está deshabilitado sin importe/descripción válidos y habilitado con ambos', async () => {
     const user = userEvent.setup();
     renderSheet();
 
@@ -83,6 +83,9 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
     expect(addButton).toBeDisabled();
 
     await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+    expect(addButton).toBeDisabled(); // RC-1.2/C1: importe solo no alcanza, falta la descripción
+
+    await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
 
     expect(addButton).not.toBeDisabled();
   });
@@ -139,6 +142,53 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
     expect(screen.getByText('El importe necesita un número para poder añadirse.')).toBeInTheDocument();
   });
 
+  // RC-1.2/C1: antes, con importe válido y descripción vacía o corta,
+  // guardar fallaba en silencio (sin mensaje de error, sin toast, sin
+  // cierre de la hoja) porque useTransactions.js solo mostraba el error de
+  // validación con notification==='legacy', nunca con 'toast' (el modo real
+  // que usa esta hoja). Ahora la validación es client-side, con el mismo
+  // patrón que el importe.
+  it('Enter con descripción vacía NO llama a onAddExpense/onAddIncome y muestra el mensaje de error', async () => {
+    const user = userEvent.setup();
+    const { onAddExpense, onAddIncome, onClose } = renderSheet();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+    await user.keyboard('{Enter}');
+
+    expect(onAddExpense).not.toHaveBeenCalled();
+    expect(onAddIncome).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByText('La descripción es requerida')).toBeInTheDocument();
+  });
+
+  it('Enter con descripción de menos de 3 caracteres NO llama a onAddExpense y muestra el mensaje de error', async () => {
+    const user = userEvent.setup();
+    const { onAddExpense, onClose } = renderSheet();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+    await user.type(screen.getByLabelText(/concepto/i), 'Ab');
+    await user.keyboard('{Enter}');
+
+    expect(onAddExpense).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByText('La descripción debe tener al menos 3 caracteres')).toBeInTheDocument();
+  });
+
+  it('corregir la descripción tras un intento fallido habilita "Añadir" y permite guardar', async () => {
+    const user = userEvent.setup();
+    const { onAddExpense } = renderSheet();
+
+    await user.type(screen.getByRole('textbox', { name: 'Importe' }), '42,50');
+    await user.keyboard('{Enter}');
+    expect(screen.getByText('La descripción es requerida')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/concepto/i), 'Supermercado');
+    expect(screen.getByRole('button', { name: 'Añadir' })).not.toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Añadir' }));
+    expect(onAddExpense).toHaveBeenCalledTimes(1);
+  });
+
   it('gate de IA: con canUseAI && hasConsent, muestra AISuggestedCategory tras sugerencia (no el chip "Elegir categoría")', async () => {
     useAIMock.mockReturnValue({
       canUseAI: true,
@@ -182,6 +232,7 @@ describe('NewMovementSheet — Checkpoint III-A (Saldo Design Constitution v1.2)
     expect(screen.queryByLabelText(/categoría/i)).not.toBeInTheDocument();
 
     await user.type(screen.getByRole('textbox', { name: 'Importe' }), '10');
+    await user.type(screen.getByLabelText(/concepto/i), 'Farmacia');
     await user.click(screen.getByRole('button', { name: 'Añadir' }));
 
     expect(onAddExpense).toHaveBeenCalledTimes(1);
