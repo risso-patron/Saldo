@@ -13,15 +13,14 @@ Tiene personas concretas con poco tiempo, presión diaria y dudas reales.
 - Qué espera de Saldo: claridad inmediata y lenguaje simple
 - Qué nunca haría: configurar reglas avanzadas o estudiar un tutorial largo
 
-## Luis (freelancer) - 5 clientes, necesita perspectiva
+## Luis (freelancer) - Ingresos variables, necesita perspectiva
 - Edad: 31
 - Conocimientos: maneja apps digitales, entiende métricas básicas, no quiere perder tiempo operativo
-- Miedos: cobrar y no ver la foto completa del mes, mezclar gastos personales y trabajo
-- Objetivos: ver tendencias rápidas por cliente y proteger su flujo de caja
+- Miedos: cobrar de forma irregular y no ver la foto completa del mes, sentir que el dinero desaparece sin entender por qué
+- Objetivos: entender con claridad cómo viene su mes y cuánto puede gastar sin perder el control
 - Frustraciones: cargar datos dos veces, no encontrar un dato puntual cuando lo necesita
 - Tiempo disponible: 15 a 20 minutos al día
 - Qué espera de Saldo: respuestas rápidas para decidir hoy, no un reporte eterno
-- Nota de lenguaje UX: necesita ver patrones de ingresos por cliente, pero la UI debe expresarlo en lenguaje simple (ej: "cómo te está yendo con tus clientes"), nunca con naming técnico tipo "Analytics"
 - Qué nunca haría: usar una app que le hable como si fuera contador
 
 ## Ana (38) - Madre, coordinación familiar
@@ -34,13 +33,13 @@ Tiene personas concretas con poco tiempo, presión diaria y dudas reales.
 - Qué espera de Saldo: acompañamiento claro, sin juicio, con foco en lo esencial
 - Qué nunca haría: dedicar una hora seguida a revisar números
 
-## José (49) - Dueño de negocio pequeño
+## José (49) - Rutina diaria, bajo perfil técnico
 - Edad: 49
-- Conocimientos: experiencia operativa alta, conocimiento técnico bajo
-- Miedos: confundir caja del negocio con gastos personales, tomar decisiones tarde
-- Objetivos: ver salud diaria del negocio y detectar desvíos temprano
-- Frustraciones: herramientas que parecen hechas para grandes empresas
-- Tiempo disponible: 10 minutos antes de abrir y 10 minutos al cerrar
+- Conocimientos: experiencia práctica alta, conocimiento técnico bajo
+- Miedos: sentir que pierde el control de su dinero y darse cuenta demasiado tarde
+- Objetivos: saber si puede llegar tranquilo a fin de mes y detectar desvíos temprano
+- Frustraciones: herramientas que lo hacen sentir que necesita ser contador
+- Tiempo disponible: 10 minutos por la mañana y 10 minutos por la noche
 - Qué espera de Saldo: control diario simple y accionable
 - Qué nunca haría: depender de paneles complejos para entender lo básico
 
@@ -58,6 +57,6 @@ Tiene personas concretas con poco tiempo, presión diaria y dudas reales.
 
 ## Aplicación concreta a Saldo
 - Para Rosa: inicio limpio con tres cifras centrales y una acción principal evidente
-- Para Luis: lectura rápida por periodos y por origen de movimientos sin pasos extra
+- Para Luis: ver rápidamente cómo viene su mes, sin tener que hacer cuentas
 - Para Ana: recordatorios útiles y mensajes de apoyo cuando se desvía del plan
-- Para José: vista diaria de negocio clara, con alertas tempranas y lenguaje simple
+- Para José: entender su dinero de un vistazo, con lenguaje simple y alertas simples

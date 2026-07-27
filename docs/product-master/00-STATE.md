@@ -1,9 +1,58 @@
 # Estado de avance - Saldo UX Edition
 
 ## Capitulos
-- [x] 01 - La Filosofia (cerrado 2026-07-10)
-- [x] 02 - Quien es nuestro usuario (cerrado 2026-07-10)
-- [x] 03 - Principios del Producto (cerrado 2026-07-10)
+- [x] 01 - La Filosofia (cerrado 2026-07-10, actualizado 2026-07-26 — PV-003)
+  - Evidencia: agregado un cuarto ítem a "Lo que Saldo sí es" reconociendo la gamificación como identidad, no como
+    funcionalidad aislada — cita las reglas ya obligatorias de cap 13 (sin vergüenza al romper un streak) y cap 14
+    (mecanismos rechazados: urgencia artificial, culpa, vergüenza, felicitación rutinaria), sin redefinirlas
+  - Evidencia: nueva sección "Filosofía Free/Pro" agregada entre "Lo que Saldo no es" y "Principio emocional base" —
+    la versión gratuita cumple la promesa completa del producto; la versión Pro amplía, acelera y profundiza, nunca
+    repara una experiencia incompleta (decisión del Product Owner, PV-003 punto 4, redactada y aprobada en 3 rondas)
+  - Evidencia: Misión, Visión, "Por qué existe Saldo", "Principio emocional base" y "Aplicación concreta a Saldo"
+    quedan sin modificar
+  - Verificado sin contradicciones contra el contenido evaluado durante PV-002/PV-003 (cap 13 y cap 14, citados como
+    fundamento directo del nuevo ítem de gamificación)
+  - Hallazgo registrado, sin resolver acá: esta sección "Decisiones fundacionales" (más abajo) documenta que Luis
+    necesita agrupar por cliente/origen (heredado explícitamente por cap 05 y cap 12) y que José necesita separación
+    caja personal/negocio (heredado explícitamente por arquitectura/categorías/design system). Ambas decisiones
+    quedan pendientes de reconciliar en la actualización de cap 02/03 ya aprobada (PV-003) — podrían dejar contenido
+    desactualizado en cap 05, 07 y 12, fuera del alcance aprobado de PV-003. Señalado al Product Owner para decisión
+    futura, sin acción todavía.
+- [x] 02 - Quien es nuestro usuario (cerrado 2026-07-10, actualizado 2026-07-26 — PV-003)
+  - Evidencia: persona Luis reescrita — se retira el eje "por cliente" (subtítulo, miedo de mezclar gastos
+    personales/trabajo, objetivo de tendencias por cliente, "Nota de lenguaje UX") por decisión del Product Owner
+    (PV-003 punto 1: "SALDO no incorporará un modelo de clientes"). Se conserva su identidad de freelancer con
+    ingresos variables, reformulada en finanzas 100% personales
+  - Evidencia: persona José reescrita — se retira el marco de negocio/caja (subtítulo, miedo de confundir caja del
+    negocio, objetivo de salud del negocio, ventana horaria de "abrir/cerrar") por decisión del Product Owner
+    (PV-003 punto 2: José deja de representar administración de negocio pequeño). Se conserva lo que lo distingue
+    como persona — mayor edad, menor alfabetización digital, rutina diaria fija — encuadrado en finanzas personales
+  - Evidencia: "Aplicación concreta a Saldo" actualizada para Luis y José, coherente con sus historias reescritas
+  - Evidencia: Rosa, Ana, "Lo que comparten estas cuatro personas" e "Implicancias directas para producto" quedan
+    sin modificar — ninguna decisión del Product Owner las afecta
+  - Nota de diferenciación: con el eje de negocio retirado, José queda distinguido de Luis por edad y perfil técnico
+    (49 años/bajo conocimiento técnico/rutina fija, vs. 31 años/cómodo con apps/ingreso variable) — evaluado, sin
+    riesgo de redundancia entre ambas personas
+  - Hallazgo heredado de cap 01 (sin resolver acá, ver esa entrada): la necesidad retirada de Luis (cliente/origen)
+    y de José (separación caja personal/negocio) fueron heredadas explícitamente por cap 05, cap 07 y cap 12 —
+    quedan fuera del alcance de PV-003 por decisión del Product Owner; se tratarán en un ticket documental
+    independiente una vez finalizado este workstream
+- [x] 03 - Principios del Producto (cerrado 2026-07-10, actualizado 2026-07-26 — PV-003)
+  - Evidencia: principio #3, listado de ejemplos — se retira "cómo te está yendo con tus clientes" (Luis/cliente,
+    ya retirado en cap 02), se reemplaza por "cuánto podés gastar sin perder el control"
+  - Evidencia: principio #8, ejemplo crítico — se conserva a Luis como ejemplo del principio (necesidad funcional
+    real sin jerga técnica), pero se actualiza la necesidad citada de "ver patrones por cliente/origen" a "entender
+    cómo viene su mes con ingresos variables", alineada con su historia ya reescrita en cap 02
+  - Evidencia: principio #9 — se retira "semanas flojas de ventas o caja diaria en su negocio pequeño" (José/negocio,
+    ya retirado en cap 02), se reemplaza por "recuperar el control antes de que un problema se vuelva una
+    preocupación", reforzando el propósito emocional de la señal anticipatoria (decisión del Product Owner)
+  - Evidencia: "Aplicación concreta a Saldo", línea de Luis actualizada de "lectura por cliente/origen" a "lectura
+    clara de cómo viene el mes, sin jerga"
+  - Evidencia: principios #1, #2 (incluida su excepción documentada), #4, #5, #6, #7, #10 quedan sin modificar
+  - Verificado sin contradicciones contra cap 01 y cap 02 ya actualizados (PV-003)
+  - Hallazgo heredado (sin resolver acá, ver entradas de cap 01/02): el resto de referencias a "cliente" (cap 04,
+    línea 32) y a la separación negocio/personal (cap 05, cap 07, cap 12) siguen pendientes del ticket documental
+    independiente ya acordado
 - [x] 04 - UX Manifesto (cerrado 2026-07-10, verificado 2026-07-12)
   - Evidencia: "Vocabulario permitido" (04-ux-manifesto.md, lineas 25-34) incluye las dos frases acunadas en cap 03 —
     "cómo te está yendo con tus clientes" (Luis, linea 32) y "tu plata" / "la plata del negocio" (Jose, lineas 33-34)
@@ -151,18 +200,80 @@
     plata"), justificada contra la misión de cap 01, no dejada genérica
   - Evidencia: elección de Rosa como prueba más exigente (no la más fácil) sostenida con cita textual de cap 02
   - Verificado sin contradicciones contra 01-19 antes de cerrar — documento completo, 20/20
+- [x] 21 - Principios de Monetización (cerrado 2026-07-26 — PV-003, capítulo nuevo; actualizado 2026-07-26 — PLAN-001)
+  - Evidencia: nueva sección "Filosofía comercial: Lifetime, Trial y cancelación" agregada entre "Qué nunca
+    monetizamos" y "Aplicación concreta a Saldo" — 3 subsecciones (Lifetime, Trial Contextual, Cancelación sin
+    castigo), producto de la Fase 3 de PLAN-001 (Diseño de la Experiencia Premium)
+  - Evidencia: Lifetime — se documenta el principio ("acceso de por vida solo a lo que tenga costo operativo
+    sostenible en pago único") sin comprometer todavía un modelo comercial concreto para las capacidades de costo
+    recurrente (IA), a pedido explícito del Product Owner de mantener el capítulo a nivel estratégico
+  - Evidencia: Trial — se documenta como contextual, nunca automático al registro, con el principio general
+    separado de sus ejemplos (ajuste de redacción pedido explícitamente para no atar el documento a las
+    funcionalidades actuales)
+  - Evidencia: Cancelación — se documenta el principio (nunca se pierde información propia) sin comprometer el
+    comportamiento funcional específico de cada módulo (qué queda visible, qué se congela), dejado explícitamente
+    para una decisión de diseño futura
+  - Evidencia: cuarta subsección agregada — "La confianza comercial nunca es retroactiva" (PLAN-001.4): quienes ya
+    compraron bajo condiciones anteriores conservan exactamente lo prometido; un cambio de arquitectura comercial
+    rige solo hacia adelante; la sostenibilidad futura nunca se resuelve modificando un acuerdo pasado — cierra
+    explícitamente el tratamiento de los usuarios Lifetime existentes frente a la nueva definición de Lifetime
+  - Verificado sin contradicciones contra los 10 principios y las líneas rojas ya existentes en el propio capítulo
+  - Evidencia: hereda explícitamente la sección "Filosofía Free/Pro" de cap 01 como fundamento (mismo patrón que
+    cap 14 cita a cap 13 al abrir) — no repite su contenido, lo opera
+  - Evidencia: 10 principios obligatorios de monetización aprobados por el Product Owner (PV-003, incluye el
+    principio 10 "Toda limitación debe ser honesta", agregado a pedido explícito durante la revisión)
+  - Evidencia: sección nueva "Qué nunca monetizamos" — 5 líneas rojas, una por cada punto de la promesa Free de
+    cap 01 (comprender su economía, registrar ingresos y gastos, conocer en qué gasta, organizar su dinero,
+    disminuir su ansiedad financiera)
+  - Evidencia: "Aplicación concreta a Saldo" contrasta los 10 principios contra los gates de plan reales del código
+    (tarjetas de crédito, metas ilimitadas, gráficos avanzados, exportación, IA) — ninguno elimina las 5 capacidades
+    básicas de Free; el límite de metas queda anotado para revisión periódica, sin atarlo a una decisión cerrada
+  - Evidencia: frase de cierre aprobada como regla de gobierno del producto ("si monetizar obliga a romper estos
+    principios, no cambiamos los principios, cambiamos el modelo de negocio")
+  - Verificado sin contradicciones contra 01-20 antes de cerrar — documento ahora 21/21
+
+## Documentos complementarios (fuera de la serie numerada)
+- [x] PRICING-STRATEGY.md - Estrategia Comercial y Pricing (creado 2026-07-26 — PLAN-001)
+  - Evidencia: consolida en un documento único el resultado completo de PLAN-001 (Fase 0 a
+    PLAN-001.6.1) — propósito de monetización, arquitectura Free/Pro/Lifetime (corazón:
+    IA contextual + tarjetas + gráficos avanzados; complementos: metas ilimitadas +
+    exportación avanzada), modelo económico (fórmula de sostenibilidad + reserva
+    operacional), filosofía comercial (remite a cap 21, no la repite), pricing vigente
+    como hipótesis inicial ($4.99/mes, $49/año, $79 lifetime), 8 métricas de validación,
+    3 criterios de decisión (mantener/subir/modificar oferta) y 6 decisiones pendientes
+  - Evidencia: explícitamente no repite la filosofía de cap 01 ("Filosofía Free/Pro") ni
+    los 10 principios/líneas rojas de cap 21 — los opera con arquitectura concreta, mismo
+    patrón de cita-sin-duplicar que cap 21 usa con cap 01
+  - Evidencia: pricing actual registrado como "hipótesis inicial validada", no como
+    decisión cerrada — ningún cambio de precio se autoriza sin evidencia sostenida (3+
+    meses), regla explícita del Product Owner ("no cambiar precios por intuición")
+  - Evidencia: `docs/technical/MONETIZATION_STRATEGY.md` (documento antiguo, confirmado
+    stale) no fue modificado ni reemplazado — queda pendiente de auditar si se archiva o
+    se reemplaza, por instrucción explícita del Product Owner
+  - Verificado sin contradicciones contra cap 01 y cap 21 antes de escribir
 
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos
-- Personas activas: Rosa (45), Luis (freelancer), Ana (madre), Jose (dueno de negocio)
+- Personas activas: Rosa (45), Luis (freelancer, ingresos variables), Ana (madre), Jose (rutina diaria, bajo perfil tecnico) — actualizado 2026-07-26, PV-003 (ver cierre de cap 02)
 - Vocabulario prohibido global UX: Analytics, Insights, Planning, Import AI, OCR, CSV, JSON
 - Vocabulario permitido base: tus gastos, tus ingresos, tu dinero, tus metas, tus movimientos
 - Inicio/Dashboard debe mostrar de forma directa: cuánto entró, cuánto salió y cuánto queda hoy (definido en cap 01, no redefinir distinto en cap 05 o 06)
-- La prohibición de "Analytics" es de naming/vocabulario, no de funcionalidad: Luis sí necesita ver patrones de ingresos y clientes, pero en lenguaje simple (ej: "cómo te está yendo con tus clientes")
-- Luis necesita agrupar movimientos por cliente/origen, no solo por categoría de gasto; es una dimensión de datos distinta que Arquitectura (05) y Design System (12) no deben ignorar
+- SUPERSEDIDO (2026-07-26, PV-003, ver cierre de cap 02): "La prohibición de 'Analytics' es de naming/vocabulario, no de
+  funcionalidad: Luis sí necesita ver patrones de ingresos y clientes, pero en lenguaje simple (ej: 'cómo te está yendo
+  con tus clientes')" — el Product Owner decidió que SALDO no incorpora un modelo de clientes; Luis ya no tiene esta
+  necesidad. Cap 04 (línea 32, "Vocabulario permitido") todavía cita la frase "cómo te está yendo con tus clientes"
+  como ejemplo — queda pendiente de reconciliar en el ticket documental independiente ya acordado para cap 05/07/12
+- SUPERSEDIDO (2026-07-26, PV-003, ver cierre de cap 02): "Luis necesita agrupar movimientos por cliente/origen, no solo
+  por categoría de gasto; es una dimensión de datos distinta que Arquitectura (05) y Design System (12) no deben
+  ignorar" — retirado por la misma decisión. Cap 05 y cap 12 todavía asumen esto — pendiente de reconciliar en el
+  ticket documental independiente ya acordado
 - Ana necesita señales anticipatorias ("semanas difíciles"), no solo registro histórico; marcar para que IA (15) y/o Roadmap UX (16) lo retomen explícitamente
-- José necesita separación clara entre caja personal y caja del negocio; no es una categoría más, es una distinción estructural de datos que debe resolverse explícitamente en arquitectura/categorías/design system más adelante
+- SUPERSEDIDO (2026-07-26, PV-003, ver cierre de cap 02): "José necesita separación clara entre caja personal y caja del
+  negocio; no es una categoría más, es una distinción estructural de datos que debe resolverse explícitamente en
+  arquitectura/categorías/design system más adelante" — el Product Owner decidió que la separación negocio/personal
+  queda fuera del alcance del producto (SALDO no es un ERP ni software contable). Pendiente de reconciliar en el
+  ticket documental independiente ya acordado para cap 05/07/12
 - A partir de cap 05, releer completos los capítulos 01-04 antes de redactar cualquier capítulo nuevo: 04 pasa a ser fundacional junto con 01-03, porque fija el vocabulario oficial (prohibido/permitido) que rige el resto del documento
 - A partir de cap 05, todo cierre de capítulo requiere checklist con evidencia y citas textuales (línea/sección concreta), no alcanza con el tilde
 - A partir de cap 06, releer completos los capítulos 01-05 antes de redactar cualquier capítulo nuevo: 05 también pasa a ser fundacional, porque fija el recorrido completo (las 12 etapas) que los capítulos siguientes deben respetar paso a paso, no redefinir distinto
@@ -194,6 +305,12 @@
 - Jerarquía del Inicio con el tiempo (cap 17, Hallazgo 3): el trío de cifras de cap 01 siempre es el elemento más prominente, ninguna pieza de V2/V3 (hallazgo IA, logros, señales) puede competir con él ni apilarse con otra al mismo tiempo — combina reglas ya existentes de cap 09 y cap 12, no crea una regla nueva
 - Patrón de estado vacío (cap 19): mensaje breve explicando por qué + CTA cuando corresponde (reusa "+ Agregar movimiento" de cap 07), nunca espacio vacío sin explicación — resuelve gráficos vacíos y tarjetas sin datos
 - 14 anti-patrones activos, no reintroducir sin discutirlos de nuevo (lista completa en cap 19): gráficos vacíos, tarjetas sin datos, métricas incomprensibles, IA por marketing, nombres técnicos, ocultar acciones importantes, doble confirmación innecesaria, modales infinitos, streak con castigo al romperse, comparación social/tabla de posiciones, economía paralela de puntos, IA narrando su propio proceso, elemento de interfaz sin condición de datos reales, etapa temprana del recorrido sin contenido válido en V1
+- Filosofía Free/Pro (cap 01, agregada 2026-07-26 PV-003): la versión gratuita cumple la promesa completa de Saldo (los 5 puntos de cap 01); la versión Pro amplía, acelera y profundiza, nunca repara una experiencia incompleta — "la tranquilidad financiera no es una función Pro"
+- Gamificación (cap 01, agregada 2026-07-26 PV-003) pasa a estar reconocida explícitamente como parte de la identidad del producto, no solo como funcionalidad de cap 14
+- 10 principios obligatorios de monetización (cap 21, 2026-07-26 PV-003), no reintroducir una decisión de monetización que los contradiga sin discutirlo de nuevo acá — incluye 5 líneas rojas ("Qué nunca monetizamos": comprender su economía, registrar ingresos y gastos, conocer en qué gasta, organizar su dinero, disminuir su ansiedad financiera) que ninguna función Pro puede eliminar, solo profundizar
+- Personas Luis y José evolucionadas (cap 02, 2026-07-26 PV-003): SALDO no incorpora un modelo de clientes ni administración de negocio pequeño/separación caja personal-negocio — decisión de alcance del Product Owner (PV-003). Luis pasa a representar ingresos variables sin eje de "cliente"; José pasa a representar rutina diaria de bajo perfil técnico sin eje de "negocio". Cap 04 (línea 32), cap 05, cap 07 (selector por cliente/origen, etapa 6) y cap 12 todavía dependen de las versiones retiradas — pendientes de un ticket documental independiente, fuera del alcance de PV-003
+- PLAN-001 cerrado como arquitectura estratégica (2026-07-26), consolidado en PRICING-STRATEGY.md: pricing vigente ($4.99/mes, $49/año, $79 lifetime) queda como hipótesis inicial validada, no como decisión definitiva — cualquier cambio de precio requiere evidencia sostenida (3+ meses) de las métricas del documento, nunca intuición. Lifetime queda fijado como herramienta estratégica/táctica, no pilar de ingreso recurrente — ese rol es de Pro mensual/anual
+- `docs/technical/MONETIZATION_STRATEGY.md` (documento antiguo, confirmado stale durante PLAN-001) no fue tocado — pendiente de decisión futura sobre si se audita, reemplaza o archiva
 
 ## Contradicciones abiertas (requieren tu decision)
 - "Primer hallazgo IA" en V2 (cap 15) solo tiene contenido definido para Ana (gasto) y José (ingreso del negocio) —

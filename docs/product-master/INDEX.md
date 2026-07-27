@@ -2,13 +2,13 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 20 de 20 — documento completo
+- Capitulos cerrados: 21 de 21 — documento completo (cap 21 agregado 2026-07-26, PV-003)
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
-- [x] [01-la-filosofia.md](01-la-filosofia.md) - La Filosofia (cerrado 2026-07-10)
-- [x] [02-quien-es-nuestro-usuario.md](02-quien-es-nuestro-usuario.md) - Quien es nuestro usuario (cerrado 2026-07-10)
-- [x] [03-principios-del-producto.md](03-principios-del-producto.md) - Principios del Producto (cerrado 2026-07-10)
+- [x] [01-la-filosofia.md](01-la-filosofia.md) - La Filosofia (cerrado 2026-07-10, actualizado 2026-07-26 — Filosofía Free/Pro y gamificación como identidad, PV-003, ver 00-STATE.md)
+- [x] [02-quien-es-nuestro-usuario.md](02-quien-es-nuestro-usuario.md) - Quien es nuestro usuario (cerrado 2026-07-10, actualizado 2026-07-26 — Luis y José evolucionados a finanzas 100% personales, PV-003, ver 00-STATE.md)
+- [x] [03-principios-del-producto.md](03-principios-del-producto.md) - Principios del Producto (cerrado 2026-07-10, actualizado 2026-07-26 — principios #3/#8/#9 y aplicación concreta reconciliados con el nuevo cap 02, PV-003, ver 00-STATE.md)
 - [x] [04-ux-manifesto.md](04-ux-manifesto.md) - UX Manifesto (cerrado 2026-07-10, verificado 2026-07-12 — vocabulario Luis/José confirmado, ver 00-STATE.md)
 - [x] [05-arquitectura-de-experiencia.md](05-arquitectura-de-experiencia.md) - Arquitectura de Experiencia (cerrado 2026-07-12 — recorrido de 12 etapas con citas de persona, ver 00-STATE.md)
 - [x] [06-onboarding.md](06-onboarding.md) - Onboarding (cerrado 2026-07-12 — esqueleto de 3 pasos, ver 00-STATE.md)
@@ -26,3 +26,7 @@
 - [x] [18-definition-of-done.md](18-definition-of-done.md) - Definition of Done (cerrado 2026-07-12 — 10 criterios citados, ver 00-STATE.md)
 - [x] [19-anti-patterns.md](19-anti-patterns.md) - Anti-Patterns (cerrado 2026-07-12 — 14 anti-patrones activos, ver 00-STATE.md)
 - [x] [20-la-regla-de-oro.md](20-la-regla-de-oro.md) - La Regla de Oro (cerrado 2026-07-12 — cierre del documento, ver 00-STATE.md)
+- [x] [21-principios-de-monetizacion.md](21-principios-de-monetizacion.md) - Principios de Monetización (cerrado 2026-07-26 — capítulo nuevo, PV-003; actualizado 2026-07-26 — filosofía de Lifetime/Trial/cancelación + confianza comercial no retroactiva, PLAN-001, ver 00-STATE.md)
+
+## Documentos complementarios (fuera de la serie numerada)
+- [x] [PRICING-STRATEGY.md](PRICING-STRATEGY.md) - Estrategia Comercial y Pricing (creado 2026-07-26 — arquitectura estratégica de PLAN-001 completo: propósito, arquitectura Free/Pro/Lifetime, modelo económico, filosofía comercial, pricing vigente como hipótesis inicial, métricas de validación, criterios de decisión, pendientes. Opera cap 01/21, no los repite. Ver 00-STATE.md)

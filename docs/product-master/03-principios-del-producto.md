@@ -23,7 +23,7 @@ Si mostramos un valor, debe responder algo concreto como:
 - cuánto entró
 - cuánto salió
 - cuánto queda hoy
-- cómo te está yendo con tus clientes
+- cuánto podés gastar sin perder el control
 
 ## 4) No mostrar información sin valor todavía
 Si el dato no ayuda a decidir hoy, no se muestra.
@@ -48,13 +48,13 @@ Las necesidades funcionales se mantienen.
 El vocabulario técnico no.
 
 Ejemplo crítico:
-Luis sí necesita ver patrones por cliente/origen.
+Luis sí necesita entender cómo viene su mes con ingresos variables.
 Lo que no se permite es nombrarlo con términos técnicos en la UI.
 
 ## 9) Registro histórico + señales anticipatorias
 Mirar el pasado no alcanza para decisiones cotidianas.
 Ana necesita señales tempranas para detectar semanas difíciles.
-José necesita señales tempranas para detectar semanas flojas de ventas o caja diaria en su negocio pequeño.
+José necesita señales tempranas para recuperar el control antes de que un problema se vuelva una preocupación.
 Esta regla debe reflejarse en capítulos 15 y 16 para ambos casos, no solo para Ana.
 
 ## 10) Consistencia entre emoción y operación
@@ -65,6 +65,6 @@ Si la interfaz genera presión, contradice la misión de Saldo.
 ## Aplicación concreta a Saldo
 - Inicio: tres cifras centrales siempre visibles y entendibles en segundos
 - Movimientos: carga rápida, edición simple, sin fricción innecesaria
-- Vista de Luis: lectura por cliente/origen en lenguaje simple
+- Vista de Luis: lectura clara de cómo viene el mes, sin jerga
 - Vista de Ana: señales anticipatorias claras cuando se aproxima una semana difícil
 - Todo mensaje del sistema: breve, directo y sin jerga

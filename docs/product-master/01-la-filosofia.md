@@ -26,11 +26,33 @@ En menos de 10 segundos.
 - Una herramienta de claridad inmediata
 - Un traductor simple de movimientos diarios
 - Un acompañamiento para decisiones pequeñas y constantes
+- Un acompañamiento que celebra el progreso sin culpa, vergüenza ni miedo
 
 ## Lo que Saldo no es
 - Un sistema para impresionar con términos técnicos
 - Una app que castiga errores del usuario
 - Una experiencia pensada para expertos financieros
+
+## Filosofía Free/Pro
+
+La versión gratuita de Saldo cumple la promesa completa: entender su economía,
+registrar ingresos y gastos, saber en qué se gasta, organizar su dinero,
+disminuir la ansiedad financiera.
+
+Todo eso debe estar disponible para cualquier persona.
+
+La versión Pro no repara una experiencia incompleta.
+
+La amplía.
+
+La acelera.
+
+La profundiza.
+
+Si alguna vez una función gratuita se siente limitada únicamente para empujar
+una compra, estaremos contradiciendo la razón por la que Saldo existe.
+
+La tranquilidad financiera no es una función Pro.
 
 ## Principio emocional base
 Cada interaccion debe responder una pregunta silenciosa del usuario:
