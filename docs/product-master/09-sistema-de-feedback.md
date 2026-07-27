@@ -98,6 +98,13 @@ potencial de todo este sistema y necesita tranquilizar explícitamente, no solo 
 Ninguna de las dos líneas usa la palabra "sesión" como excusa técnica ni "expiró por seguridad" — cap 01: *"Mensajes
 de error: tono humano, sin culpa, con salida clara"*, y expirar sesión no es un error del usuario.
 
+### Función requiere un nivel de acceso superior (nuevo — UX-MON-001)
+Aparece únicamente como resultado de una acción deliberada del usuario, nunca como interrupción pasiva (regla
+operativa, cap 21). No lleva ✓ — no confirma algo que salió bien, orienta sobre una condición de acceso. Usa el
+rol Disponibilidad (cap 12). Sigue las reglas transversales de esta sección: nunca modal bloqueante sin salida,
+nunca se apila con otro estado. Texto exacto y disparadores concretos se resuelven en un bloque posterior de
+UX-MON-001 — acá se fija solo la mecánica.
+
 ## Qué no resuelve este capítulo (delegado a capítulos siguientes)
 - Color, iconografía exacta y duración en pantalla de cada estado → cap 12, Design System (aplicando el principio
   rector de cap 08, que ya es decisión fundacional)

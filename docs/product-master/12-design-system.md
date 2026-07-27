@@ -30,6 +30,14 @@ Roles, no nombres de color:
   no que reportan un estado. Cubre el énfasis de los botones principales (Vamos, Guardar, + Agregar movimiento) y,
   como se resuelve en la sección 7, el anillo de foco de teclado. Se separa de Positivo (algo ya se confirmó) y de
   Atención (algo necesita mirarse) porque significa algo distinto: "esto se puede tocar/activar ahora".
+- **Disponibilidad** (nuevo — UX-MON-001): rol para elementos que señalan que una función tiene una condición de
+  acceso distinta al resto de la interfaz. No representa un plan comercial específico ni codifica precio o nombre
+  de plan — comunica únicamente el estado funcional "esta función existe, pero no está disponible en tu acceso
+  actual". Se mantiene válido si el modelo comercial cambia por completo en el futuro (otros niveles de acceso, o
+  la desaparición del esquema actual), sin necesitar un color nuevo por cada variante. Distinto de Interactivo
+  (activa la función de inmediato) y de Atención (señala un problema real del sistema) — este rol no señala una
+  acción inmediata ni un error, señala una condición de acceso. Mismas reglas de contraste que el resto de los
+  roles (este apartado).
 - Regla ya fundacional (cap 10): ningún estado se comunica solo con color — todo rol de color va acompañado de forma
   o ícono.
 

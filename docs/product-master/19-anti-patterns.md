@@ -22,6 +22,11 @@ movimientos en este período"*) y, cuando corresponde, la misma acción de cap 0
 movimiento"*) — nunca un espacio vacío sin explicación, que es indistinguible de un error. Aplica cap 08 (la función
 acá es orientar, no decorar — nada de ilustraciones elaboradas sin propósito) y cap 03, regla 6.
 
+Nota (UX-MON-001): un bloque persistente que comunica que una función requiere un nivel de acceso superior
+reutiliza este mismo patrón — explica por qué el contenido no está disponible y ofrece una acción posible. Cambia
+únicamente la causa del estado vacío; el patrón continúa siendo el mismo. Usa el rol Disponibilidad (cap 12) en
+vez del tratamiento genérico de estado vacío.
+
 **3. Métricas incomprensibles — ya resuelto, sin completar.** Cap 03, regla 3 (*"todo número responde una
 pregunta"*), cap 04 (las 4 preguntas de orientación) y cap 07 (copy real que las responde para las 12 etapas de
 cap 05). Ningún número del documento existe sin una pregunta que responda.

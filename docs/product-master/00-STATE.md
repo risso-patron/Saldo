@@ -278,6 +278,113 @@ redacción del Grupo 4; F10 excluido, pasa a UX-MON-001 como diseño de producto
   PRICING-STRATEGY.md, resolviendo los hallazgos identificados en PM-AUDIT-001. El hallazgo F10 queda fuera del
   alcance de este ticket y pasa a UX-MON-001.
 
+## UX-MON-001 — Arquitectura UX de Monetización (cerrado 2026-07-27)
+Traduce a experiencia de usuario los hallazgos de severidad Alta/Crítica del Discovery de UX-MON-001 (F10 del
+diagnóstico de PM-AUDIT-001), operando exclusivamente cap 21 y PRICING-STRATEGY.md — ninguna decisión comercial
+nueva, ninguna implementación de código.
+
+- **Bloque A — Fundamentos (H5, H6, H8), cerrado 2026-07-27:**
+  - Evidencia: nuevo rol de Design System "Disponibilidad" (cap 12) — funcional, sin codificar modelo comercial,
+    válido ante cualquier cambio futuro de planes
+  - Evidencia: nueva entrada en "Avisos" de cap 09 — "Función requiere un nivel de acceso superior" (momento
+    transitorio, disparado solo por acción deliberada)
+  - Evidencia: nota en el "Patrón de estado vacío" de cap 19 — el bloque persistente reutiliza ese patrón, no crea
+    una variante nueva
+  - Evidencia: nueva sección en cap 21, "Cuándo puede aparecer una invitación a Pro" — criterios positivos,
+    negativos, y regla conservadora por defecto ante la duda
+  - Verificado sin contradicciones contra cap 21/PRICING-STRATEGY.md
+
+- **Bloque B — Corrección de gates existentes (H1, H7), cerrado 2026-07-27:**
+  - Evidencia: inventario completo de 8 gates, clasificados persistentes/reactivos, verificados contra cap 04,
+    cap 12, cap 21 y PRICING-STRATEGY.md
+  - Evidencia: hallazgos clasificados como Normalización (el gráfico bloqueado y el aviso de exportación ya
+    aplican el rol Disponibilidad de cap 12 — quedan formalmente reconocidos, sin corrección), Corrección (el
+    modal de upgrade y la comparación de planes usan "CSV"/"PDF" como texto visible y tono de urgencia —
+    corrección de implementación de código, pendiente, fuera del alcance de escritura de UX-MON-001) y Pregunta
+    al Product Owner (tratamiento final del elemento persistente de invitación en el espacio de gestión de cuenta)
+  - Evidencia: cap 21 complementado — nueva subsección "Aplicación de esta regla a elementos de gestión de
+    cuenta" (criterio de interpretación de la regla del Bloque A para este caso particular, sin modificar la
+    regla original) y 2 bullets nuevos en "Aplicación concreta a Saldo" (sin reescribir los ya existentes)
+  - Evidencia: discrepancia numérica menor detectada (17% en código vs. ~18% real/PRICING-STRATEGY.md) — anotada
+    para un ticket de código, no es una decisión de UX ni comercial
+  - Verificado: no introduce reglas comerciales nuevas, no crea componentes, mantiene independencia de la
+    implementación técnica
+
+- **Bloque C — Cancelación sin castigo (H2, H3), cerrado 2026-07-27:**
+  - Evidencia: nueva sección en cap 21, "Qué debe comunicarse ante cualquier cambio de acceso comercial" — regla
+    transversal (qué conserva el usuario / qué deja de estar disponible), aplicable a upgrade, downgrade,
+    cancelación, reactivación, Lifetime o cualquier modalidad futura, desacoplada de la implementación técnica
+    actual
+  - Evidencia: dependencia técnica registrada, no resuelta: la acción `cancel_at_period_end` en
+    `subscription-manage.js` no llama a la API de Stripe — bloquea la implementación de cualquier política de
+    gracia hasta fin de período, no bloquea el diseño documental
+  - Verificado: no introduce políticas comerciales nuevas, no asume mecanismo técnico
+
+- **Bloque D, Capa 1 — Ayuda temporal contextual (H4), cerrado 2026-07-27:**
+  - Evidencia: nueva sección en cap 21, "Ayuda temporal contextual (principio de experiencia, independiente del
+    mecanismo)" — invierte la relación principio/implementación: el Trial contextual ya escrito en cap 21 se
+    documenta como una posible materialización de este principio, no como su fundamento
+  - Evidencia: principio de finalidad (la ayuda existe para que el usuario evalúe valor real, nunca para maximizar
+    conversión) y principio de independencia arquitectónica (toda implementación debe poder eliminarse sin romper
+    la experiencia gratuita) incorporados textualmente
+  - Evidencia: Capas 2 (política comercial: duración, elegibilidad, repetibilidad, coexistencia con compra
+    directa, condiciones de fin) y 3 (dependencias técnicas: modelo de datos sin estado temporal, sin seguimiento
+    de beneficio, sin proceso de expiración) quedan explícitamente fuera del Product Master — documentadas solo en
+    el Discovery de la conversación, no en archivos
+  - Verificado: la sección de Trial contextual preexistente queda intacta, sin contradicciones
+
+- **Bloque E — No-retroactividad (H9), cerrado 2026-07-27:**
+  - Evidencia: se verificó primero si el hallazgo requería una subsección nueva — no la requería. Se resolvió con
+    una sola oración agregada al final de "La confianza comercial nunca es retroactiva" (cap 21), sin crear
+    estructura nueva
+  - Evidencia: distingue explícitamente el principio comercial ya aprobado (qué se garantiza) de la obligación de
+    comunicarlo (que la garantía no quede invisible para el usuario) — sin duplicar el principio existente
+  - Evidencia: la oración no asume canal, pantalla ni mecanismo — válida ante cualquier interacción futura que
+    informe o modifique condiciones comerciales
+  - Evidencia: principio de finalidad incorporado explícitamente — la comunicación reafirma confianza, nunca
+    cumple solo una formalidad legal
+  - Verificado: sin contradicciones con Bloques A, B, C ni D; ningún nombre de componente o mecanismo técnico
+    aparece en el texto
+
+- **Bloque F — Consumo de IA Lifetime (H10), cerrado 2026-07-27:**
+  - Evidencia: verificación de fondo previa a redactar — se determinó que el principio permanente no es "función
+    agotada" (un caso concreto) sino la distinción arquitectónica entre acceso y estado operativo de un recurso de
+    costo variable; se confirmó que esto no encaja en "Disponibilidad" (Bloque A responde "¿tenés esto en tu
+    plan?", esto responde "¿te queda esto para usar ahora?") y que no requiere familia de feedback ni rol visual
+    nuevos
+  - Evidencia: resuelto con una sola oración integrada al final de "Lifetime no significa todo de por vida" (cap
+    21), sin crear sección, componente, ni regla nueva — mismo criterio de mínima intervención del Bloque E
+  - Evidencia: oración verificada contra duplicación (no repite el principio de sostenibilidad ya escrito, lo
+    traduce a experiencia), independencia técnica (no menciona IA, tokens, cuotas, proveedores ni mecanismos) y
+    test de independencia arquitectónica (válida aunque cambie el mecanismo de consumo o la IA deje de ser el
+    recurso limitado)
+  - Verificado: no introduce política comercial, no redefine "Disponibilidad", consistente con Bloques A-E
+
+**Cierre formal del ticket (2026-07-27):** los 6 bloques (A-F) quedan cerrados y verificados en conjunto —
+ningún capítulo fuera de cap 09/12/19/21 fue modificado; ningún componente, tecnología, proveedor ni mecanismo
+técnico aparece en el texto de cap 21; ninguna decisión comercial pendiente (mecanismo de trial, mecanismo de
+consumo de IA, tratamiento del banner de Perfil, corrección de cálculo de descuento anual) fue resuelta como
+regla permanente — todas quedan registradas como pendientes explícitos. Ningún archivo de código fue modificado
+en ningún momento del ticket.
+
+**Archivos modificados por UX-MON-001:** `09-sistema-de-feedback.md`, `12-design-system.md`,
+`19-anti-patterns.md`, `21-principios-de-monetizacion.md`, más este archivo e `INDEX.md`.
+
+**Dependencias pendientes, fuera del alcance de UX-MON-001:**
+- Verificación técnica de si `ai_analysis`/`ai_predictions` están gateados en código.
+- Corrección de código de `UpgradeModal.jsx`/`PricingPlans.jsx` (vocabulario CSV/PDF, tono de urgencia).
+- Llamada faltante a la API de Stripe para sostener una cancelación con gracia.
+- Instrumentación de uso de IA (prerrequisito técnico para cualquier modelo de consumo Lifetime).
+- Corrección del cálculo de "17%" de ahorro anual (real: ~18%).
+
+**Decisiones comerciales pendientes para el Product Owner:**
+- Mecanismo y política del Trial contextual (duración, repetibilidad, coexistencia con pago directo).
+- Mecanismo de consumo de IA para Lifetime (medición, qué ocurre al agotarse, renovación).
+- Tratamiento final del elemento persistente de invitación en el espacio de gestión de cuenta.
+- Canal y momento de la comunicación de no-retroactividad hacia usuarios Lifetime existentes.
+
+**Próximos pasos sugeridos:** un ticket de implementación de código para las correcciones de Bloque B (vocabulario/tono) y la dependencia de Stripe de Bloque C; una ronda de decisiones comerciales con el Product Owner para Trial (Bloque D) y consumo de IA (Bloque F) antes de que cualquiera de los dos sea implementable.
+
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos
