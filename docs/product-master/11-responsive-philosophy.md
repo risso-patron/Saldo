@@ -7,7 +7,7 @@ mínimo de objetivos táctiles"* — se resuelve primero. Los ratios numéricos 
 ## Por qué mobile-first no es una preferencia técnica
 Ninguna persona de cap 02 se describe usando Saldo en un escritorio. Al contrario: sus ventanas de tiempo son,
 literalmente, momentos de teléfono en la mano. Rosa dispone de *"10 a 15 minutos al día"*; Ana, *"5 a 10 minutos por
-bloque, en distintos momentos del día"*; José, *"10 minutos antes de abrir y 10 minutos al cerrar"*. Ninguno de esos
+bloque, en distintos momentos del día"*; José, *"10 minutos por la mañana y 10 minutos por la noche"*. Ninguno de esos
 patrones describe a alguien sentado frente a una computadora — describen a alguien revisando el teléfono entre otras
 cosas. Mobile-first en Saldo no es una decisión de arquitectura de software: es la traducción directa de cómo cap 02
 ya describió a estas cuatro personas.
@@ -53,7 +53,7 @@ Extendido a layout responsive:
   arquitectura de información, no una decisión estética — y tiene que justificarse igual que cualquier otra.
 
 ## Aplicación por persona
-- **José:** sus 10 minutos antes de abrir y 10 al cerrar (cap 02) son, con altísima probabilidad, con el teléfono en
+- **José:** sus 10 minutos por la mañana y 10 por la noche (cap 02) son, con altísima probabilidad, con el teléfono en
   una mano mientras hace otra cosa. La zona fácil no es una mejora para él — es la diferencia entre que use Saldo en
   esos minutos o no.
 - **Ana:** sus bloques de 5 a 10 minutos "en distintos momentos del día" (cap 02) describen exactamente el patrón de

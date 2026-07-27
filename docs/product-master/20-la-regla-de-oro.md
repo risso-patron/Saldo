@@ -18,7 +18,7 @@ Cap 02 no la eligió como la persona "menos capaz" — la eligió como la prueba
 de su casa con responsabilidad real, poco tiempo y ningún margen para equivocarse en público (cap 02: *"miedos:
 equivocarse en números, perder información, quedar expuesta frente a su familia"*). Si una pantalla le resulta clara
 a ella, le resulta clara a Luis, que además la quiere rápida; a Ana, que además la necesita interrumpible; y a José,
-que además la necesita separada de su negocio. La regla de oro no es el piso mínimo del producto — es el filtro que,
+que además la necesita simple para su rutina diaria. La regla de oro no es el piso mínimo del producto — es el filtro que,
 si se cumple para Rosa, ya cumplió para las otras tres personas por añadidura.
 
 ## Diecinueve capítulos, una sola pregunta
@@ -48,7 +48,8 @@ objetivo: que al final, Rosa no tenga que preguntarle a nadie.
 
 ## Lo que la regla de oro no es
 No es diseñar para "el usuario menos capaz", y no es simplificar hasta perder utilidad real — cap 03, regla 8, ya
-estableció que Luis sí necesita ver patrones por cliente, solo que sin nombrarlos con jerga. La regla de oro no le
+estableció que Luis sí necesita entender cómo viene su mes con ingresos variables, solo que sin nombrarlo con jerga.
+La regla de oro no le
 resta capacidad al producto. Le exige que esa capacidad no dependa de cuánto sepa quien la usa.
 
 ## Cierre
@@ -73,6 +74,7 @@ Si Rosa lo entiende sin preguntarle a nadie, Saldo hizo su trabajo.
       original no citaba ningún capítulo de este documento, esta sí.
 - [ ] **¿Se sostiene la elección de Rosa como prueba, con cita real?** Sí. Evidencia: cap 02, miedos de Rosa citados
       textualmente como justificación de por qué es la prueba más exigente, no la más fácil de satisfacer.
-- [ ] **Contradicciones abiertas detectadas:** ninguna nueva. Las 2 ya logueadas en 00-STATE.md (Luis/hallazgo IA V2,
-      presupuesto sostenido único o repetible) siguen abiertas, sin agrandarse ni resolverse en este capítulo — no
-      era su función.
+- [ ] **Contradicciones abiertas detectadas:** ninguna nueva. De las 2 originalmente logueadas en 00-STATE.md, 1
+      sigue abierta (Luis/hallazgo IA V2 — sin contenido propio en V2, hereda V1 indefinidamente) y 1 ya quedó
+      resuelta (presupuesto sostenido: repetible, cap 14/15, 2026-07-12) — ninguna se agranda ni se resuelve en
+      este capítulo, no era su función.

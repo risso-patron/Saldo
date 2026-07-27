@@ -29,11 +29,6 @@ si no hay cita, no se asume.
 - Objetivo funcional: crear la cuenta sin fricción ni pasos innecesarios
 - Objetivo visual: formulario corto, jerarquía limpia, pocos campos
 - Objetivo psicológico: bajar la barrera de entrada y evitar que el usuario crea que necesita "prepararse" antes de usar la app
-- **Nota de persona (José):** este es el paso donde se define, sin fricción, si la cuenta va a separar "tu plata" personal
-  de "la plata del negocio" (vocabulario cap 04, líneas 33-34). La distinción se resuelve acá, no se agrega después como
-  parche. Cita, 00-STATE.md: *"José necesita separación clara entre caja personal y caja del negocio; no es una categoría
-  más, es una distinción estructural de datos que debe resolverse explícitamente en arquitectura/categorías/design system
-  más adelante."*
 
 ### 3) Onboarding
 - Objetivo emocional: dar sensación de acompañamiento, no de instrucción pesada
@@ -52,8 +47,6 @@ si no hay cita, no se asume.
 - **Nota de continuidad (cap 01):** el Inicio debe reflejar de inmediato el mismo trío de cifras definido en cap 01 y no
   redefinido distinto acá: *"cuánto entró, cuánto salió y cuánto queda hoy"* (01-la-filosofia.md, línea 42). Cargar el
   primer ingreso debe verse reflejado ahí mismo, sin ir a otra pantalla a "confirmar".
-- **Nota de persona (José):** si en el registro ya definió que separa personal de negocio, el ingreso debe preguntar
-  (sin fricción, en el mismo paso) a cuál "plata" pertenece — nunca asumir. Misma cita fundacional que en Registro.
 
 ### 5) Primer gasto
 - Objetivo emocional: normalizar el gasto sin culpa
@@ -70,10 +63,10 @@ si no hay cita, no se asume.
 - Objetivo funcional: mostrar patrones básicos sin exigir interpretación técnica
 - Objetivo visual: gráfico simple, sin saturación, con un mensaje que lo traduzca
 - Objetivo psicológico: evitar que el gráfico parezca decoración y convertirlo en una respuesta concreta
-- **Nota de persona (Luis):** para Luis, este gráfico ya tiene que poder agruparse por cliente u origen, no solo por
-  categoría de gasto genérica. Cita, 00-STATE.md: *"Luis necesita agrupar movimientos por cliente/origen, no solo por
-  categoría de gasto; es una dimensión de datos distinta que Arquitectura (05) y Design System (12) no deben ignorar."*
-  Esta es la primera etapa del recorrido donde esa dimensión de datos tiene que estar disponible, no una etapa futura.
+- **Nota de persona (Luis):** su ingreso variable hace que comprender patrones de gasto por categoría — la misma
+  vista genérica de esta etapa — le resuelva directamente la necesidad real que cap 02 le asigna ("entender con
+  claridad cómo viene su mes"). No requiere una dimensión de agrupación especial: la arquitectura vigente de Saldo
+  no incorpora un eje de cliente/origen.
 
 ### 7) Primer presupuesto
 - Objetivo emocional: que el presupuesto se sienta como una ayuda, no como una restricción
@@ -83,11 +76,10 @@ si no hay cita, no se asume.
 - **Nota de persona (Ana y José):** este es el primer punto del recorrido donde corresponde mostrar una señal anticipatoria
   en vez de solo un tope numérico — por ejemplo, avisar que el mes viene más ajustado que otros, antes de que el límite se
   cruce. Cita, 00-STATE.md: *"Ana necesita señales anticipatorias ('semanas difíciles'), no solo registro histórico"* y
-  *"José necesita separación clara entre caja personal y caja del negocio"* combinada con la regla de cap 03: *"José
-  necesita señales tempranas para detectar semanas flojas de ventas o caja diaria en su negocio pequeño."* La
-  profundidad de esta señal (cómo se calcula, con qué anticipación) se define en los capítulos 15 (IA) y 16 (Roadmap UX),
-  tal como cap 03 lo marca explícitamente en su regla 9 — este capítulo solo fija que el presupuesto es el primer lugar
-  del recorrido donde la señal debe aparecer.
+  cap 03 regla 9 (vigente): *"José necesita señales tempranas para recuperar el control antes de que un problema se
+  vuelva una preocupación."* La profundidad de esta señal (cómo se calcula, con qué anticipación) se define en los
+  capítulos 15 (IA) y 16 (Roadmap UX), tal como cap 03 lo marca explícitamente en su regla 9 — este capítulo solo fija
+  que el presupuesto es el primer lugar del recorrido donde la señal debe aparecer.
 
 ### 8) Primer hallazgo IA
 - Objetivo emocional: sorprender con utilidad, no con complejidad
@@ -132,9 +124,8 @@ si no hay cita, no se asume.
 - Objetivo funcional: resumir información relevante para tomar decisiones
 - Objetivo visual: estructura simple, títulos claros, prioridad visual fuerte
 - Objetivo psicológico: demostrar que el reporte existe para actuar, no para acumular datos
-- **Nota de persona (Luis):** el reporte tiene que respetar exactamente lo que Luis ya venía viendo en pantalla — si
-  estaba agrupando por cliente/origen (etapa 6), el reporte se exporta agrupado igual, no en un formato genérico distinto.
-  Misma cita fundacional que en Primer gráfico.
+- **Nota de persona (Luis):** el reporte exporta los mismos patrones por categoría que Luis ya viene viendo en el
+  gráfico (etapa 6), no un formato genérico distinto. Misma cita fundacional que en Primer gráfico.
 - **Nota de vocabulario (cap 04):** el archivo puede ser técnicamente un CSV o un PDF por dentro, pero esas palabras
   —igual que "JSON"— están en el vocabulario prohibido (línea 17-22) y no pueden aparecer como texto de interfaz. El
   reporte se nombra y se explica en lenguaje humano ("descargá tus movimientos"), nunca por su formato técnico.
@@ -164,15 +155,15 @@ si no hay cita, no se asume.
 ## Aplicación por persona (con cita de origen)
 - **Rosa:** cada etapa se diseñó para sentirse obvia, corta y sin jerga — es el caso base de las 12 etapas, no requiere
   una nota aparte en ninguna.
-- **Luis:** agrupación por cliente/origen aplicada en Primer gráfico (etapa 6) y Primer reporte (etapa 11). Cita,
-  00-STATE.md: *"Luis necesita agrupar movimientos por cliente/origen, no solo por categoría de gasto."*
+- **Luis:** su necesidad de comprender patrones en un ingreso variable queda cubierta por la vista de categoría, ya
+  genérica, en Primer gráfico (etapa 6) y Primer reporte (etapa 11) — la arquitectura vigente ya no incorpora un
+  eje de cliente/origen.
 - **Ana:** señales anticipatorias aplicadas en Primer presupuesto (etapa 7) y maduradas en Cliente recurrente (etapa 12).
   Cita, 00-STATE.md: *"Ana necesita señales anticipatorias ('semanas difíciles'), no solo registro histórico."* Profundidad
   técnica de la señal: pendiente de caps 15 y 16, tal como cap 03 regla 9 lo marca.
-- **José:** separación caja personal/negocio aplicada en Registro (etapa 2) y Primer ingreso (etapa 4); señales
-  anticipatorias aplicadas en Primer presupuesto (etapa 7) y Cliente recurrente (etapa 12). Cita, 00-STATE.md: *"José
-  necesita separación clara entre caja personal y caja del negocio"* y cap 03 regla 9: *"José necesita señales tempranas
-  para detectar semanas flojas de ventas o caja diaria en su negocio pequeño."*
+- **José:** señales anticipatorias aplicadas en Primer presupuesto (etapa 7) y Cliente recurrente (etapa 12), enfocadas
+  en su economía personal. Cita, cap 03 regla 9 (vigente): *"José necesita señales tempranas para recuperar el control
+  antes de que un problema se vuelva una preocupación."*
 
 ## Checklist de cierre (evidencia, no tildes)
 - [ ] **¿Redefine "Inicio" distinto a cap 01?** No. Evidencia: etapas 4, 5, 10 y 12 citan textualmente cap 01, línea 42
@@ -180,15 +171,16 @@ si no hay cita, no se asume.
 - [ ] **¿Aparece vocabulario prohibido de cap 04 como texto de interfaz?** No. Evidencia: etapa 8 usa "hallazgo IA" en vez
       de "insight" (nota de nombre incluida); etapa 11 marca explícitamente que CSV/JSON no pueden ser texto de interfaz.
 - [ ] **¿Se aplican las 3 decisiones fundacionales de 00-STATE.md?** Sí. Evidencia: Luis en etapas 6 y 11; Ana en etapas 7
-      y 12; José en etapas 2, 4, 7 y 12 — todas con cita textual inline, no por intuición.
+      y 12; José en etapas 7 y 12 (la arquitectura vigente ya no incorpora la separación personal/negocio que
+      motivaba su nota en etapas 2 y 4) — todas con cita textual inline, no por intuición.
 - [ ] **¿Alguna etapa exige tutorial para completarse?** No. Evidencia: etapa 3 (Onboarding) resuelto explícitamente contra
       cap 03 regla 5, citada inline.
 - [ ] **¿La IA aparece como protagonista en algún punto?** No. Evidencia: etapa 8 la limita a mensaje breve integrado al
       flujo, nunca pantalla propia; cap 03 regla 7 citada inline.
-- [ ] **Contradicciones abiertas detectadas:** una. El mapa original nombraba esta etapa "Primer insight IA"; este
-      capítulo la redactó como "Primer hallazgo IA" por el vocabulario prohibido de cap 04. Queda pendiente tu
-      confirmación — si preferís mantener "insight" como nombre interno de etapa (no de UI), se ajusta sin tocar el resto
-      del capítulo.
+- [ ] **Contradicciones abiertas detectadas:** ninguna. El mapa original nombraba esta etapa "Primer insight IA";
+      este capítulo la redactó como "Primer hallazgo IA" por el vocabulario prohibido de cap 04. Resuelto: se
+      mantiene "hallazgo IA" en todo el documento — "insight" queda descartado incluso como nombre interno,
+      consistente con el vocabulario prohibido de cap 04 (ver 00-STATE.md, Contradicciones resueltas).
 
 **Addendum (cap 17, QA — Hallazgo 2, 2026-07-12):** la etapa 8 no tenía contenido real para ningún día 1 — el único
 contenido definido (cap 15) requería 4 semanas de historial. Corregido: ver "Nota de contenido por versión" al final

@@ -35,10 +35,6 @@ original de este capítulo.
 Cargar un movimiento real: un ingreso o un gasto, lo que el usuario tenga a mano. Esta es la acción que reemplaza al
 tutorial (cap 03, regla 5, citada arriba). No hay pantalla de "así se carga un movimiento" antes de esto: la primera
 vez que el usuario ve el formulario de carga, ya lo está usando para cargar algo real.
-- **Nota de persona (José):** si en el Registro (cap 05, etapa 2) ya definió que separa "tu plata" personal de "la
-  plata del negocio", el Paso B tiene que reflejar esa elección, no volver a preguntarla. Cita, cap 05, etapa 4: *"si en
-  el registro ya definió que separa personal de negocio, el ingreso debe preguntar (sin fricción, en el mismo paso) a
-  cuál 'plata' pertenece — nunca asumir."* Nunca asumir tampoco significa nunca repreguntar lo ya elegido.
 
 ### Paso C — Confirmación y entrada al Inicio (empalme, no una pantalla nueva)
 El onboarding no termina en una pantalla de "¡listo!" separada. Termina en el mismo lugar donde cap 05 ubica la etapa
@@ -71,9 +67,9 @@ cambia es el énfasis:
   perder tiempo operativo"* y *"tiempo disponible: 15 a 20 minutos al día"*. Prioridad total en llegar al Paso B rápido.
 - **Ana:** ver "Onboarding interrumpido y retomado" arriba — la prioridad es que el onboarding sobreviva la
   interrupción, no que sea más corto en sí mismo.
-- **José:** el Paso B ya refleja la separación personal/negocio definida en el Registro, nunca la repregunta (ver nota
-  de persona en Paso B). Cita, cap 02: *"tiempo disponible: 10 minutos antes de abrir y 10 minutos al cerrar"* — el
-  onboarding de José compite directamente con su rutina operativa real, no puede tomar más de eso.
+- **José:** el Paso B sigue el mismo flujo que el resto de las personas, sin bifurcación adicional. Cita, cap 02:
+  *"tiempo disponible: 10 minutos por la mañana y 10 minutos por la noche"* — el onboarding de José compite
+  directamente con su rutina diaria real, no puede tomar más de eso.
 
 ## Nota de vocabulario
 "Onboarding" es el nombre interno de este capítulo, igual que "hallazgo IA" en cap 05 — no es necesariamente una
@@ -92,7 +88,7 @@ la estructura y el criterio de cierre del onboarding, pero no resuelve:
 ## Aplicación concreta a Saldo
 - El onboarding empieza inmediatamente después del Registro (cap 05, etapa 2), sin pantalla intermedia
 - Paso A es una frase, no una serie de slides, y su botón de saltear pesa visualmente igual que el de continuar
-- Paso B carga un movimiento real; si el usuario ya definió personal/negocio en el Registro, no se le repregunta
+- Paso B carga un movimiento real, con el mismo flujo para las 4 personas, sin bifurcaciones adicionales
 - Paso C es el Inicio real de cap 01, con el trío de cifras y el dato recién cargado — no una pantalla de cierre aparte
 - El onboarding sobrevive el cierre de la app a mitad de camino y retoma en el mismo Paso B, no reinicia
 
@@ -103,9 +99,9 @@ la estructura y el criterio de cierre del onboarding, pero no resuelve:
       explicita que no existe una pantalla de cierre separada del Inicio real.
 - [ ] **¿Contradice la etapa 3 ya cerrada en cap 05?** No. Evidencia: las cuatro dimensiones de cap 05 etapa 3 se citan
       textualmente al inicio del capítulo como punto de partida, y ningún paso las contradice.
-- [ ] **¿Se aplican las decisiones fundacionales de persona?** Sí. Evidencia: José en Paso B (no repreguntar
-      personal/negocio, cita cap 05 etapa 4); Ana en "Onboarding interrumpido y retomado" (cita cap 02, tiempo en
-      bloques); Rosa y Luis en "Onboarding por persona" (citas cap 02 inline).
+- [ ] **¿Se aplican las decisiones fundacionales de persona?** Sí. Evidencia: José en "Onboarding por persona" (mismo
+      flujo que el resto, sin bifurcación adicional, cita cap 02 vigente); Ana en "Onboarding interrumpido y retomado"
+      (cita cap 02, tiempo en bloques); Rosa y Luis en "Onboarding por persona" (citas cap 02 inline).
 - [ ] **¿Aparece vocabulario prohibido o naming técnico como texto de interfaz?** No verificable en este capítulo
       porque no define copy exacto (delegado a cap 07) — evidencia: se deja nota de vocabulario explícita advirtiendo
       que "Onboarding" es nombre interno, no texto de pantalla, para que cap 07 no lo herede por descuido.

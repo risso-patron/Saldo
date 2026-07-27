@@ -46,8 +46,8 @@ No se rediseña nada de cap 06 o cap 08 — se agrega el requisito de teclado a 
   teclado o lector de pantalla, incluida Rosa si en algún momento usa asistencia.
 - **Edición en el lugar** (cap 08, "Editar"): al volverse editable un campo, el foco se mueve ahí automáticamente. Si
   el campo no recibe foco, la interacción es invisible para quien no usa mouse.
-- **Selectores de cap 07** (¿ingreso o gasto?, ¿tu plata o la plata del negocio?): se implementan como grupo de
-  opciones real (no solo agrupación visual), navegable con flechas y anunciado como grupo, no como botones sueltos.
+- **Selector de cap 07** (¿ingreso o gasto?): se implementa como grupo de opciones real (no solo agrupación visual),
+  navegable con flechas y anunciado como grupo, no como botones sueltos.
 
 ## 3) Contraste y no depender solo del color
 El símbolo ✓ de cap 09 ya cumple esto por diseño: tiene forma reconocible, no depende solo de un color de fondo verde
@@ -60,7 +60,7 @@ etapas de cap 05 (tabla completa). Este capítulo cierra el círculo técnico: e
 accesible real de cada pantalla (encabezado principal, foco inicial al navegar a ella), no solo un texto grande
 visualmente. Sin esto, cap 04 se cumple para quien ve la pantalla y falla para quien la escucha.
 
-## Propuesta pendiente de tu confirmación: aviso antes de expirar sesión
+## Aviso antes de expirar sesión (propuesta aprobada, agregada a cap 09)
 Cap 09 resolvió el mensaje de después de expirar la sesión (*"Pasó un rato. Volvé a entrar para seguir"*) y garantiza
 que nada se pierde. WCAG 2.2 AA, en su principio de límites de tiempo, pide además avisar *antes* de que el límite se
 cumpla, con oportunidad de extenderlo — salvo que el límite sea esencial. El límite de sesión de Saldo no es esencial
@@ -73,8 +73,8 @@ Se propone agregar un tercer texto, previo al de cap 09, sin modificar los dos y
 **"Seguís ahí? En unos minutos te vamos a pedir que vuelvas a entrar."**
 
 Transitorio, mismo tratamiento que los avisos de cap 09 (sin ✓, con anuncio de lector de pantalla que no interrumpe).
-Esto es una extensión propuesta a cap 09, no una decisión tomada — queda para tu confirmación antes de loguearla en
-00-STATE.md.
+Esta extensión a cap 09 fue aprobada y ya está incorporada como tercer texto en 09-sistema-de-feedback.md (ver
+00-STATE.md).
 
 ## Qué no resuelve este capítulo (delegado)
 - Valores exactos de contraste (ratios numéricos) y tamaño mínimo de objetivos táctiles → cap 11, Responsive
@@ -93,8 +93,8 @@ Esto es una extensión propuesta a cap 09, no una decisión tomada — queda par
 - [ ] **¿Resuelve lo delegado por cap 09?** Sí. Evidencia: sección 1 completa, distinción confirmaciones/avisos
       extendida a lector de pantalla sin agregar categoría nueva.
 - [ ] **¿Aplica accesibilidad a elementos ya definidos, sin rediseñar?** Sí. Evidencia: secciones 2, 3 y 4 citan cap
-      06, cap 07, cap 08 y cap 09 explícitamente, sin proponer pantallas o copy nuevos (salvo la propuesta marcada
-      como pendiente).
+      06, cap 07, cap 08 y cap 09 explícitamente, sin proponer pantallas o copy nuevos más allá de la extensión ya
+      aprobada de aviso previo a expiración de sesión.
 - [ ] **¿La excepción de cap 03 regla 2 (Paso A) se mantiene también en teclado?** Sí, con precisión: la excepción es
       sobre jerarquía visual, no sobre alcance por teclado — ambos caminos deben ser igual de accesibles sin mouse,
       sin excepción ahí.
@@ -105,5 +105,5 @@ Esto es una extensión propuesta a cap 09, no una decisión tomada — queda par
       no por una necesidad de accesibilidad inventada.
 - [ ] **¿Invade cap 11 o cap 12?** No. Evidencia: sección "Qué no resuelve este capítulo" delega valores numéricos y
       tokens visuales explícitamente.
-- [ ] **Contradicciones abiertas detectadas:** ninguna nueva. Una propuesta pendiente (aviso previo a expiración de
-      sesión) queda marcada como tal, no como decisión tomada.
+- [ ] **Contradicciones abiertas detectadas:** ninguna. La propuesta de aviso previo a expiración de sesión quedó
+      aprobada e incorporada a cap 09 (ver 00-STATE.md).

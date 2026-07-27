@@ -64,8 +64,8 @@ editar sigue siendo la misma pantalla, no una nueva.
 Invisible cuando funciona. Sin indicador de "sincronizando…" permanente — un ícono parpadeando todo el tiempo genera
 la pregunta silenciosa *"¿se está guardando bien?"*, que es exactamente la ansiedad que cap 01 busca bajar. Solo se
 hace visible cuando hay un problema real que el usuario necesita saber.
-- **Nota de persona (José):** cap 02 describe su ventana de uso como *"10 minutos antes de abrir y 10 minutos al
-  cerrar"* — no tiene margen para quedarse dudando si algo sincronizó. Sincronización invisible cuando todo va bien es,
+- **Nota de persona (José):** cap 02 describe su ventana de uso como *"10 minutos por la mañana y 10 minutos por la
+  noche"* — no tiene margen para quedarse dudando si algo sincronizó. Sincronización invisible cuando todo va bien es,
   para él, directamente tiempo operativo recuperado.
 
 ### Cargar

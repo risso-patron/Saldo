@@ -42,10 +42,6 @@ pasos, paso 2 de 3"), nunca como título visible permanente.
 - Título: **"Cargá tu primer movimiento"**
 - Ayuda breve (una sola línea, solo si no se saltó el Paso A): **"Puede ser algo que ya tenías anotado en otro lado."**
 - Selector de tipo: **"¿Es un ingreso o un gasto?"** — opciones **"Ingreso"** / **"Gasto"**
-- Si el usuario eligió en el Registro que separa personal de negocio (cap 05, etapa 2 — nota de persona José): un
-  campo más, nunca repreguntado de otra forma: **"¿Es tu plata o la plata del negocio?"** — opciones **"Tu plata"** /
-  **"La plata del negocio"** (vocabulario permitido, cap 04, líneas 33-34, textual). Este campo no aparece si el
-  usuario eligió "Solo mi plata" en el Registro.
 - Botón: **"Guardar"**
 
 ### Paso C — Confirmación y entrada al Inicio
@@ -75,10 +71,6 @@ el documento tiene hasta ahora.
 | 11. Primer reporte | "Descargá tus movimientos"² | "Descargar" | "Baja un archivo con lo mismo que estás viendo" | "Vas a poder llevarte tus números a donde los necesites" |
 | 12. Cliente recurrente | trío de cifras de cap 01³ | "+ Agregar movimiento" | "Se guarda al toque, después lo podés editar" | "Vas a mantener esto tan claro como el primer día" |
 
-¹ Para Luis, cuando agrupa por cliente/origen, "¿Dónde estoy?" se responde con la frase ya acuñada en cap 03/04, textual:
-**"Cómo te está yendo con tus clientes"** — no es una frase nueva, es la misma reutilizada en este punto exacto del
-recorrido.
-
 ² Nunca "Exportar CSV" ni "Descargar PDF" — cap 05, etapa 11, nota de vocabulario: el formato técnico no puede ser el
 nombre visible.
 
@@ -103,7 +95,7 @@ esa decisión convertida en copy real.
       columnas resueltas (etapa 3 remite a la sección de onboarding para no duplicar texto).
 - [ ] **¿Se redefine el trío de cifras de cap 01?** No. Evidencia: etapa 12 cita textual cap 01 línea 42 en vez de
       inventar un título nuevo para el Inicio.
-- [ ] **¿Se aplican las decisiones de persona con cita?** Sí. Evidencia: José en el copy del Paso B (campo
-      personal/negocio, condicionado a su elección en el Registro); Luis en la nota¹ de la etapa 6, reutilizando la
-      frase exacta de cap 03/04.
+- [ ] **¿Se aplican las decisiones de persona con cita?** Sí. Evidencia: Luis en la nota¹ de la etapa 6, reutilizando
+      la frase exacta de cap 03/04 (José ya no tiene campo de copy propio en el Paso B — la arquitectura vigente ya
+      no incorpora la bifurcación personal/negocio que lo originaba).
 - [ ] **Contradicciones abiertas detectadas:** ninguna.

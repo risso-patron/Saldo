@@ -75,9 +75,10 @@ generar enganche en vez de bajar ansiedad, no entra, aunque sea efectivo retenie
   cita es sobre configuración y aprendizaje, no sobre gamificación. Que un sistema de streaks o logros complejo
   también la alejaría es una inferencia de este capítulo, extendiendo esa misma aversión a la complejidad — no una
   cita textual sobre streaks, que no existe en 01-12.
-- **José:** cap 02, cita exacta: *"Objetivos: ver salud diaria del negocio y detectar desvíos temprano"*. El cierre
-  de mes (cap 05, etapa 10) es la extensión mensual de ese mismo seguimiento diario — esa conexión sí está apoyada
-  por la cita. Que el cierre de mes tenga *más* peso para José que para las otras tres personas es una inferencia de
+- **José:** cap 02, cita exacta: *"Objetivos: saber si puede llegar tranquilo a fin de mes y detectar desvíos
+  temprano"*. El cierre de mes (cap 05, etapa 10) es la extensión mensual de ese mismo seguimiento diario — esa
+  conexión sí está apoyada por la cita. Que el cierre de mes tenga *más* peso para José que para las otras tres
+  personas es una inferencia de
   este capítulo: no hay ninguna cita en 01-12 que compare el peso del cierre de mes entre personas.
 - **Ana:** cap 02, cita exacta: *"Tiempo disponible: 5 a 10 minutos por bloque, en distintos momentos del día"*.
   Cap 06 estableció, para el onboarding específicamente, que debe soportar interrupción sin reiniciar (00-STATE.md,

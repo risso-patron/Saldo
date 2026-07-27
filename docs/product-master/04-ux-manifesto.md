@@ -29,9 +29,7 @@ Saldo sí puede hablar así:
 - tu dinero
 - tus metas
 - tus movimientos
-- cómo te está yendo con tus clientes
 - tu plata
-- la plata del negocio
 
 ## Cómo debe sentirse la interfaz
 - Clara antes que completa

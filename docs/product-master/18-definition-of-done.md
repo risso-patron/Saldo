@@ -35,9 +35,9 @@ esto sin preguntarle a nadie?"* Este criterio ya tenía nombre propio antes de e
 semilla de cap 20 (La Regla de Oro), todavía no escrito. Acá se usa como uno de los diez, no se desarrolla más.
 
 **8. Luis la usa.** No alcanza con que Luis pueda usarla — tiene que preferirla a no usarla. Cap 02: *"Qué espera de
-Saldo: respuestas rápidas para decidir hoy, no un reporte eterno"*. Si la función le hace perder tiempo operativo o
-no respeta su necesidad de agrupar por cliente/origen (cap 05, etapa 6), no pasa este criterio aunque técnicamente
-"funcione" para él.
+Saldo: respuestas rápidas para decidir hoy, no un reporte eterno"*. Si una función le hace perder tiempo operativo,
+o si su versión Free le agrega fricción para empujarlo hacia Pro (cap 21, principio 4: ninguna función Free se
+vuelve más lenta o incómoda a propósito), no pasa este criterio aunque técnicamente "funcione" para él.
 
 **9. La IA puede explicarla.** Si hay un número o una función que la IA (cap 15) no puede describir en una frase de
 vocabulario permitido, sin hablar difícil y sin responder de más (cap 15, sección 3), es señal de que la función no

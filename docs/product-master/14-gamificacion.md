@@ -103,8 +103,9 @@ recorrido (punto 3), y no introducir comparación social ni una economía parale
   13 ya usó esta misma cita para marcar el riesgo de un streak clásico para Ana — eso sí viene citado. Que la ventana
   móvil de este capítulo (punto 2) sea la solución a ese riesgo específico es una inferencia nueva de cap 14: cap 13
   identificó el problema, no propuso este mecanismo ni ningún otro.
-- **José:** cap 02, cita exacta: *"Objetivos: ver salud diaria del negocio y detectar desvíos temprano"*. Que el
-  logro "Primer presupuesto sostenido" conecte con esa cita (seguimiento continuo, no puntual) es una inferencia de
+- **José:** cap 02, cita exacta: *"Objetivos: saber si puede llegar tranquilo a fin de mes y detectar desvíos
+  temprano"*. Que el logro "Primer presupuesto sostenido" conecte con esa cita (seguimiento continuo, no puntual) es
+  una inferencia de
   este capítulo — y una parcial, dado que "sostenido" todavía no tiene definición numérica (ver punto 3). No se
   repite acá la comparación entre personas que cap 13 marcó como inferencia sin respaldo — este capítulo no afirma
   que le importe más a José que al resto.

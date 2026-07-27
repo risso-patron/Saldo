@@ -64,10 +64,10 @@ marketing): acá el problema es que la IA hable de sí misma ("terminé de anali
 de su plata. Cap 09 lo nombró y lo rechazó explícitamente ("IA terminó"), y quedó logueado en 00-STATE.md para no
 reintroducirse sin discutirlo de nuevo.
 
-**13. Elemento de interfaz mostrado sin condición de datos reales.** Encontrado en cap 17, Hallazgo 1: el selector de
-agrupación por cliente aparecía para cualquier persona, tuviera o no un segundo origen de ingreso. Se resolvió
-condicionando su aparición a datos reales, no a una persona asignada — el anti-patrón general es mostrar un control
-que no tiene nada que controlar todavía.
+**13. Elemento de interfaz mostrado sin condición de datos reales.** Ningún control de la interfaz aparece si no
+tiene datos reales que lo justifiquen — mostrar un control que no tiene nada que controlar todavía es tan inválido
+como un gráfico vacío (anti-patrones 1-2). Aplica a cualquier control futuro que dependa de una condición de datos
+real, no de una persona asignada por defecto.
 
 **14. Etapa temprana del recorrido sin contenido válido en V1.** Encontrado en cap 17, Hallazgo 2: "Primer hallazgo
 IA" estaba ubicado temprano en cap 05, pero su único contenido definido exigía 4 semanas de historial. El anti-patrón

@@ -252,6 +252,32 @@
     se reemplaza, por instrucción explícita del Product Owner
   - Verificado sin contradicciones contra cap 01 y cap 21 antes de escribir
 
+## PM-RECON-001 — Reconciliación documental posterior a PV-003 (cerrado 2026-07-27)
+Ejecuta el diagnóstico de PM-AUDIT-001 (11 hallazgos: F1-F9 más Nuevo-1 y Nuevo-2, detectados durante la
+redacción del Grupo 4; F10 excluido, pasa a UX-MON-001 como diseño de producto nuevo, no reconciliación).
+
+- Grupo 1 (negocio/personal, José): retirado el eje que separaba "tu plata" de "la plata del negocio" en Registro
+  (cap 05, etapas 2/4), Onboarding (cap 06), copy (cap 07) y accesibilidad (cap 10). La señal semanal de José
+  (cap 15) se recalcula sobre su economía personal completa. "Caja diaria" (cap 16, V4) se reinterpreta — no se
+  elimina — como señal temprana de su situación financiera general, no de la salud de un negocio.
+- Grupo 2 (cliente/origen, Luis): retirado el eje "cliente/origen" (cap 04 vocabulario, cap 05 etapas 6/11, cap 07,
+  cap 16 V1, cap 17, cap 19). Se preservó la intención original (comprender patrones en un ingreso variable)
+  redirigiendo a la vista de categoría ya genérica — decisión explícita del Product Owner de no inventar una
+  funcionalidad nueva para llenar el vacío. Cap 18, criterio 8, reemplaza su ejemplo obsoleto por uno vigente
+  ligado a la filosofía Free/Pro (cap 21, principio 4).
+- Grupo 3: corregidas 7 citas de cap 02/03 sobre José que citaban redacciones ya superadas por PV-003 (horario
+  "antes de abrir/al cerrar" → "por la mañana/por la noche"; objetivos "salud diaria del negocio" → "llegar
+  tranquilo a fin de mes y detectar desvíos temprano"), en cap 08, 11 (x2), 13, 14, 15 (x2).
+- Grupo 4: 5 notas internas que marcaban como abiertas decisiones ya resueltas se actualizaron preservando su
+  explicación técnica — cap 05 (naming hallazgo/insight IA), cap 20 (conteo de contradicciones abiertas), cap 17
+  (ambigüedad de "sostenido" en dos ubicaciones), cap 10 (aviso previo a expiración de sesión, aprobado desde el
+  cierre de cap 10 pero nunca reflejado en su propio texto).
+- Lenguaje atemporal en todo el ticket ("la arquitectura vigente ya no incorpora...") — ningún capítulo del
+  Product Master menciona el nombre de este ticket, por pedido explícito del Product Owner.
+- Alcance de la reconciliación: se verificó la coherencia documental respecto de los capítulos 01, 02, 03, 21 y
+  PRICING-STRATEGY.md, resolviendo los hallazgos identificados en PM-AUDIT-001. El hallazgo F10 queda fuera del
+  alcance de este ticket y pasa a UX-MON-001.
+
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos
@@ -262,18 +288,18 @@
 - SUPERSEDIDO (2026-07-26, PV-003, ver cierre de cap 02): "La prohibición de 'Analytics' es de naming/vocabulario, no de
   funcionalidad: Luis sí necesita ver patrones de ingresos y clientes, pero en lenguaje simple (ej: 'cómo te está yendo
   con tus clientes')" — el Product Owner decidió que SALDO no incorpora un modelo de clientes; Luis ya no tiene esta
-  necesidad. Cap 04 (línea 32, "Vocabulario permitido") todavía cita la frase "cómo te está yendo con tus clientes"
-  como ejemplo — queda pendiente de reconciliar en el ticket documental independiente ya acordado para cap 05/07/12
+  necesidad. Reconciliado en PM-RECON-001 (2026-07-27): la frase se retiró de cap 04 y de toda referencia activa —
+  ver esa entrada
 - SUPERSEDIDO (2026-07-26, PV-003, ver cierre de cap 02): "Luis necesita agrupar movimientos por cliente/origen, no solo
   por categoría de gasto; es una dimensión de datos distinta que Arquitectura (05) y Design System (12) no deben
-  ignorar" — retirado por la misma decisión. Cap 05 y cap 12 todavía asumen esto — pendiente de reconciliar en el
-  ticket documental independiente ya acordado
+  ignorar" — retirado por la misma decisión. Reconciliado en PM-RECON-001 (2026-07-27): retirado de cap 05, 07,
+  16, 17, 18, 19; cap 12 nunca llegó a mencionarlo en su propio texto — ver esa entrada
 - Ana necesita señales anticipatorias ("semanas difíciles"), no solo registro histórico; marcar para que IA (15) y/o Roadmap UX (16) lo retomen explícitamente
 - SUPERSEDIDO (2026-07-26, PV-003, ver cierre de cap 02): "José necesita separación clara entre caja personal y caja del
   negocio; no es una categoría más, es una distinción estructural de datos que debe resolverse explícitamente en
   arquitectura/categorías/design system más adelante" — el Product Owner decidió que la separación negocio/personal
-  queda fuera del alcance del producto (SALDO no es un ERP ni software contable). Pendiente de reconciliar en el
-  ticket documental independiente ya acordado para cap 05/07/12
+  queda fuera del alcance del producto (SALDO no es un ERP ni software contable). Reconciliado en PM-RECON-001
+  (2026-07-27): retirado de cap 04, 05, 06, 07, 10, 15, 16 — ver esa entrada
 - A partir de cap 05, releer completos los capítulos 01-04 antes de redactar cualquier capítulo nuevo: 04 pasa a ser fundacional junto con 01-03, porque fija el vocabulario oficial (prohibido/permitido) que rige el resto del documento
 - A partir de cap 05, todo cierre de capítulo requiere checklist con evidencia y citas textuales (línea/sección concreta), no alcanza con el tilde
 - A partir de cap 06, releer completos los capítulos 01-05 antes de redactar cualquier capítulo nuevo: 05 también pasa a ser fundacional, porque fija el recorrido completo (las 12 etapas) que los capítulos siguientes deben respetar paso a paso, no redefinir distinto
@@ -297,18 +323,18 @@
 - "Primer presupuesto sostenido" (logro de cap 14) introduce un criterio nuevo no presente en cap 05 etapa 7 (que solo define crear un presupuesto, no mantenerlo) — la definición numérica de "sostenido" (cuántos períodos, con qué tolerancia) queda delegada a cap 15 (IA) o cap 16 (Roadmap UX), mismo patrón que las señales anticipatorias de Ana/José
 - Señales anticipatorias (cap 15): comparación contra el promedio histórico propio de cada persona, nunca contra otros usuarios; mínimo 4 semanas de historial antes de calcular cualquier señal; margen de 20% de desviación (propuesta ajustable con datos reales, no constante fija)
 - "Primer presupuesto sostenido" (cap 15, resuelve lo delegado por cap 14): 3 meses calendario consecutivos sin superar el límite, sin tolerancia parcial dentro del mes (se evalúa el total del mes cerrado, no día a día). Es REPETIBLE, no único en la vida de la cuenta — se vuelve a activar cada vez que se cumplen 3 meses consecutivos nuevos, mismo criterio numérico. Decidido 2026-07-12: un logro de una sola vez sería un streak con vencimiento invertido, no coherente con la constancia sin castigo de cap 14 (ventana móvil, sin punto de ruptura)
-- Pendiente explícito para cap 16: granularidad diaria de "caja diaria" para José (cap 03, regla 9) — la señal de cap 15 es semanal (recalculada en cada entrada); una señal diaria confiable necesita su propia definición de historial mínimo y umbral, no resuelta todavía
+- Pendiente explícito para cap 16: granularidad diaria de "caja diaria" para José — reinterpretada en PM-RECON-001 (2026-07-27) como señal de su economía personal, no de un negocio; la señal de cap 15 es semanal (recalculada en cada entrada); una señal diaria confiable necesita su propia definición de historial mínimo y umbral, no resuelta todavía
 - Roadmap (cap 16): V1 (recorrido completo, sin dependencia de historial de uso) — V2 (≥4 semanas, señal semanal Ana/José) — V3 (≥3 meses, gamificación completa incluido "sostenido") — V4 (caja diaria de José, sin fecha, bloqueada por diseño pendiente, no por antigüedad de datos)
 - Accesibilidad (cap 10), Responsive (cap 11) y Design System (cap 12) son piso desde V1, nunca una fase tardía del roadmap
 - "Primer hallazgo IA" (cap 05, etapa 8) tiene contenido de V1 aplicable a las 4 personas (observación simple sobre el primer movimiento cargado, sin pretensión predictiva) — la señal semanal de Ana/José (cap 15) es la evolución de esa misma etapa en V2, nunca un contenido o etapa separada. Corregido en cap 17 tras detectar que, sin esto, nadie tenía contenido real para esa etapa el día 1
-- El selector de agrupación por cliente/origen (cap 07, etapa 6) tiene condición de aparición basada en datos reales (más de un origen de ingreso distinguible), no en persona asignada — corregido en cap 17, Hallazgo 1
+- El selector de agrupación por cliente/origen (cap 07, etapa 6) fue retirado por completo en PM-RECON-001 (2026-07-27) — ya no existe una condición de aparición que describir; Luis usa la misma vista de categoría que el resto de las personas. Su historial previo (condición de aparición basada en datos reales, corregida en cap 17) queda en el historial de commits, no repetido en el propio cap 17 tras la reconciliación
 - Jerarquía del Inicio con el tiempo (cap 17, Hallazgo 3): el trío de cifras de cap 01 siempre es el elemento más prominente, ninguna pieza de V2/V3 (hallazgo IA, logros, señales) puede competir con él ni apilarse con otra al mismo tiempo — combina reglas ya existentes de cap 09 y cap 12, no crea una regla nueva
 - Patrón de estado vacío (cap 19): mensaje breve explicando por qué + CTA cuando corresponde (reusa "+ Agregar movimiento" de cap 07), nunca espacio vacío sin explicación — resuelve gráficos vacíos y tarjetas sin datos
 - 14 anti-patrones activos, no reintroducir sin discutirlos de nuevo (lista completa en cap 19): gráficos vacíos, tarjetas sin datos, métricas incomprensibles, IA por marketing, nombres técnicos, ocultar acciones importantes, doble confirmación innecesaria, modales infinitos, streak con castigo al romperse, comparación social/tabla de posiciones, economía paralela de puntos, IA narrando su propio proceso, elemento de interfaz sin condición de datos reales, etapa temprana del recorrido sin contenido válido en V1
 - Filosofía Free/Pro (cap 01, agregada 2026-07-26 PV-003): la versión gratuita cumple la promesa completa de Saldo (los 5 puntos de cap 01); la versión Pro amplía, acelera y profundiza, nunca repara una experiencia incompleta — "la tranquilidad financiera no es una función Pro"
 - Gamificación (cap 01, agregada 2026-07-26 PV-003) pasa a estar reconocida explícitamente como parte de la identidad del producto, no solo como funcionalidad de cap 14
 - 10 principios obligatorios de monetización (cap 21, 2026-07-26 PV-003), no reintroducir una decisión de monetización que los contradiga sin discutirlo de nuevo acá — incluye 5 líneas rojas ("Qué nunca monetizamos": comprender su economía, registrar ingresos y gastos, conocer en qué gasta, organizar su dinero, disminuir su ansiedad financiera) que ninguna función Pro puede eliminar, solo profundizar
-- Personas Luis y José evolucionadas (cap 02, 2026-07-26 PV-003): SALDO no incorpora un modelo de clientes ni administración de negocio pequeño/separación caja personal-negocio — decisión de alcance del Product Owner (PV-003). Luis pasa a representar ingresos variables sin eje de "cliente"; José pasa a representar rutina diaria de bajo perfil técnico sin eje de "negocio". Cap 04 (línea 32), cap 05, cap 07 (selector por cliente/origen, etapa 6) y cap 12 todavía dependen de las versiones retiradas — pendientes de un ticket documental independiente, fuera del alcance de PV-003
+- Personas Luis y José evolucionadas (cap 02, 2026-07-26 PV-003): SALDO no incorpora un modelo de clientes ni administración de negocio pequeño/separación caja personal-negocio — decisión de alcance del Product Owner (PV-003). Luis pasa a representar ingresos variables sin eje de "cliente"; José pasa a representar rutina diaria de bajo perfil técnico sin eje de "negocio". Reconciliado en PM-RECON-001 (2026-07-27): cap 04, 05, 06, 07, 08, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20 actualizados; cap 12 nunca dependió de esto en su propio texto — ver entrada PM-RECON-001
 - PLAN-001 cerrado como arquitectura estratégica (2026-07-26), consolidado en PRICING-STRATEGY.md: pricing vigente ($4.99/mes, $49/año, $79 lifetime) queda como hipótesis inicial validada, no como decisión definitiva — cualquier cambio de precio requiere evidencia sostenida (3+ meses) de las métricas del documento, nunca intuición. Lifetime queda fijado como herramienta estratégica/táctica, no pilar de ingreso recurrente — ese rol es de Pro mensual/anual
 - `docs/technical/MONETIZATION_STRATEGY.md` (documento antiguo, confirmado stale durante PLAN-001) no fue tocado — pendiente de decisión futura sobre si se audita, reemplaza o archiva
 
