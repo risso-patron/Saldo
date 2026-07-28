@@ -588,6 +588,7 @@ como deuda técnica (ya registrada en PRE-RC-001).
 - "Saldo disponible" (cap 01, PM-RECON-003/D1, 2026-07-28): representa flujo operativo del período (ingresos menos gastos), no patrimonio acumulado — distinción completa preservada sin abrir en PM-DISCOVERY-003
 - Catálogo de categorías (cap 03, PM-CAT-001, 2026-07-28): canónico protegido por el sistema, personalizadas del usuario solo bajo demanda (Product Blueprint §04) — no reintroducir un modelo de personalización libre o de catálogo cerrado sin discutirlo de nuevo acá
 - Categorías de ingreso (PM-CAT-001, 2026-07-28): bucket único "Ingresos" mantenido hasta tener evidencia de BR-2 — no crear subcategorías de ingreso sin esa evidencia
+- Principio metodológico (OPOS-001, 2026-07-28): la metodología también debe ganarse el derecho a crecer. Ninguna evolución del proceso se incorpora sin evidencia concreta de un problema real que la metodología vigente ya no resuelva. Las propuestas evaluadas y rechazadas bajo este principio quedan registradas como antecedente metodológico y no deben reintroducirse sin nueva evidencia que justifique reabrir la decisión. Antecedentes evaluados bajo este criterio: Learning Review como artefacto independiente, Decision Log con identificadores propios y Product Learning Flow fijo de cinco etapas.
 
 ## Contradicciones abiertas (requieren tu decision)
 - "Primer hallazgo IA" en V2 (cap 15) solo tiene contenido definido para Ana (gasto) y José (ingreso del negocio) —
