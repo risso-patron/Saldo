@@ -28,7 +28,7 @@ export const PricingPlans = ({ onClose }) => {
         'Gamificación básica',
       ],
       limitations: [
-        'Sin export CSV/PDF',
+        'Exportación limitada',
         'Sin análisis con IA',
         'Sin gráficos avanzados',
         'Sin tarjetas de crédito',
@@ -44,7 +44,7 @@ export const PricingPlans = ({ onClose }) => {
       description: 'Para usuarios que quieren el máximo control',
       features: [
         'Todo de Gratuito +',
-        '📥 Export ilimitado (CSV + PDF)',
+        'Exportar sin límite',
         '🤖 Análisis con IA de Claude',
         '📊 4 tipos de gráficos avanzados',
         '💳 Gestión de tarjetas de crédito',
@@ -57,7 +57,7 @@ export const PricingPlans = ({ onClose }) => {
       limitations: [],
       color: 'purple',
       popular: true,
-      savings: billingCycle === 'yearly' ? 'Ahorra $10.88 (17%)' : null,
+      savings: billingCycle === 'yearly' ? 'Ahorra $10.88 (18%)' : null,
     },
     {
       id: 'lifetime',
@@ -169,9 +169,6 @@ export const PricingPlans = ({ onClose }) => {
                 }`}
               >
                 Anual
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  -17%
-                </span>
               </button>
             </div>
           </div>

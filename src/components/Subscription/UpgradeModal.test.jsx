@@ -24,7 +24,7 @@ describe('UpgradeModal — accesibilidad (RC-1.7/A5)', () => {
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
     const labelId = dialog.getAttribute('aria-labelledby');
-    expect(document.getElementById(labelId)).toHaveTextContent('Export a CSV');
+    expect(document.getElementById(labelId)).toHaveTextContent('Exportar tus movimientos');
   });
 
   it('el botón de cerrar tiene aria-label', () => {

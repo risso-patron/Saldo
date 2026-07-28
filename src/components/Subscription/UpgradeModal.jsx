@@ -17,13 +17,13 @@ export const UpgradeModal = ({ isOpen, onClose, feature }) => {
 
   const featureMessages = {
     export_csv: {
-      title: '📥 Export a CSV',
-      description: 'Descarga todas tus transacciones en formato CSV para análisis avanzado en Excel o Google Sheets.',
+      title: 'Exportar tus movimientos',
+      description: 'Descarga tus movimientos en una hoja de cálculo para revisarlos donde quieras.',
       icon: '📊',
     },
     export_pdf: {
-      title: '📄 Export a PDF',
-      description: 'Genera reportes profesionales en PDF con tus transacciones y gráficos.',
+      title: 'Exportar un resumen',
+      description: 'Genera un resumen de tus movimientos y gráficos, listo para guardar o compartir.',
       icon: '📑',
     },
     ai_analysis: {
@@ -108,7 +108,7 @@ export const UpgradeModal = ({ isOpen, onClose, feature }) => {
                 <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>📥 Export ilimitado (CSV + PDF)</span>
+                <span>Exportar sin límite</span>
               </li>
               <li className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -152,16 +152,13 @@ export const UpgradeModal = ({ isOpen, onClose, feature }) => {
             </div>
 
             <div className="border-2 border-green-500 rounded-xl p-4 bg-green-50 dark:bg-green-900/20 relative">
-              <div className="absolute -top-3 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                AHORRA 17%
-              </div>
               <div className="flex justify-between items-center mb-2">
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white">Plan Anual</div>
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">$49<span className="text-sm text-gray-600 dark:text-gray-400">/año</span></div>
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Solo $4.08/mes
+                  Solo $4.08/mes (18% menos)
                 </div>
               </div>
             </div>
@@ -187,7 +184,7 @@ export const UpgradeModal = ({ isOpen, onClose, feature }) => {
               onClick={() => setShowPricing(true)}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-4 px-6 rounded-xl hover:shadow-xl transition-all transform hover:scale-105"
             >
-              🚀 Ver Planes y Actualizar
+              Ver planes
             </button>
             <button
               onClick={onClose}
