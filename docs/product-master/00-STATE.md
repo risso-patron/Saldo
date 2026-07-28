@@ -385,6 +385,85 @@ en ningún momento del ticket.
 
 **Próximos pasos sugeridos:** un ticket de implementación de código para las correcciones de Bloque B (vocabulario/tono) y la dependencia de Stripe de Bloque C; una ronda de decisiones comerciales con el Product Owner para Trial (Bloque D) y consumo de IA (Bloque F) antes de que cualquiera de los dos sea implementable.
 
+## PM-RECON-002 — Reconciliación de Gamificación (cerrado 2026-07-27)
+Aplica por primera vez, de punta a punta, la política permanente Normalización / Corrección / Evolución del
+producto (ver Decisiones fundacionales) sobre la brecha entre cap 13/14 y la implementación real de gamificación
+(`achievementDefinitions.js`, `useAchievements.js`, `PlayerProgress.jsx`, `AchievementsPanel.jsx`,
+`AchievementNotification.jsx`, `GamificationDashboard.jsx`).
+
+- **F1 — Streak con punto de ruptura clásico:** confirmado como deuda técnica. `updateStreak()` resetea la racha a
+  1 tras un día salteado; cap 13/14 ya especifican correctamente el mecanismo correcto ("ventana móvil, ej. 12 de
+  los últimos 14 días"). Cap 13/14 quedan sin modificar — el texto ya era, y sigue siendo, el correcto.
+- **F2 — Sistema de puntos y niveles:** confirmado como deuda técnica. Cap 14 ya rechaza "sistema de puntos o
+  moneda virtual paralela" citando cap 03 regla 3 — regla transversal, no exclusiva de gamificación. El sistema de
+  niveles (10 escalones) es una función directa de los puntos, ya cubierto por la misma prohibición sin necesitar
+  mención aparte. Cap 13/14 quedan sin modificar.
+- **F3 — 23 logros vs. 4 documentados:** auditoría funcional completa de los 23 logros reales contra trazabilidad
+  a cap 05, contribución a la misión (cap 01) y redundancia — resultado: 3 Compatibles, 3 Redundantes, 17 Sin
+  trazabilidad. De los 3 Compatibles, dos (FIRST_GOAL, EXPORT_DATA) fueron evaluados a fondo contra el riesgo de
+  "pendiente resbaladiza" (el mismo razonamiento que los justificaría aplica, sin límite principiado, a las 12
+  etapas de cap 05) — el Product Owner decidió explícitamente no incorporar ninguno de los dos. El tercero
+  (GOAL_COMPLETED) ya coincide exactamente con el logro ya documentado. Cap 14 queda sin modificar — el límite de
+  "cuatro logros, no una lista abierta" queda confirmado como correcto, no como algo que requería una excepción.
+- **F4 — Coordinador de notificaciones (`useFeedbackQueue.js`):** confirmado como Normalización — ya garantiza
+  "nunca se apilan dos estados a la vez" (cap 09), corregido en el pasado (RC-1.7/A1+A3). Sin necesidad de mención
+  documental adicional — la regla transversal ya existente es suficiente.
+- **Auditoría de dependencias funcionales:** verificado que `totalPoints`/`currentLevel`/`calculateLevel()` no
+  tienen ningún consumidor fuera del propio dominio de gamificación. `currentStreak`/`longestStreak` se consumen
+  en `ProfilePage.jsx` y `HabitDailyCard.jsx` únicamente como presentación (texto, color/peso de ícono
+  condicional) — ninguna dependencia de Categoría B (lógica interna) encontrada en todo el producto. Ningún
+  desbloqueo, navegación, onboarding, recomendación o lógica de IA depende de estos valores.
+- **Lección metodológica del ticket:** la divergencia no fue un problema de documentación (cap 13/14 resistieron
+  intactos un análisis crítico exhaustivo, incluida la prueba de "¿lo escribirías igual hoy?") sino de proceso —
+  no existió ningún punto de contacto obligatorio entre el Product Master ya escrito y la implementación real en
+  el momento en que se construyó. Dentro del mismo dominio, la pieza que sí pasó por una verificación explícita
+  contra un principio documentado (`useFeedbackQueue.js`, RC-1.7) quedó conforme; la que no pasó por ninguna
+  verificación (el núcleo de logros/puntos/streak) divergió.
+- **Cap 13 y cap 14: sin modificaciones.** Verificado, no solo asumido — ambos capítulos quedan confirmados como
+  arquitectónicamente correctos tras el análisis más exhaustivo aplicado hasta ahora a cualquier capítulo del
+  Product Master.
+
+**Dependencias técnicas que quedan abiertas** (fuera de este ticket, para una futura implementación):
+- Reescribir `updateStreak()` (`useAchievements.js`) hacia ventana móvil.
+- Retirar la capa de puntos/niveles de `useAchievements.js`, `PlayerProgress.jsx`, `AchievementsPanel.jsx`,
+  `AchievementNotification.jsx`.
+- Reducir `achievementDefinitions.js` de 23 a 4 logros (sin incorporar FIRST_GOAL ni EXPORT_DATA).
+- Recalibrar los umbrales de estilo de `HabitDailyCard.jsx` (hoy `>=7`, `>=3` sobre racha clásica) contra el nuevo
+  mecanismo de ventana móvil.
+- Migración de datos de usuarios con logros/puntos/racha ya guardados en `localStorage` — mencionada, no resuelta.
+
+## PM-DISCOVERY-003 — Modelo Mental del Dinero: Flujo de Caja vs. Patrimonio (preservado, no abierto)
+Este hallazgo surgió durante la revisión funcional de PM-RECON-002 y **queda expresamente fuera del alcance de
+ese ticket**. Se preserva acá como antecedente, no como decisión ni como deuda.
+
+- **Qué se investigó:** si el modelo financiero interno de Saldo (flujo de un período: cuánto entró, cuánto
+  salió, cuánto queda — cap 01) representa correctamente cómo al menos un usuario piensa su dinero cotidiano.
+- **Qué se confirmó con código, no solo con lo relatado:** `BalanceCard.jsx` y `dashboardCalculations.js`
+  confirman que Saldo modela únicamente flujo acotado a un período — no existe ningún concepto de patrimonio
+  acumulado. `GoalManager.jsx` confirma que las metas ("currentAmount") son un campo manual, desconectado de
+  transacciones reales y del balance — no hay ninguna operación de transferencia entre "flujo" y "ahorro".
+- **Qué describió el usuario:** un modelo mental de dos cuentas relacionadas — flujo operativo del período y
+  patrimonio acumulado — con una regla de cascada (se gasta primero del flujo; el ahorro se usa solo si no
+  alcanza; el sobrante del período se transfiere al patrimonio al cierre).
+- **Conclusión de esta investigación, explícita y acotada:** existe una diferencia conceptual real y verificada
+  entre ambos modelos. Esa diferencia **no constituye una decisión de producto, no abre deuda técnica, no
+  modifica el Product Master y no genera ningún cambio de implementación.** Tiene, sin embargo, entidad
+  arquitectónica suficiente para conservarse como antecedente de un futuro **PM-DISCOVERY-003**.
+- **PM-DISCOVERY-003 no nace como una solución.** Nace como una investigación futura, pendiente de abrir, para
+  responder:
+  - ¿El modelo mental de "Flujo de Caja + Patrimonio" es un caso aislado o representa un patrón frecuente?
+  - ¿El modelo actual de Saldo responde correctamente a la pregunta financiera que la mayoría de los usuarios
+    realmente intenta responder?
+  - ¿Debe Saldo seguir siendo un gestor de flujo de dinero, o evolucionar hacia un modelo que también represente
+    patrimonio y transferencias entre ambas bolsas?
+  - ¿Qué impacto tendría esa decisión sobre la filosofía del producto (cap 01), el recorrido del usuario (cap 05)
+    y el modelo conceptual del dinero?
+- **Capítulos potencialmente involucrados en ese futuro Discovery** (no tocados ahora): cap 01, cap 03 (regla 3),
+  cap 05 (etapa 9), cap 02 (personas) — ninguna de las cuatro personas documentadas describe hoy este
+  comportamiento de "dos bolsas".
+- PM-RECON-002 termina sin ninguna modificación adicional del Product Master y sin adelantar ninguna conclusión
+  sobre este posible cambio de paradigma.
+
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos

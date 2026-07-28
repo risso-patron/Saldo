@@ -2,7 +2,7 @@
 
 ## Estado general
 - Setup inicial: completo
-- Capitulos cerrados: 21 de 21 — documento completo (cap 21 agregado 2026-07-26, PV-003; reconciliado 2026-07-27, PM-RECON-001; arquitectura UX de monetización cerrada 2026-07-27, UX-MON-001 — 6 bloques A-F, ver 00-STATE.md)
+- Capitulos cerrados: 21 de 21 — documento completo (cap 21 agregado 2026-07-26, PV-003; reconciliado 2026-07-27, PM-RECON-001; arquitectura UX de monetización cerrada 2026-07-27, UX-MON-001 — 6 bloques A-F; gamificación (cap 13/14) verificada contra código sin cambios, PM-RECON-002 · 2026-07-27; hallazgo preservado sin abrir — PM-DISCOVERY-003, Modelo Mental del Dinero — ver 00-STATE.md)
 
 ## Tabla de contenidos
 - [x] [00-STATE.md](00-STATE.md) - Estado de avance
@@ -18,8 +18,8 @@
 - [x] [10-accesibilidad.md](10-accesibilidad.md) - Accesibilidad (cerrado 2026-07-12 — WCAG 2.2 AA, extiende cap 09 (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)
 - [x] [11-responsive-philosophy.md](11-responsive-philosophy.md) - Responsive Philosophy (cerrado 2026-07-12 — 44×44px táctil, zonas de pulgar (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)
 - [x] [12-design-system.md](12-design-system.md) - Design System (cerrado 2026-07-12 — roles Positivo/Atención/Interactivo (UX-MON-001 · 2026-07-27), ver 00-STATE.md)
-- [x] [13-psicologia.md](13-psicologia.md) - Psicologia (cerrado 2026-07-12 — límite obligatorio para streaks (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)
-- [x] [14-gamificacion.md](14-gamificacion.md) - Gamificacion (cerrado 2026-07-12 — ventana móvil de constancia (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)
+- [x] [13-psicologia.md](13-psicologia.md) - Psicologia (cerrado 2026-07-12 — límite obligatorio para streaks (PM-RECON-001 · 2026-07-27; verificado contra código sin cambios, PM-RECON-002 · 2026-07-27), ver 00-STATE.md)
+- [x] [14-gamificacion.md](14-gamificacion.md) - Gamificacion (cerrado 2026-07-12 — ventana móvil de constancia (PM-RECON-001 · 2026-07-27; verificado contra código sin cambios, PM-RECON-002 · 2026-07-27), ver 00-STATE.md)
 - [x] [15-ia.md](15-ia.md) - IA (cerrado 2026-07-12 — señal semanal definida, caja diaria delegada a cap 16 (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)
 - [x] [16-roadmap-ux.md](16-roadmap-ux.md) - Roadmap UX (cerrado 2026-07-12 — V1-V4 justificadas (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)
 - [x] [17-qa.md](17-qa.md) - QA (cerrado 2026-07-12 — 3 hallazgos de simulación end-to-end, reabre cap 05/15 (PM-RECON-001 · 2026-07-27), ver 00-STATE.md)

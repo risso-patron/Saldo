@@ -109,7 +109,7 @@ queda explícitamente excluido.
 
 - Verificar en código si `ai_analysis`/`ai_predictions` están realmente gateados
   (bloqueante antes de comunicar la IA como diferenciador Pro).
-- DP-PROD-001: auditoría de gamificación (`PlayerProgress.jsx` vs. cap 14).
+- DP-PROD-001: auditoría de gamificación completada (PM-RECON-002) — deuda técnica de implementación registrada en `00-STATE.md`.
 - Diseño concreto del acceso a IA para Lifetime (hipótesis de consumo): nombre,
   límites, UX y modelo económico del add-on.
 - Decisión de mercado objetivo para habilitar multi-moneda.
