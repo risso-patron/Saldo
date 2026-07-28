@@ -152,6 +152,8 @@ Decisiones pendientes del PO antes de poder implementar nada:
 Resolución prevista:
 Ninguna todavía. Queda registrada para que el PO defina la política única del catálogo antes de aprobar cualquier implementación. No bloquea el resto de RC-1.4 en lo que respecta a sus otros hallazgos (C1, A1, A2, M1–M5, B1–B6 del informe de auditoría), que siguen en alcance para una futura fase de implementación, sujeta a aprobación separada. (A3 no forma parte de esta lista: fue clasificado como deuda de integración, no como hallazgo pendiente de implementación bajo este proceso — ver `docs/design/integration-debt.md`.)
 
+Resolución (PM-CAT-001, 2026-07-28): el PO ratificó el Modelo C — catálogo canónico protegido + categorías personalizadas bajo demanda, ya anticipado en Product Blueprint §04 (documentado en `docs/product-master/03-principios-del-producto.md`, "Aplicación concreta a Saldo"). Política para categorías no canónicas: con equivalencia, normalizar al catálogo oficial; sin equivalencia, convertir en personalizada del usuario; nunca degradar a "Otros". Para BR-2, el catálogo canónico queda congelado — "Comida"/"Compras" no se incorporan, deben mapearse. Con esto, **C2 queda desbloqueada**: la implementación debe converger IA, motor de reglas y picker de importación hacia el catálogo único (clasificado como Corrección, no como decisión de producto adicional — ver también Historial/Omnibar, misma clasificación). Detalle completo en `docs/product-master/00-STATE.md`, sección PM-CAT-001.
+
 ---
 
 # Bugs medios
@@ -426,7 +428,7 @@ El roadmap de implementación de RC-1 (Fases 0 a 6, aprobado en la sección "Roa
 
 | Fase | Ticket | Estado final | Commits |
 |------|--------|--------------|---------|
-| Fase 0 | Prerrequisitos administrativos (D1, D2) | 🟡 Parcial — D1 ✅ resuelta, D2 ⏳ abierta (ver detalle abajo) | — |
+| Fase 0 | Prerrequisitos administrativos (D1, D2) | ✅ D1 y D2 resueltas — ver detalle en cada sección | — |
 | Fase 1 | RC-1.8 — Código muerto y componentes huérfanos | ✅ Cerrado | `c9c4168` |
 | Fase 2 | RC-1.7 — Toasts y sistema de feedback | ✅ Finalizado en lo implementable | `ed2342c`, `a447fac`, `930bbf1`, `e03b866`, `505d87c`, `8fd4e87`, `52fcf1b` |
 | Fase 3 | RC-1.6 — Paywall | ✅ Finalizado en lo implementable | `868f840`, `ab32c10`, `6216dd7` |
@@ -434,7 +436,7 @@ El roadmap de implementación de RC-1 (Fases 0 a 6, aprobado en la sección "Roa
 | Fase 5 | RC-1.2 — Nuevo Movimiento | ✅ Alcance implementable completo | `f8ae378`, `aff709f` |
 | Fase 6 | RC-1.5 — Internacionalización (bug de locale) | ✅ Alcance del roadmap completo | `ca24cc0` |
 
-**Única decisión de producto que sigue abierta: D2** (gobernanza del catálogo de categorías — ver sección "## D2" arriba). Bloquea exclusivamente **RC-1.4/C2** (categorías del picker de revisión de importación inconsistentes con `EXPENSE_CATEGORIES`); no bloquea ningún otro hallazgo, fase, ni el cierre del resto de RC-1. D1 (única otra decisión de producto que había quedado pendiente) fue resuelta durante la Fase 5 — ver sección "## D1" para el detalle completo de la resolución.
+**D1 y D2 (las dos decisiones de producto que habían quedado pendientes) están resueltas.** D1 fue resuelta durante la Fase 5 — ver sección "## D1". D2 (gobernanza del catálogo de categorías) fue resuelta en PM-CAT-001 (2026-07-28) — ver sección "## D2" y `docs/product-master/00-STATE.md`. Con esto, **RC-1.4/C2** queda desbloqueada como deuda técnica de implementación (ver PRE-RC-001).
 
 Hallazgos retirados formalmente por pérdida de trazabilidad documental durante el ciclo (sin contenido recuperable en ningún lugar del proyecto, ver el detalle de cada regularización en la sección del ticket correspondiente): RC-1.2/B1–B4, RC-1.4/M1–M5 y B1–B6, RC-1.6/A1–A3, M1–M6 y B1–B4, RC-1.7/M6 (diferido, no retirado) y B1–B3.
 

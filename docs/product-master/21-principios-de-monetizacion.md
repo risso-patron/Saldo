@@ -196,9 +196,11 @@ este tipo, presente o futura, incluidas modalidades comerciales que todavía no 
   (contradice cap 04) y un tono de urgencia (badges de descuento, tachados en rojo, llamados a la acción
   imperativos) que no corresponde al lenguaje calmo ya exigido — quedan señalados como corrección pendiente de
   implementación, no de principio.
-- (UX-MON-001, Bloque B) El elemento persistente de invitación en el espacio de gestión de cuenta requiere, además
-  de estar en un lugar legítimo, la justificación explícita ya descrita arriba — su tratamiento final es una
-  decisión pendiente del Product Owner.
+- (UX-MON-001, Bloque B; ratificado en PM-RECON-003, 2026-07-28) El elemento persistente de invitación en el
+  espacio de gestión de cuenta queda resuelto: vive como una página propia dentro de Perfil, con una invitación
+  contextual de frecuencia mensual, sin contadores ni urgencia artificial — modelo definido en Product Blueprint
+  §02 ("Suscripción"), que opera los principios de este capítulo sin contradecirlos. Ya no es una decisión
+  pendiente del Product Owner.
 
 Si algún día monetizar obliga a romper cualquiera de estos principios, no debemos cambiar los principios. Debemos
 cambiar el modelo de negocio.

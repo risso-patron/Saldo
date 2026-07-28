@@ -68,3 +68,4 @@ Si la interfaz genera presión, contradice la misión de Saldo.
 - Vista de Luis: lectura clara de cómo viene el mes, sin jerga
 - Vista de Ana: señales anticipatorias claras cuando se aproxima una semana difícil
 - Todo mensaje del sistema: breve, directo y sin jerga
+- Categorías (PM-CAT-001, 2026-07-28): catálogo canónico protegido por el sistema (regla 3, regla 8); personalizadas del usuario solo bajo demanda, nunca en el flujo principal (Product Blueprint §04); una categoría no canónica se normaliza al catálogo oficial si hay equivalencia, o pasa a ser personalizada si no la hay — nunca se degrada a "Otros" automáticamente

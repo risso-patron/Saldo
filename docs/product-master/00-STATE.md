@@ -380,7 +380,8 @@ en ningún momento del ticket.
 **Decisiones comerciales pendientes para el Product Owner:**
 - Mecanismo y política del Trial contextual (duración, repetibilidad, coexistencia con pago directo).
 - Mecanismo de consumo de IA para Lifetime (medición, qué ocurre al agotarse, renovación).
-- Tratamiento final del elemento persistente de invitación en el espacio de gestión de cuenta.
+- ~~Tratamiento final del elemento persistente de invitación en el espacio de gestión de cuenta.~~ Resuelto en
+  PM-RECON-003 (2026-07-28) — ver esa entrada y cap 21, Bloque B.
 - Canal y momento de la comunicación de no-retroactividad hacia usuarios Lifetime existentes.
 
 **Próximos pasos sugeridos:** un ticket de implementación de código para las correcciones de Bloque B (vocabulario/tono) y la dependencia de Stripe de Bloque C; una ronda de decisiones comerciales con el Product Owner para Trial (Bloque D) y consumo de IA (Bloque F) antes de que cualquiera de los dos sea implementable.
@@ -464,6 +465,65 @@ ese ticket**. Se preserva acá como antecedente, no como decisión ni como deuda
 - PM-RECON-002 termina sin ninguna modificación adicional del Product Master y sin adelantar ninguna conclusión
   sobre este posible cambio de paradigma.
 
+## PM-RECON-003 — Reconciliación Product Master ↔ Design Constitution / Blueprint (cerrado 2026-07-28)
+Reconciliación documental entre Product Master y el track paralelo de gobernanza de diseño (Design Constitution
+v1.2, Experience Constitution v1.1, Product Blueprint v1.0, Design Review Guide v1.0, Screen Specs, Flow Specs,
+`integration-debt.md`) — nunca cruzados formalmente antes de este ticket. El Discovery (PM-RECON-003) y la
+decisión del Product Owner (PM-RECON-003-CLOSE) preceden esta entrada; acá se registra la ejecución documental
+(PM-RECON-003-WRITE).
+
+- **C1 — Gamificación (Normalización con aclaración conceptual):** cap 13/14 se mantienen sin cambios de fondo.
+  Se agregó una aclaración de alcance en cap 14, sección "Qué NO hacer": los reconocimientos de hitos financieros
+  no constituyen gamificación tradicional (sin puntos, rankings, competencia, streak-obligación diaria, presión
+  psicológica ni confeti) y no activan el anti-patrón "El casino" de la Experience Constitution, que recibió la
+  referencia cruzada simétrica.
+- **C2 — Componentes desmontados del Dashboard (Normalización / cierre documental):** se ratifica el Dashboard
+  screen spec como autoridad vigente. `HabitDailyCard`, `Summary`, `GlobalBudgetTracker` no regresan;
+  `GamificationDashboard` queda alineado con la resolución de C1. `integration-debt.md` actualizado.
+- **C3 — Invitación Pro / Monetización (Normalización):** se ratifica Product Blueprint §02 como implementación
+  concreta de cap 21 — página propia de suscripción en Perfil, invitación contextual mensual, sin contadores ni
+  urgencia. cap 21 (Bloque B) actualizado; ya no queda como decisión pendiente del Product Owner.
+  `integration-debt.md` actualizado.
+- **D1 — Saldo disponible (Deuda documental, cerrada):** se documentó en cap 01 que la cifra representa flujo
+  operativo del período (ingresos − gastos), no patrimonio acumulado. No se abre PM-DISCOVERY-003 — permanece
+  preservado como investigación futura.
+
+**Archivos modificados por PM-RECON-003-WRITE:** `14-gamificacion.md`, `21-principios-de-monetizacion.md`,
+`01-la-filosofia.md`, `docs/design/constitution/Saldo Experience Constitution.dc.html`,
+`docs/design/integration-debt.md`, más este archivo e `INDEX.md`. Ningún archivo de código, ninguna Design
+Constitution, ningún principio nuevo.
+
+**Verificación de cierre:** las 4 decisiones (C1-C3, D1) quedan trasladadas exactamente como el Product Owner las
+aprobó en PM-RECON-003-CLOSE, sin reinterpretación ni ampliación de alcance. No surgió ninguna duda conceptual
+nueva durante la redacción.
+
+## PM-CAT-001 — Gobernanza del Catálogo de Categorías (cerrado 2026-07-28)
+Discovery + decisión del Product Owner sobre D2 (`docs/release/RC-1.md`), única decisión de producto pendiente de
+RC-1/BR-1.
+
+- **Decisión 1 (Normalización):** Modelo C ratificado — catálogo canónico protegido + personalizadas bajo demanda,
+  ya anticipado en Product Blueprint §04. No constituye Evolución del producto. Documentado en cap 03
+  ("Aplicación concreta a Saldo") — no en cap 01, por observación de arquitectura documental del PO: cap 01 se
+  mantiene puramente filosófico; las reglas funcionales de gobernanza de datos viven en cap 03, que ya sostiene
+  esta decisión con sus propias reglas 3 y 8.
+- **Decisión 2 (preservada, no abre Evolución):** sin subcategorías de ingreso antes de BR-2 — bucket único
+  "Ingresos". Queda como investigación futura basada en evidencia de BR-2, sin ticket propio todavía.
+- **Decisión 3:** política de categorías no canónicas — equivalencia → catálogo oficial; sin equivalencia →
+  personalizada; nunca degradar a "Otros" automáticamente. Documentado en cap 03, junto a la Decisión 1. Sin
+  diseño de migración en este ticket.
+- **Decisión 4 (Corrección, sin cambio documental):** inconsistencia IA/motor de reglas/picker/catálogo — el
+  código debe converger hacia el catálogo único; ningún principio de Product Master se modifica.
+- **Decisión 5 (Corrección, sin cambio documental):** Historial y Omnibar deben compartir semántica de búsqueda
+  por categoría.
+- **Decisión 6:** catálogo congelado para BR-2 — "Comida"/"Compras" no se incorporan como categorías oficiales,
+  deben mapearse. Documentado junto a la Decisión 1 en cap 03.
+
+**D2 (`RC-1.md`) queda formalmente resuelta** — ver esa sección para el detalle completo. C2 queda desbloqueada
+como deuda técnica (ya registrada en PRE-RC-001).
+
+**Archivos modificados por PM-CAT-001:** `03-principios-del-producto.md`, `RC-1.md`, más este archivo e
+`INDEX.md`. Ningún archivo de código, ninguna migración de datos diseñada, cap 01 sin cambios.
+
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos
@@ -523,6 +583,11 @@ ese ticket**. Se preserva acá como antecedente, no como decisión ni como deuda
 - Personas Luis y José evolucionadas (cap 02, 2026-07-26 PV-003): SALDO no incorpora un modelo de clientes ni administración de negocio pequeño/separación caja personal-negocio — decisión de alcance del Product Owner (PV-003). Luis pasa a representar ingresos variables sin eje de "cliente"; José pasa a representar rutina diaria de bajo perfil técnico sin eje de "negocio". Reconciliado en PM-RECON-001 (2026-07-27): cap 04, 05, 06, 07, 08, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20 actualizados; cap 12 nunca dependió de esto en su propio texto — ver entrada PM-RECON-001
 - PLAN-001 cerrado como arquitectura estratégica (2026-07-26), consolidado en PRICING-STRATEGY.md: pricing vigente ($4.99/mes, $49/año, $79 lifetime) queda como hipótesis inicial validada, no como decisión definitiva — cualquier cambio de precio requiere evidencia sostenida (3+ meses) de las métricas del documento, nunca intuición. Lifetime queda fijado como herramienta estratégica/táctica, no pilar de ingreso recurrente — ese rol es de Pro mensual/anual
 - `docs/technical/MONETIZATION_STRATEGY.md` (documento antiguo, confirmado stale durante PLAN-001) no fue tocado — pendiente de decisión futura sobre si se audita, reemplaza o archiva
+- Aclaración de alcance de gamificación (cap 14, PM-RECON-003, 2026-07-28): los reconocimientos de hitos financieros de Saldo no constituyen gamificación tradicional ni activan el anti-patrón "El casino" (Experience Constitution) — sin puntos, sin rankings, sin competencia, sin streak-obligación diaria, sin presión psicológica, sin confeti
+- Invitación a Pro (cap 21, Bloque B, ratificada en PM-RECON-003, 2026-07-28): vive como página propia en Perfil, invitación contextual de frecuencia mensual, sin contadores ni urgencia — modelo de Product Blueprint §02, ya no es una decisión pendiente
+- "Saldo disponible" (cap 01, PM-RECON-003/D1, 2026-07-28): representa flujo operativo del período (ingresos menos gastos), no patrimonio acumulado — distinción completa preservada sin abrir en PM-DISCOVERY-003
+- Catálogo de categorías (cap 03, PM-CAT-001, 2026-07-28): canónico protegido por el sistema, personalizadas del usuario solo bajo demanda (Product Blueprint §04) — no reintroducir un modelo de personalización libre o de catálogo cerrado sin discutirlo de nuevo acá
+- Categorías de ingreso (PM-CAT-001, 2026-07-28): bucket único "Ingresos" mantenido hasta tener evidencia de BR-2 — no crear subcategorías de ingreso sin esa evidencia
 
 ## Contradicciones abiertas (requieren tu decision)
 - "Primer hallazgo IA" en V2 (cap 15) solo tiene contenido definido para Ana (gasto) y José (ingreso del negocio) —

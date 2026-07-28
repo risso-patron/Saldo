@@ -22,6 +22,10 @@ No después de tocar diez filtros.
 No después de leer tutoriales.
 En menos de 10 segundos.
 
+El saldo disponible que muestra Saldo representa el flujo operativo del período — ingresos menos gastos —, no el
+patrimonio acumulado del usuario. Esa distinción conceptual queda preservada como investigación futura en
+PM-DISCOVERY-003, sin abrirse en este capítulo.
+
 ## Lo que Saldo sí es
 - Una herramienta de claridad inmediata
 - Un traductor simple de movimientos diarios
