@@ -36,9 +36,6 @@ export const AchievementNotification = ({ achievement, onClose }) => {
             <span className="text-xs font-bold text-white uppercase tracking-wide">
               Logro Desbloqueado
             </span>
-            <span className="text-xs font-bold text-white bg-white/20 px-2 py-0.5 rounded">
-              +{achievement.points} pts
-            </span>
           </div>
           
           <h3 className="text-white font-bold text-lg leading-tight mb-1">
@@ -81,7 +78,6 @@ AchievementNotification.propTypes = {
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
-    points: PropTypes.number.isRequired,
   }),
   onClose: PropTypes.func.isRequired,
 };
@@ -134,7 +130,6 @@ AchievementNotifications.propTypes = {
       name: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
       icon: PropTypes.string.isRequired,
-      points: PropTypes.number.isRequired,
     })
   ).isRequired,
   onRemove: PropTypes.func.isRequired,

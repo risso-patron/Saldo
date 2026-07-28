@@ -19,7 +19,8 @@ const formatAmount = (n) => {
 export const ProfilePage = ({
   filteredTotalExpenses = 0,
   totalTransactions = 0,
-  currentStreak = 0,
+  constancyWindow = 0,
+  windowSize = 14,
   categoryCount = 0,
   onNavigate,
   onShowAlert,
@@ -78,7 +79,7 @@ export const ProfilePage = ({
   const stats = [
     { label: t('profile.spent'), value: formatAmount(filteredTotalExpenses) },
     { label: t('profile.movements'), value: String(totalTransactions) },
-    { label: t('profile.streak'), value: `${currentStreak}🔥` },
+    { label: t('profile.streak'), value: `${constancyWindow}/${windowSize}` },
     { label: t('profile.categories'), value: String(categoryCount) },
   ]
 

@@ -1,275 +1,127 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ACHIEVEMENTS, getAllAchievements, calculateLevel, getPointsForNextLevel, getLevelProgress } from '../../features/gamification/achievementDefinitions';
+import { useState, useEffect, useMemo } from 'react';
+import { getAllMilestones } from '../../features/gamification/achievementDefinitions';
 
-const STORAGE_KEY = 'budget_app_achievements';
-const STATS_KEY = 'budget_app_stats';
-const STREAK_KEY = 'budget_app_streak';
-const MORNING_KEY = 'budget_app_morning';
+const STORAGE_KEY = 'budget_app_gamification';
+const LEGACY_ACHIEVEMENTS_KEY = 'budget_app_achievements';
+const WINDOW_SIZE = 14;
+
+// Remapeo de logros retirados hacia los 4 hitos aprobados (cap 14,
+// PM-RECON-002, PRE-RC-001-T5-SPEC). Todo id sin equivalente se descarta sin
+// aviso — no representa ningún recurso material del usuario que preservar.
+const LEGACY_ID_REMAP = {
+  first_income: 'first_movement',
+  first_expense: 'first_movement',
+  goal_completed: 'goal_completed',
+};
+
+const emptyMilestonesState = () => ({
+  first_movement: { unlockedAt: null },
+  first_month_closed: { unlockedAt: null },
+  goal_completed: { unlockedAt: null },
+  sustained_budget: { unlockedAt: null, consecutiveMonthsCurrent: 0, lastEvaluatedMonth: null },
+});
+
+const toDayKey = (date) => date.toISOString().split('T')[0];
+
+function loadMilestones() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      return { ...emptyMilestonesState(), ...JSON.parse(saved).milestones };
+    } catch (error) {
+      console.error('Error cargando gamificación:', error);
+    }
+  }
+
+  // Migración desde el modelo anterior (23 logros, streak, puntos) — se lee
+  // una sola vez; la clave vieja no se vuelve a escribir.
+  const migrated = emptyMilestonesState();
+  try {
+    const legacy = localStorage.getItem(LEGACY_ACHIEVEMENTS_KEY);
+    if (legacy) {
+      JSON.parse(legacy).forEach((entry) => {
+        const newId = LEGACY_ID_REMAP[entry.id];
+        if (!newId) return; // logro retirado, se descarta sin aviso
+        const current = migrated[newId].unlockedAt;
+        if (!current || new Date(entry.unlockedAt) < new Date(current)) {
+          migrated[newId] = { ...migrated[newId], unlockedAt: entry.unlockedAt };
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error migrando logros previos:', error);
+  }
+  return migrated;
+}
 
 /**
- * Hook para gestionar el sistema de logros y gamificación
+ * Hook de gamificación (cap 14): ventana móvil de constancia + 4 hitos
+ * reales, derivados siempre de los movimientos/metas reales que recibe como
+ * argumento — sin estado incremental propio, sin puntos, sin niveles, sin
+ * streak clásico (PM-RECON-002, PRE-RC-001-T5-SPEC).
  */
-export const useAchievements = () => {
-  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
-  const [stats, setStats] = useState({
-    totalIncomes: 0,
-    totalExpenses: 0,
-    totalGoals: 0,
-    goalsCompleted: 0,
-    goalsOnTrackDays: 0,
-    currentBalance: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    usedDarkMode: false,
-    dataExported: false,
-    usedAI: false,
-    creditCardsAdded: 0,
-    achievementsUnlocked: 0,
-    morningRegistrations: 0,
-    topCategoryReduced: false,
-  });
+export const useAchievements = (incomes = [], expenses = [], goalsCompletedCount = 0) => {
+  const [milestones, setMilestones] = useState(loadMilestones);
   const [newAchievements, setNewAchievements] = useState([]);
 
-  // Cargar datos desde localStorage al iniciar
   useEffect(() => {
-    const savedAchievements = localStorage.getItem(STORAGE_KEY);
-    const savedStats = localStorage.getItem(STATS_KEY);
-    
-    if (savedAchievements) {
-      try {
-        setUnlockedAchievements(JSON.parse(savedAchievements));
-      } catch (error) {
-        console.error('Error loading achievements:', error);
-      }
-    }
-    
-    if (savedStats) {
-      try {
-        setStats(JSON.parse(savedStats));
-      } catch (error) {
-        console.error('Error loading stats:', error);
-      }
-    }
-  }, []);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ milestones }));
+  }, [milestones]);
 
-  // Guardar achievements cuando cambien
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(unlockedAchievements));
-  }, [unlockedAchievements]);
-
-  // Guardar stats cuando cambien
-  useEffect(() => {
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  }, [stats]);
-
-  /**
-   * Verifica si un logro está desbloqueado
-   */
-  const isAchievementUnlocked = useCallback((achievementId) => {
-    return unlockedAchievements.some(a => a.id === achievementId);
-  }, [unlockedAchievements]);
-
-  /**
-   * Verifica y desbloquea logros basados en las estadísticas actuales
-   */
-  const checkAchievements = useCallback(() => {
-    const allAchievements = getAllAchievements();
-    const newlyUnlocked = [];
-
-    allAchievements.forEach(achievement => {
-      // Solo verificar si no está desbloqueado
-      if (!isAchievementUnlocked(achievement.id)) {
-        // Verificar condición
-        if (achievement.condition(stats)) {
-          const unlockedAchievement = {
-            ...achievement,
-            unlockedAt: new Date().toISOString(),
-          };
-          newlyUnlocked.push(unlockedAchievement);
-        }
+  // Ventana móvil de constancia (cap 14: "cargaste movimientos 12 de los
+  // últimos 14 días"). Se deriva siempre de las fechas reales de los
+  // movimientos — nunca de un contador incremental — para que un día sin
+  // actividad baje el número en 1, nunca lo reinicie, y para que el valor
+  // coincida en cualquier dispositivo (PRE-RC-001-T5-SPEC §1/§4).
+  const constancyWindow = useMemo(() => {
+    const today = new Date();
+    const cutoff = new Date(today);
+    cutoff.setDate(cutoff.getDate() - (WINDOW_SIZE - 1));
+    const cutoffKey = toDayKey(cutoff);
+    const todayKey = toDayKey(today);
+    const activeDays = new Set();
+    [...incomes, ...expenses].forEach((tx) => {
+      if (tx.date && tx.date >= cutoffKey && tx.date <= todayKey) {
+        activeDays.add(tx.date);
       }
     });
+    return activeDays.size;
+  }, [incomes, expenses]);
 
-    if (newlyUnlocked.length > 0) {
-      setUnlockedAchievements(prev => [...prev, ...newlyUnlocked]);
-      setNewAchievements(newlyUnlocked);
-      
-      // Actualizar contador de logros desbloqueados
-      setStats(prev => ({
-        ...prev,
-        achievementsUnlocked: prev.achievementsUnlocked + newlyUnlocked.length,
-      }));
-      
-      // Limpiar nuevos logros después de 5 segundos
-      setTimeout(() => setNewAchievements([]), 5000);
-      
-      return newlyUnlocked;
-    }
-    
-    return [];
-  }, [stats, isAchievementUnlocked]);
-
-  /**
-   * Actualiza la racha de días consecutivos
-   */
-  const updateStreak = useCallback(() => {
-    const streakData = localStorage.getItem(STREAK_KEY);
-    const today = new Date().toDateString();
-    
-    if (streakData) {
-      try {
-        const { lastDate, currentStreak, longestStreak } = JSON.parse(streakData);
-        const lastDateObj = new Date(lastDate);
-        const todayObj = new Date(today);
-        
-        // Calcular diferencia en días
-        const diffTime = todayObj - lastDateObj;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 0) {
-          // Mismo día, no hacer nada
-          return;
-        } else if (diffDays === 1) {
-          // Día consecutivo
-          const newStreak = currentStreak + 1;
-          const newLongest = Math.max(newStreak, longestStreak);
-          
-          localStorage.setItem(STREAK_KEY, JSON.stringify({
-            lastDate: today,
-            currentStreak: newStreak,
-            longestStreak: newLongest,
-          }));
-          
-          setStats(prev => ({ 
-            ...prev,
-            currentStreak: newStreak,
-            longestStreak: newLongest,
-          }));
-        } else {
-          // Se rompió la racha
-          localStorage.setItem(STREAK_KEY, JSON.stringify({
-            lastDate: today,
-            currentStreak: 1,
-            longestStreak: longestStreak,
-          }));
-          
-          setStats(prev => ({ ...prev, currentStreak: 1 }));
-        }
-      } catch (error) {
-        console.error('Error updating streak:', error);
-      }
-    } else {
-      // Primera vez
-      localStorage.setItem(STREAK_KEY, JSON.stringify({
-        lastDate: today,
-        currentStreak: 1,
-        longestStreak: 1,
-      }));
-      
-      setStats(prev => ({ ...prev, currentStreak: 1, longestStreak: 1 }));
-    }
-  }, []);
-
-  /**
-   * Actualiza las estadísticas y verifica logros
-   */
-  const updateStats = useCallback((updates) => {
-    setStats(prev => ({ ...prev, ...updates }));
-  }, []);
-
-  // Verificar logros cuando cambien cualquier stat relevante
+  // Verifica y desbloquea hitos cuando cambian los datos reales que evalúan
+  // sus condiciones. Reactivo a `milestones` para poder chequear si un hito
+  // ya está desbloqueado sin depender de una función memorizada aparte;
+  // es idempotente (si no hay nada nuevo, no hace nada) así que no genera
+  // un bucle.
   useEffect(() => {
-    checkAchievements();
-  }, [
-    stats.totalIncomes,
-    stats.totalExpenses,
-    stats.totalGoals,
-    stats.goalsCompleted,
-    stats.currentBalance,
-    stats.creditCardsAdded,
-    stats.currentStreak,
-    stats.usedDarkMode,
-    stats.dataExported,
-    stats.usedAI,
-    stats.goalsOnTrackDays,
-    stats.achievementsUnlocked,
-    stats.morningRegistrations,
-    stats.topCategoryReduced,
-    checkAchievements,
-  ]);
+    const statsForConditions = {
+      totalMovements: incomes.length + expenses.length,
+      goalsCompleted: goalsCompletedCount,
+    };
+    const newlyUnlocked = getAllMilestones().filter(
+      (milestone) => !milestones[milestone.id]?.unlockedAt && milestone.condition(statsForConditions)
+    );
+    if (newlyUnlocked.length === 0) return;
 
-  /**
-   * Incrementa el contador de transacciones (sin closure stale)
-   */
-  const recordTransaction = useCallback((type) => {
-    const key = type === 'income' ? 'totalIncomes' : 'totalExpenses';
-    const now = new Date();
-    const isMorning = now.getHours() < 12;
-    const today = now.toDateString();
-    const lastMorningDate = localStorage.getItem(MORNING_KEY);
-    const isNewMorningDay = isMorning && lastMorningDate !== today;
-    if (isNewMorningDay) localStorage.setItem(MORNING_KEY, today);
-    setStats(prev => ({
-      ...prev,
-      [key]: prev[key] + 1,
-      ...(isNewMorningDay && { morningRegistrations: (prev.morningRegistrations || 0) + 1 }),
-    }));
-    updateStreak();
-  }, [updateStreak]);
-
-  /**
-   * Calcula puntos totales
-   */
-  const totalPoints = unlockedAchievements.reduce((sum, achievement) => sum + achievement.points, 0);
-
-  /**
-   * Calcula nivel actual
-   */
-  const currentLevel = calculateLevel(totalPoints);
-
-  /**
-   * Puntos para siguiente nivel
-   */
-  const pointsForNext = getPointsForNextLevel(totalPoints);
-
-  /**
-   * Progreso del nivel actual (0-100)
-   */
-  const levelProgress = getLevelProgress(totalPoints);
-
-  /**
-   * Obtiene logros por categoría
-   */
-  const getAchievementsByCategory = useCallback((category) => {
-    return getAllAchievements().filter(a => a.category === category);
-  }, []);
-
-  /**
-   * Progreso general (porcentaje de logros desbloqueados)
-   */
-  const overallProgress = (unlockedAchievements.length / getAllAchievements().length) * 100;
+    const unlockedAt = new Date().toISOString();
+    setMilestones((prev) => {
+      const next = { ...prev };
+      newlyUnlocked.forEach((m) => {
+        next[m.id] = { ...next[m.id], unlockedAt };
+      });
+      return next;
+    });
+    setNewAchievements(newlyUnlocked.map((m) => ({ ...m, unlockedAt })));
+    setTimeout(() => setNewAchievements([]), 5000);
+  }, [incomes.length, expenses.length, goalsCompletedCount, milestones]);
 
   return {
-    // Estado
-    unlockedAchievements,
-    stats,
+    milestones,
     newAchievements,
-    
-    // Métricas
-    totalPoints,
-    currentLevel,
-    pointsForNext,
-    levelProgress,
-    overallProgress,
-    
-    // Métodos
-    updateStats,
-    recordTransaction,
-    checkAchievements,
-    isAchievementUnlocked,
-    getAchievementsByCategory,
+    constancyWindow,
+    windowSize: WINDOW_SIZE,
     removeNewAchievement: (index) => {
-      setNewAchievements(prev => prev.filter((_, i) => i !== index));
+      setNewAchievements((prev) => prev.filter((_, i) => i !== index));
     },
   };
 };

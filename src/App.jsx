@@ -39,7 +39,6 @@ import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PeriodProvider } from './contexts/PeriodContext';
 import { AIProvider } from './contexts/AIContext';
 import { groqProvider } from './lib/groqProvider';
-import { filterByMonth } from './utils/calculations';
 import { writeDraft } from './utils/newMovementDraft';
 
 // Tabs lazy — solo se cargan cuando el usuario navega a esa sección
@@ -227,7 +226,7 @@ function AppContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const achievements = useAchievements();
+  const achievements = useAchievements(incomes, expenses, goals.filter(g => g.currentAmount >= g.targetAmount).length);
   const { recurring, addRecurring, toggleRecurring, removeRecurring } = useRecurring(addIncome, addExpense);
 
   const [activeTab, setActiveTab] = useLocalStorage('budgetrp_ui_activeTab', 'resumen');
@@ -269,13 +268,11 @@ function AppContent() {
   // consume BudgetForm.jsx (no se toca).
   const handleAddIncome = (description, amount, date, currency) => {
     const result = addIncome(description, amount, date, currency);
-    if (result.success) achievements.recordTransaction('income');
     return result.success;
   };
 
   const handleAddExpense = (description, category, amount, date, currency) => {
     const result = addExpense(description, category, amount, date, currency);
-    if (result.success) achievements.recordTransaction('expense');
     return result.success;
   };
 
@@ -288,13 +285,11 @@ function AppContent() {
   // registra el logro.
   const handleCreateIncome = (description, amount, date, currency) => {
     const result = addIncome(description, amount, date, currency, { notification: 'toast' });
-    if (result.success) achievements.recordTransaction('income');
     return result.success;
   };
 
   const handleCreateExpense = (description, category, amount, date, currency) => {
     const result = addExpense(description, category, amount, date, currency, { notification: 'toast' });
-    if (result.success) achievements.recordTransaction('expense');
     return result.success;
   };
 
@@ -328,30 +323,6 @@ function AppContent() {
   };
 
   useEffect(() => { if (user && hasPendingMigration()) setShowMigration(true); }, [user]);
-  useEffect(() => {
-    achievements.updateStats({
-      totalIncomes: incomes.length, totalExpenses: expenses.length, totalGoals: goals.length,
-      goalsCompleted: goals.filter(g => g.currentAmount >= g.targetAmount).length, currentBalance: balance, creditCardsAdded: creditCards.length,
-    });
-  }, [incomes.length, expenses.length, goals.length, balance, creditCards.length]);
-
-  // Logro "Domé la Bestia": la categoría top actual bajó ≥10% vs el mes anterior
-  useEffect(() => {
-    if (!categoryAnalysis.length || achievements.stats.topCategoryReduced) return;
-    const topCategory = categoryAnalysis[0];
-    if (!topCategory) return;
-    const now = new Date();
-    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
-    const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
-    const prevExpenses = filterByMonth(expenses, prevYear, prevMonth);
-    const prevCategoryTotal = prevExpenses
-      .filter(e => e.category === topCategory.category)
-      .reduce((sum, e) => sum + Number(e.amount), 0);
-    if (prevCategoryTotal > 0 && topCategory.amount <= prevCategoryTotal * 0.9) {
-      achievements.updateStats({ topCategoryReduced: true });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryAnalysis, expenses]);
 
   if (!user && !authLoading) {
     if (!showAuth) return <LandingPage onGetStarted={() => setShowAuth(true)} onLogin={() => setShowAuth(true)} />;
@@ -497,8 +468,8 @@ function AppContent() {
                 />
               )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}
-              {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} onExport={() => achievements.updateStats({ dataExported: true })} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></Suspense>}
-              {activeTab === 'cuenta' && <Suspense fallback={<TabLoader />}><ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} currentStreak={achievements.stats.currentStreak} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} /></Suspense>}
+              {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></Suspense>}
+              {activeTab === 'cuenta' && <Suspense fallback={<TabLoader />}><ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} constancyWindow={achievements.constancyWindow} windowSize={achievements.windowSize} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} /></Suspense>}
             </main>
             <InstallPWA />
           </div>
