@@ -464,6 +464,20 @@ ese ticket**. Se preserva acá como antecedente, no como decisión ni como deuda
   comportamiento de "dos bolsas".
 - PM-RECON-002 termina sin ninguna modificación adicional del Product Master y sin adelantar ninguna conclusión
   sobre este posible cambio de paradigma.
+- **Refuerzo de señal (feedback informal de usuario, 2026-07-28):** un segundo caso independiente —no derivado de
+  este documento ni guiado hacia esta idea— describió el mismo modelo de dos bolsas (separar dinero operativo de
+  dinero "protegido", mover el excedente del período hacia ese espacio). Esto refuerza la hipótesis ya registrada
+  arriba, pero **no constituye un patrón validado** — dos casos no son un patrón; sigue exactamente bajo el mismo
+  criterio de cierre ya definido ("¿caso aislado o patrón frecuente?").
+- Este mismo feedback aporta una faceta relacionada del mismo hallazgo, no una iniciativa nueva: conocer y
+  registrar la ubicación del dinero (cuentas bancarias, efectivo, inversiones, criptomonedas, otros instrumentos),
+  etiquetando cada movimiento con su origen/destino — comparte la misma necesidad subyacente ("entender dónde está
+  mi dinero") y la misma cautela ya aplicable acá: cap 01 (responder "dónde se fue mi dinero" en menos de 10
+  segundos, no una herramienta de patrimonio), cap 03 (simplicidad, evitar complejidad innecesaria), y el riesgo
+  de confundir "más información" con "más claridad".
+- Sigue sin abrirse. Criterio para reabrir sin cambios respecto del original: solo si este patrón (dos bolsas y/o
+  ubicación del dinero) aparece de forma repetida durante BR-2 u otras investigaciones futuras — nunca por una
+  sola opinión o por este segundo caso aislado.
 
 ## PM-RECON-003 — Reconciliación Product Master ↔ Design Constitution / Blueprint (cerrado 2026-07-28)
 Reconciliación documental entre Product Master y el track paralelo de gobernanza de diseño (Design Constitution
