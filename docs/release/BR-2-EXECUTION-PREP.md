@@ -1,6 +1,13 @@
 # BR-2 — Execution Preparation Record
 
-**Estado:** Preparación administrativa — BR-2 todavía no iniciado. Este documento no autoriza el inicio de usuarios reales; eso requiere una aprobación explícita separada ("BR-2 START").
+**Estado:** BR-2 — READY FOR EXECUTION. "BR-2 START" fue aprobado administrativamente (autorización del Product Owner) — esto habilita el arranque operativo, pero **no equivale a estar "EN EJECUCIÓN"**.
+
+**Condición de transición a "EN EJECUCIÓN":** el estado cambia únicamente cuando se cumplen, de forma simultánea:
+- existe al menos un participante confirmado;
+- existe una fecha oficial de Día 1 definida para ese participante;
+- se inició la observación real (Día 1 ya ocurrió).
+
+Hasta que esas 3 condiciones se cumplan, BR-2 permanece en "READY FOR EXECUTION" — los materiales están listos, pero no hay todavía ningún participante real bajo observación.
 
 ---
 
