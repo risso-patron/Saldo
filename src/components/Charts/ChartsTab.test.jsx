@@ -68,30 +68,30 @@ describe('ChartsTab — CTA de reclasificación en el banner de dominancia (HAL-
 describe('ChartsTab — gate de gráficos avanzados (RC-1.6/C1, pieza 3/3)', () => {
   const categoryAnalysis = [{ category: 'Vivienda', amount: 600, percentage: 100 }];
 
-  it('Free: los 2 gráficos PRO muestran el badge "Función PRO" en vez del gráfico real', () => {
+  it('Free: los 2 gráficos PRO muestran el badge "No disponible" en vez del gráfico real', () => {
     hasFeatureMock.mockReturnValue(false);
     render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
 
-    expect(screen.getAllByText('Función PRO')).toHaveLength(2);
+    expect(screen.getAllByText('No disponible')).toHaveLength(2);
     expect(screen.getByText('Flujo de Caja Mensual')).toBeInTheDocument();
     expect(screen.getByText('Gastos por Día de la Semana')).toBeInTheDocument();
   });
 
-  it('Free: hacer click en "Actualizar" abre UpgradeModal con feature="advanced_charts"', () => {
+  it('Free: hacer click en "Conocer más" abre UpgradeModal con feature="advanced_charts"', () => {
     hasFeatureMock.mockReturnValue(false);
     render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Actualizar' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Conocer más' })[0]);
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText('📊 Gráficos Avanzados')).toBeInTheDocument();
   });
 
-  it('PRO: no muestra ningún badge "Función PRO" ni modal', () => {
+  it('PRO: no muestra ningún badge "No disponible" ni modal', () => {
     hasFeatureMock.mockReturnValue(true);
     render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
 
-    expect(screen.queryByText('Función PRO')).not.toBeInTheDocument();
+    expect(screen.queryByText('No disponible')).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

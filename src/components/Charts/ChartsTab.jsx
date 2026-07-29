@@ -15,11 +15,22 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { UpgradeModal } from '../Subscription/UpgradeModal';
 
 // ─── Gráfico bloqueado (PRO) ─────────────────────────────────────────────────
-// RC-1.6/C1 (pieza 3/3): mismo badge "Función PRO" ya usado en
-// ExportManager.jsx, aplicado a un gráfico completo en vez de a un botón de
-// acción — MonthlyCashFlowChart/SpendingByDayChart no tienen una acción que
+// RC-1.6/C1 (pieza 3/3): mismo badge ya usado en ExportManager.jsx, aplicado a
+// un gráfico completo en vez de a un botón de acción —
+// MonthlyCashFlowChart/SpendingByDayChart no tienen una acción que
 // interceptar (se renderizan siempre), así que el gate ocurre al momento de
 // decidir qué renderizar, no dentro de esos componentes (sin tocarlos).
+//
+// DISCOVERY-BR2-001 (temporal para BR-2, 2026-07-28): copy neutralizado
+// ("No disponible" / "Conocer más" / "Esta visualización no está disponible
+// para tu cuenta.") para eliminar lenguaje comercial pasivo durante la
+// validación con usuarios reales — este badge se muestra sin ninguna acción
+// deliberada del usuario, a diferencia de ExportManager/GoalManager/
+// CreditCardManager. Sin cambios de lógica: hasFeature('advanced_charts') y
+// onUpgradeClick siguen exactamente igual. Revertir al copy comercial
+// original ("Función PRO" / "Actualizar" / "Desbloquea este gráfico con el
+// plan PRO desde $4.99/mes") al finalizar BR-2, salvo que la evidencia
+// obtenida justifique una decisión distinta del Product Owner.
 const LockedChart = ({ title, height, onUpgradeClick }) => (
   <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-white/40 dark:border-white/5 rounded-2xl p-5 shadow-sm">
     <p className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">{title}</p>
@@ -29,18 +40,18 @@ const LockedChart = ({ title, height, onUpgradeClick }) => (
           <div className="flex items-center gap-2">
             <span className="text-xl">🔒</span>
             <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
-              Función PRO
+              No disponible
             </span>
           </div>
           <button
             onClick={onUpgradeClick}
             className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full font-semibold transition-colors"
           >
-            Actualizar
+            Conocer más
           </button>
         </div>
         <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">
-          Desbloquea este gráfico con el plan PRO desde $4.99/mes
+          Esta visualización no está disponible para tu cuenta.
         </p>
       </div>
     </div>
