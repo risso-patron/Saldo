@@ -538,6 +538,41 @@ como deuda técnica (ya registrada en PRE-RC-001).
 **Archivos modificados por PM-CAT-001:** `03-principios-del-producto.md`, `RC-1.md`, más este archivo e
 `INDEX.md`. Ningún archivo de código, ninguna migración de datos diseñada, cap 01 sin cambios.
 
+## DISPLAY-CURRENCY-001 — Migración al sistema unificado de moneda de visualización (cerrado 2026-07-29)
+Discovery → WRITE → Implementation Plan → Implementación, ejecutado en una sola cadena. Corrección de
+consistencia, no evolución de producto: SALDO ya tenía una arquitectura completa de moneda de visualización
+(`CurrencyContext`, `useCurrency()`, `convertCurrency()`, `CurrencySelector`) construida y en producción — el
+problema no era ausencia de arquitectura, sino aplicación inconsistente de la moneda seleccionada en la capa de
+presentación.
+
+- **Alcance final** (reducido en dos rondas tras verificación puntual de origen de datos): `DashboardHome.jsx`
+  ("Saldo disponible", ahora recibe `balance` ya normalizado por `useTransactions()` vía `App.jsx`, en vez de
+  recalcularlo desde `incomes`/`expenses` crudos), `ChartsTab.jsx` (KPI "Mayor categoría"), `CategoryBarChart.jsx`
+  (formato del `LabelList`), `Omnibar.jsx` (vista previa de borrador y fila de resultado de búsqueda, esta última
+  vía `tx.currency`, mismo patrón que `TransactionItem.jsx`). Commit `551c86c`. Build verde, lint limpio, 749/749
+  tests verdes (2 archivos de test requirieron envolver sus renders en `CurrencyProvider`, mismo patrón ya usado en
+  `Omnibar.test.jsx`/`BudgetManager.test.jsx`).
+- **Hallazgo arquitectónico central:** `useFilters()` (filtrado por período) y `useTransactions()` (normalización
+  de moneda vía `convertCurrency()`) son dos pipelines de cálculo independientes que nunca se combinan — ningún
+  componente que dependa de valores filtrados por período (`filteredIncomes`/`filteredExpenses`/
+  `filteredTotalIncome`/`filteredTotalExpenses`/`filteredBalance`) llega normalizado a la moneda seleccionada.
+  Esto excluyó del alcance a `Historial.jsx` completo, `BalanceDonutChart.jsx`, `MonthlyCashFlowChart.jsx`,
+  `SpendingByDayChart.jsx`, `chartHelpers.jsx` (`CustomTooltip`), y dos elementos de `DashboardHome.jsx` ("Gasto
+  del mes", leyenda de ritmo de gasto) — registrado como deuda `DEBT-CHARTS-CURRENCY-001` (ver
+  `docs/design/integration-debt.md`).
+- **Otras deudas registradas, sin trabajo adelantado:** `DEBT-CHARTS-CURRENCY-002` (símbolo de moneda hardcodeado
+  en el eje de `CategoryBarChart.jsx`), `DEBT-PROFILE-CURRENCY-001` (`ProfilePage.jsx` usa un `formatAmount` local
+  hardcodeado a USD, independiente de `CurrencyContext`), `DEBT-EXPORT-CURRENCY-001` (`ExportManager.jsx`/
+  `exportUtils.js` no pasan por `formatCurrency` ni `convertCurrency` en ningún punto).
+- **Verificado durante el Discovery:** varios componentes previamente asumidos como "Prioridad Alta" en un
+  inventario preliminar (`Summary.jsx`, `HabitDailyCard.jsx`, `GlobalBudgetTracker.jsx`, `CategoryChart.jsx`,
+  `BalanceCard.jsx`, `TopMerchantsChart.jsx`, `ComparativeChart.jsx`, `TrendLineChart.jsx`) resultaron ser código
+  muerto — sin importador real en la app viva (confirmado en `App.jsx` y en los imports internos de `ChartsTab.jsx`).
+  No forman parte de ninguna deuda porque no se renderizan.
+
+Sin cambios en `convertCurrency()`, `CurrencyContext`, `useFilters()`, `useTransactions()`, base de datos, ni
+modelo financiero.
+
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos
