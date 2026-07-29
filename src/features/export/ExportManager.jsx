@@ -254,14 +254,25 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
             <li>• <strong>PDF:</strong> Reporte profesional con resumen y gráficos</li>
           </ul>
           
-          {/* Badge PRO si no tiene acceso */}
+          {/* Badge PRO si no tiene acceso —
+              DISCOVERY-BR2-002 (temporal para BR-2, 2026-07-29): copy
+              neutralizado ("No disponible" / "Ver detalles" / "Esta función
+              no está disponible para tu cuenta.") para eliminar lenguaje
+              comercial pasivo durante la validación con usuarios reales —
+              este badge se muestra sin ninguna acción deliberada del
+              usuario, solo por entrar a esta pantalla. Sin cambios de
+              lógica: hasFeature('export_csv') y el onClick siguen
+              exactamente igual. Revertir al copy comercial original
+              ("Función PRO" / "Actualizar" / "Exporta tus datos con el plan
+              PRO desde $4.99/mes") al finalizar BR-2, salvo que la evidencia
+              obtenida justifique una decisión distinta del Product Owner. */}
           {!hasFeature('export_csv') && (
             <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🔒</span>
                   <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
-                    Función PRO
+                    No disponible
                   </span>
                 </div>
                 <button
@@ -271,11 +282,11 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
                   }}
                   className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full font-semibold transition-colors"
                 >
-                  Actualizar
+                  Ver detalles
                 </button>
               </div>
               <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                Exporta tus datos con el plan PRO desde $4.99/mes
+                Esta función no está disponible para tu cuenta.
               </p>
             </div>
           )}

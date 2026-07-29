@@ -170,7 +170,18 @@ export const ProfilePage = ({
         <UserCircle size={22} className="text-slate-300 dark:text-slate-600 shrink-0" />
       </button>
 
-      {/* ── Pro / Stats card ── */}
+      {/* ── Pro / Stats card ──
+          DISCOVERY-BR2-002 (temporal para BR-2, 2026-07-29): copy neutralizado
+          ("Otras funciones" / "Ver detalles" / "Funciones adicionales no
+          incluidas en tu cuenta actual.") para eliminar lenguaje comercial
+          pasivo durante la validación con usuarios reales — esta tarjeta se
+          muestra sin ninguna acción deliberada del usuario, en una de las 4
+          pestañas principales. Sin cambios de lógica: setShowPricing sigue
+          abriendo PricingPlans exactamente igual. Revertir al copy comercial
+          original ("Pro" / "Ir Pro" / "por solo $4.99/mes · sin anuncios",
+          vía profile.pro_subtitle/profile.go_pro en los 3 locales) al
+          finalizar BR-2, salvo que la evidencia obtenida justifique una
+          decisión distinta del Product Owner. */}
       <div className="relative rounded-3xl overflow-hidden mb-4 bg-gradient-to-br from-violet-700 via-violet-600 to-indigo-600 p-5 shadow-xl shadow-violet-900/25">
         {/* Inner glare */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
@@ -181,7 +192,7 @@ export const ProfilePage = ({
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <Diamond size={17} weight="fill" className="text-violet-200" />
-              <span className="text-white font-black text-xl">Pro</span>
+              <span className="text-white font-black text-xl">Otras funciones</span>
             </div>
             <p className="text-violet-200 text-xs font-medium">
               {t('profile.pro_subtitle')}
