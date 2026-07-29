@@ -14,6 +14,7 @@ import { ChartContainer } from './ChartContainer';
 import { transformToBarData, CustomTooltip } from '../../utils/chartHelpers';
 import { formatCurrency } from '../../utils/formatters';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 /**
  * Gráfico de Barras - Top 5 Categorías de Gasto
@@ -23,6 +24,9 @@ export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
   // RC-1.1 — Recharts no puede leer clases dark: de Tailwind en stroke/fill
   // de sus primitivas SVG; estos colores deben elegirse en JS según el tema.
   const { isDark } = useTheme();
+  // WRITE-DISPLAY-CURRENCY-001: categoryAnalysis ya llega normalizado a
+  // selectedCurrency (useTransactions.js) — solo falta la capa de formato.
+  const { selectedCurrency } = useCurrency();
   const gridStroke = isDark ? '#334155' : '#f0f0f0';
   const axisStroke = isDark ? '#64748b' : '#9ca3af';
   const yTickFill = isDark ? '#cbd5e1' : '#374151';
@@ -70,7 +74,7 @@ export const CategoryBarChart = ({ categoryAnalysis, topN = 5 }) => {
             <LabelList
               dataKey="monto"
               position="right"
-              formatter={(value) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(value, selectedCurrency)}
               className="text-xs font-semibold fill-gray-700 dark:fill-slate-300"
             />
           </Bar>

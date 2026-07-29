@@ -4,6 +4,15 @@
 // onReclassifyOtros — sin construir un flujo de navegación propio en ChartsTab.
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ChartsTab } from './ChartsTab';
+import { CurrencyProvider } from '../../contexts/CurrencyContext';
+
+// WRITE-DISPLAY-CURRENCY-001: ChartsTab ahora usa useCurrency() (solo para
+// el KPI "Mayor categoría") — requiere CurrencyProvider en el árbol.
+// CurrencyProvider hace fetch de tasas al montar — sin red en tests, cae a
+// FALLBACK_RATES (mismo patrón que Omnibar.test.jsx/BudgetManager.test.jsx).
+beforeEach(() => {
+  global.fetch = vi.fn(() => Promise.reject(new Error('sin red en tests')));
+});
 
 // Los sub-gráficos (recharts) no son el objeto de este test y requieren
 // ResizeObserver/tamaño real de layout que jsdom no provee — se stubean para
@@ -41,7 +50,11 @@ describe('ChartsTab — CTA de reclasificación en el banner de dominancia (HAL-
       { category: 'Vivienda', amount: 600, percentage: 55 },
       { category: 'Otros', amount: 280, percentage: 25 },
     ];
-    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} onReclassifyOtros={onReclassifyOtros} />);
+    render(
+      <CurrencyProvider>
+        <ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} onReclassifyOtros={onReclassifyOtros} />
+      </CurrencyProvider>
+    );
 
     const cta = screen.getByRole('button', { name: /reclasificar/i });
     fireEvent.click(cta);
@@ -55,7 +68,11 @@ describe('ChartsTab — CTA de reclasificación en el banner de dominancia (HAL-
       { category: 'Vivienda', amount: 600, percentage: 60 },
       { category: 'Otros', amount: 100, percentage: 10 },
     ];
-    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} onReclassifyOtros={onReclassifyOtros} />);
+    render(
+      <CurrencyProvider>
+        <ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} onReclassifyOtros={onReclassifyOtros} />
+      </CurrencyProvider>
+    );
 
     expect(screen.queryByRole('button', { name: /reclasificar/i })).not.toBeInTheDocument();
   });
@@ -70,7 +87,11 @@ describe('ChartsTab — gate de gráficos avanzados (RC-1.6/C1, pieza 3/3)', () 
 
   it('Free: los 2 gráficos PRO muestran el badge "No disponible" en vez del gráfico real', () => {
     hasFeatureMock.mockReturnValue(false);
-    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
+    render(
+      <CurrencyProvider>
+        <ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />
+      </CurrencyProvider>
+    );
 
     expect(screen.getAllByText('No disponible')).toHaveLength(2);
     expect(screen.getByText('Flujo de Caja Mensual')).toBeInTheDocument();
@@ -79,7 +100,11 @@ describe('ChartsTab — gate de gráficos avanzados (RC-1.6/C1, pieza 3/3)', () 
 
   it('Free: hacer click en "Conocer más" abre UpgradeModal con feature="advanced_charts"', () => {
     hasFeatureMock.mockReturnValue(false);
-    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
+    render(
+      <CurrencyProvider>
+        <ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />
+      </CurrencyProvider>
+    );
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Conocer más' })[0]);
 
@@ -89,7 +114,11 @@ describe('ChartsTab — gate de gráficos avanzados (RC-1.6/C1, pieza 3/3)', () 
 
   it('PRO: no muestra ningún badge "No disponible" ni modal', () => {
     hasFeatureMock.mockReturnValue(true);
-    render(<ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />);
+    render(
+      <CurrencyProvider>
+        <ChartsTab {...baseProps} categoryAnalysis={categoryAnalysis} />
+      </CurrencyProvider>
+    );
 
     expect(screen.queryByText('No disponible')).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

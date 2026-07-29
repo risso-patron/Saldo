@@ -426,6 +426,7 @@ function AppContent() {
                 <DashboardHome
                   incomes={incomes}
                   expenses={expenses}
+                  balance={balance}
                   allTransactions={allTransactions}
                   loading={loading}
                   onRegisterExpense={handleQuickAddAction}

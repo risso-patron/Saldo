@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { calculateTotal, calculateBalance } from '../../utils/calculations';
 import {
   calculateSpendingPaceComparison,
   getMonthlySeries,
@@ -8,6 +7,7 @@ import {
   splitAmountForDisplay,
 } from '../../utils/dashboardCalculations';
 import { formatCurrency } from '../../utils/formatters';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { Button } from '../ds/Button';
 import { FilaMovimiento } from '../ds/FilaMovimiento';
 import { cn } from '../ds/cn';
@@ -68,18 +68,17 @@ function EmptyState({ onRegisterExpense }) {
   );
 }
 
-function DashboardContent({ incomes, expenses, allTransactions, onViewAllTransactions }) {
+function DashboardContent({ expenses, balance, allTransactions, onViewAllTransactions }) {
   const { i18n } = useTranslation();
+  const { selectedCurrency } = useCurrency();
   const now = new Date();
 
   // ── Cifra protagonista: Saldo disponible (ingresos - gastos, TODO el
   // historial, sin descontar deuda de tarjetas — decisión explícita del PO,
-  // ver docs/design/integration-debt.md). Mismo default de moneda ('USD')
-  // que el resto de la app usa hoy para esta cifra (Summary/HabitDailyCard
-  // llaman formatCurrency sin currency code explícito) — no se introduce
-  // aquí una dependencia nueva de CurrencyContext no pedida en el encargo.
-  const balance = calculateBalance(calculateTotal(incomes), calculateTotal(expenses));
-  const balanceSplit = splitAmountForDisplay(balance);
+  // ver docs/design/integration-debt.md). WRITE-DISPLAY-CURRENCY-001: usa el
+  // balance ya normalizado a la moneda seleccionada (useTransactions.js),
+  // recibido como prop — no se recalcula desde incomes/expenses crudos.
+  const balanceSplit = splitAmountForDisplay(balance, selectedCurrency);
 
   // ── Contexto del mes: serie de 6 meses (helper 1b) — el último elemento
   // es siempre el mes de referencia (hoy), reusado como cifra "Gasto de
@@ -172,6 +171,7 @@ function DashboardContent({ incomes, expenses, allTransactions, onViewAllTransac
 export function DashboardHome({
   incomes = [],
   expenses = [],
+  balance = 0,
   allTransactions = [],
   loading = false,
   onRegisterExpense,
@@ -187,6 +187,7 @@ export function DashboardHome({
     <DashboardContent
       incomes={incomes}
       expenses={expenses}
+      balance={balance}
       allTransactions={allTransactions}
       onViewAllTransactions={onViewAllTransactions}
     />
@@ -196,6 +197,7 @@ export function DashboardHome({
 DashboardHome.propTypes = {
   incomes: PropTypes.array,
   expenses: PropTypes.array,
+  balance: PropTypes.number,
   allTransactions: PropTypes.array,
   loading: PropTypes.bool,
   onRegisterExpense: PropTypes.func.isRequired,

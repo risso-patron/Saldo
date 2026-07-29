@@ -12,6 +12,7 @@ import {
 } from '@phosphor-icons/react';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { CurrencySelector } from '../../features/currency/CurrencySelector';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { parseMovementText } from '../../utils/newMovementParser';
 
 // Fase I-C (Integración de Diseño): el shell nuevo (DSSidebar/DSBottomNav)
@@ -24,6 +25,8 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
+  // WRITE-DISPLAY-CURRENCY-001: mismo patrón ya usado en TransactionItem.jsx.
+  const { selectedCurrency } = useCurrency();
 
   // Focus and clear input when opened
   useEffect(() => {
@@ -149,7 +152,7 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
                 >
                   <Receipt size={20} />
                   <span className="font-bold">
-                    Nuevo movimiento: {parsedMovement.movementDraft.description} — {formatCurrency(parsedMovement.movementDraft.amount)}
+                    Nuevo movimiento: {parsedMovement.movementDraft.description} — {formatCurrency(parsedMovement.movementDraft.amount, selectedCurrency)}
                   </span>
                 </li>
               </ul>
@@ -222,7 +225,7 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
                       </div>
 
                       <div className={`font-black text-sm text-right ${isIncome ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {isIncome ? '+' : '-'}{formatCurrency(tx.amount)}
+                        {isIncome ? '+' : '-'}{formatCurrency(tx.amount, tx.currency || 'USD')}
                       </div>
                     </li>
                   )

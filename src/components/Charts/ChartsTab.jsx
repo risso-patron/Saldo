@@ -12,6 +12,7 @@ import { formatCurrency, formatPercentageSafe } from '../../utils/formatters';
 import { transformToSpendingByDay } from '../../utils/chartHelpers';
 import { getCategoryDominance } from '../../utils/calculations';
 import { useSubscription } from '../../hooks/useSubscription';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { UpgradeModal } from '../Subscription/UpgradeModal';
 
 // ─── Gráfico bloqueado (PRO) ─────────────────────────────────────────────────
@@ -114,6 +115,9 @@ export const ChartsTab = ({
   const { hasFeature } = useSubscription();
   const hasAdvancedCharts = hasFeature('advanced_charts');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  // WRITE-DISPLAY-CURRENCY-001: solo el KPI "Mayor categoría" — deriva de
+  // categoryAnalysis, ya normalizado a selectedCurrency en useTransactions.js.
+  const { selectedCurrency } = useCurrency();
 
   // ── KPI 1: Tasa de ahorro del período seleccionado ──
   const savingRate = useMemo(() => {
@@ -197,7 +201,7 @@ export const ChartsTab = ({
           iconBg="bg-violet-500"
           label="Mayor categoría"
           value={topCategory ? topCategory.name : '—'}
-          sub={topCategory ? formatCurrency(topCategory.amount) : null}
+          sub={topCategory ? formatCurrency(topCategory.amount, selectedCurrency) : null}
           trend="neutral"
         />
         <KpiCard

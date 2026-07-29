@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DashboardHome } from './DashboardHome';
+import { CurrencyProvider } from '../../contexts/CurrencyContext';
 
 // Fase II — Integración del Dashboard (Saldo Design Constitution v1.2).
 // Fuente: docs/design/screens/Saldo Dashboard.dc.html.
@@ -105,6 +106,14 @@ describe('DashboardHome — estado Vacío (sin transacciones)', () => {
 });
 
 describe('DashboardHome — caso general (con datos)', () => {
+  // WRITE-DISPLAY-CURRENCY-001: DashboardContent ahora usa useCurrency()
+  // (solo para "Saldo disponible") — requiere CurrencyProvider en el árbol.
+  // CurrencyProvider hace fetch de tasas al montar — sin red en tests, cae a
+  // FALLBACK_RATES (mismo patrón que Omnibar.test.jsx/BudgetManager.test.jsx).
+  beforeEach(() => {
+    global.fetch = vi.fn(() => Promise.reject(new Error('sin red en tests')));
+  });
+
   // Fake timers SOLO en los tests que lo necesitan (no en beforeEach global):
   // userEvent v14 usa setTimeout real internamente y se cuelga con fake
   // timers activos sin avanzarlos — mismo hallazgo documentado en
@@ -134,30 +143,36 @@ describe('DashboardHome — caso general (con datos)', () => {
 
   it('la cifra protagonista muestra el balance correcto (ingresos - gastos, todo el historial)', withFixedToday(() => {
     render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={expenses}
-        allTransactions={allTransactions}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={vi.fn()}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={expenses}
+          balance={1200}
+          allTransactions={allTransactions}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={vi.fn()}
+        />
+      </CurrencyProvider>
     );
-    // balance = 2000 - (500+200+100) = 1200
+    // balance = 2000 - (500+200+100) = 1200 (ahora recibido normalizado por prop, no recalculado)
     expect(screen.getByText('1,200')).toBeInTheDocument();
     expect(screen.getByText('.00 USD')).toBeInTheDocument();
   }));
 
   it('la región de IA no renderiza ningún nodo (estado constitucional "Sin IA")', withFixedToday(() => {
     render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={expenses}
-        allTransactions={allTransactions}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={vi.fn()}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={expenses}
+          balance={1200}
+          allTransactions={allTransactions}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={vi.fn()}
+        />
+      </CurrencyProvider>
     );
     expect(screen.queryByText(/insight/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/inteligencia artificial/i)).not.toBeInTheDocument();
@@ -168,14 +183,17 @@ describe('DashboardHome — caso general (con datos)', () => {
     const user = userEvent.setup();
     const onViewAllTransactions = vi.fn();
     render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={expenses}
-        allTransactions={allTransactions}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={onViewAllTransactions}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={expenses}
+          balance={1200}
+          allTransactions={allTransactions}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={onViewAllTransactions}
+        />
+      </CurrencyProvider>
     );
     await user.click(screen.getByRole('button', { name: 'Ver todos los movimientos' }));
     expect(onViewAllTransactions).toHaveBeenCalledTimes(1);
@@ -183,14 +201,17 @@ describe('DashboardHome — caso general (con datos)', () => {
 
   it('renderiza las filas de "Movimientos recientes" (helper 1c, límite 5)', withFixedToday(() => {
     render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={expenses}
-        allTransactions={allTransactions}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={vi.fn()}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={expenses}
+          balance={1200}
+          allTransactions={allTransactions}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={vi.fn()}
+        />
+      </CurrencyProvider>
     );
     expect(screen.getByText('Renta')).toBeInTheDocument();
     expect(screen.getByText('Super')).toBeInTheDocument();
@@ -202,14 +223,17 @@ describe('DashboardHome — caso general (con datos)', () => {
       { id: 'e1', description: 'Renta', amount: 500, date: '2026-07-05', type: 'expense' },
     ];
     render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={onlyCurrentMonthExpenses}
-        allTransactions={[...incomes, ...onlyCurrentMonthExpenses]}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={vi.fn()}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={onlyCurrentMonthExpenses}
+          balance={1500}
+          allTransactions={[...incomes, ...onlyCurrentMonthExpenses]}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={vi.fn()}
+        />
+      </CurrencyProvider>
     );
     expect(screen.queryByText(/más que tu media/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/menos que tu media/i)).not.toBeInTheDocument();
@@ -217,14 +241,17 @@ describe('DashboardHome — caso general (con datos)', () => {
 
   it('con historial, muestra la caption de comparación con el signo adaptado', withFixedToday(() => {
     render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={expenses}
-        allTransactions={allTransactions}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={vi.fn()}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={expenses}
+          balance={1200}
+          allTransactions={allTransactions}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={vi.fn()}
+        />
+      </CurrencyProvider>
     );
     // currentAmount (hasta día 17 de julio) = 500; histórico jun=200, may=100 -> media=150.
     // diff = 150 - 500 = -350 -> "más que tu media"
@@ -233,14 +260,17 @@ describe('DashboardHome — caso general (con datos)', () => {
 
   it('el mini-gráfico renderiza 6 barras: 5 en gris (bg-ds-border) y 1 en acento (bg-ds-accent, el mes actual)', withFixedToday(() => {
     const { container } = render(
-      <DashboardHome
-        incomes={incomes}
-        expenses={expenses}
-        allTransactions={allTransactions}
-        loading={false}
-        onRegisterExpense={vi.fn()}
-        onViewAllTransactions={vi.fn()}
-      />
+      <CurrencyProvider>
+        <DashboardHome
+          incomes={incomes}
+          expenses={expenses}
+          balance={1200}
+          allTransactions={allTransactions}
+          loading={false}
+          onRegisterExpense={vi.fn()}
+          onViewAllTransactions={vi.fn()}
+        />
+      </CurrencyProvider>
     );
     const accentBars = Array.from(container.querySelectorAll('div')).filter((el) => el.classList.contains('bg-ds-accent'));
     const grayBars = Array.from(container.querySelectorAll('div')).filter((el) => el.classList.contains('bg-ds-border'));
