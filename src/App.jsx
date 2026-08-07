@@ -35,6 +35,8 @@ import { InstallPWA } from './components/InstallPWA';
 import { useAchievements } from './hooks/gamification/useAchievements';
 import { AchievementNotifications } from './features/gamification/AchievementNotification';
 import { useRecurring } from './hooks/useRecurring';
+import { useOnboardingFlow } from './hooks/useOnboardingFlow';
+import { OnboardingStepA } from './components/Onboarding/OnboardingStepA';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PeriodProvider } from './contexts/PeriodContext';
 import { AIProvider } from './contexts/AIContext';
@@ -84,6 +86,41 @@ function AppContent() {
   const [newMovementRemountKey, setNewMovementRemountKey] = useState(0);
   const { confirmDialog, openConfirm, closeConfirm } = useConfirmDialog();
 
+  // Checkpoint IV-A: removeMultiple/categorizeMultiple siguen sin consumidor
+  // en App.jsx (bulk actions descartadas por el PO) — se mantienen fuera de
+  // esta desestructuración; useTransactions.js no se toca, las sigue
+  // exponiendo para quien las necesite.
+  // Checkpoint IV-B: updateIncome/updateExpense vuelven a desestructurarse —
+  // editar movimientos desde Historial vía NewMovementSheet en modo edición
+  // los necesita de nuevo (contrato ya boolean, sin envoltorio adicional).
+  // Checkpoint IV-C: pendingOperation/deleteMovement/confirmPendingOperation/
+  // undoPendingOperation reemplazan a undoAddMovement (III-B) — el hook es
+  // ahora la única fuente de verdad de la operación reversible activa
+  // (alta o baja), App.jsx solo la renderiza.
+  // onboarding-flow (design.md Decisión 1): este hook se llama ANTES de
+  // isAnyOverlayOpen/keydown de abajo — useOnboardingFlow necesita
+  // `loading`/`allTransactions` para su siembra, y onboarding.isActive suma
+  // a isAnyOverlayOpen (Decisión 4). Único motivo por el que useTransactions()
+  // se adelantó respecto de su posición original en el archivo.
+  const {
+    incomes, expenses, alert, addIncome, addExpense, addBulkTransactions,
+    updateIncome, updateExpense,
+    pendingOperation, pendingOperationMessage, deleteMovement, confirmPendingOperation, undoPendingOperation,
+    showAlert,
+    balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
+    syncError, lastSyncedAt,
+  } = useTransactions();
+
+  // onboarding-flow (design.md Decisión 1) — estado propio del flujo de
+  // onboarding. transactionCount SOLO se lee en la siembra interna del hook
+  // (Idempotencia, spec) — acá solo se pasa el valor actual, nunca se vuelve
+  // a leer después de sembrado.
+  const onboarding = useOnboardingFlow({
+    userId: user?.id,
+    transactionsLoading: loading,
+    transactionCount: allTransactions.length,
+  });
+
   // Checkpoint IV-B — única instancia de NewMovementSheet, reusada tanto
   // para crear (isNewMovementOpen) como para editar (editingMovement != null)
   // — NUNCA un segundo <NewMovementSheet> montado en Historial (eso
@@ -111,7 +148,10 @@ function AppContent() {
   // abrirse si otro ya está abierto. Constante derivada única, usada
   // simétricamente por los dos triggers globales de teclado (N y ⌘K) para
   // que ninguno pueda abrir un overlay por encima de otro ya abierto.
-  const isAnyOverlayOpen = isOmnibarOpen || isMovementSheetOpen || confirmDialog.isOpen || showMigration;
+  // onboarding-flow (design.md Decisión 4): onboarding.isActive suma acá —
+  // sin esto, ⌘K/N podrían abrir otro overlay ENCIMA del Paso A (que, a
+  // diferencia del Paso B, no pasa por isMovementSheetOpen).
+  const isAnyOverlayOpen = isOmnibarOpen || isMovementSheetOpen || confirmDialog.isOpen || showMigration || onboarding.isActive;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -155,28 +195,25 @@ function AppContent() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isAnyOverlayOpen, isOmnibarOpen]);
 
+  // onboarding-flow (design.md Decisión 2) — al entrar en step 'B', abre la
+  // única instancia de NewMovementSheet (nunca un sheet propio, V3). Guarda
+  // con useRef: dispara una sola vez por transición a step B — si el usuario
+  // cierra el sheet (Escape/velo) mientras onboarding sigue en step B, NO se
+  // reabre solo (Decisión 3: cerrar no completa ni avanza — se reintenta
+  // recién en la próxima entrada a la app / remontaje).
+  const onboardingStepBOpenedRef = useRef(false);
+  useEffect(() => {
+    if (onboarding.isStepB && !onboardingStepBOpenedRef.current) {
+      onboardingStepBOpenedRef.current = true;
+      setIsNewMovementOpen(true);
+    }
+    if (!onboarding.isStepB) {
+      onboardingStepBOpenedRef.current = false;
+    }
+  }, [onboarding.isStepB]);
+
   const [creditCards, setCreditCards] = useLocalStorage(STORAGE_KEYS.CREDIT_CARDS, []);
   const [goals, setGoals] = useLocalStorage(STORAGE_KEYS.GOALS, []);
-
-  // Checkpoint IV-A: removeMultiple/categorizeMultiple siguen sin consumidor
-  // en App.jsx (bulk actions descartadas por el PO) — se mantienen fuera de
-  // esta desestructuración; useTransactions.js no se toca, las sigue
-  // exponiendo para quien las necesite.
-  // Checkpoint IV-B: updateIncome/updateExpense vuelven a desestructurarse —
-  // editar movimientos desde Historial vía NewMovementSheet en modo edición
-  // los necesita de nuevo (contrato ya boolean, sin envoltorio adicional).
-  // Checkpoint IV-C: pendingOperation/deleteMovement/confirmPendingOperation/
-  // undoPendingOperation reemplazan a undoAddMovement (III-B) — el hook es
-  // ahora la única fuente de verdad de la operación reversible activa
-  // (alta o baja), App.jsx solo la renderiza.
-  const {
-    incomes, expenses, alert, addIncome, addExpense, addBulkTransactions,
-    updateIncome, updateExpense,
-    pendingOperation, pendingOperationMessage, deleteMovement, confirmPendingOperation, undoPendingOperation,
-    showAlert,
-    balance, categoryAnalysis, clearAll, refreshTransactions, loading, allTransactions,
-    syncError, lastSyncedAt,
-  } = useTransactions();
 
   // RC-1.7/A1 — coordinador único del sistema de feedback puramente visual
   // (alert, saludo diario, logro desbloqueado, banner de bienvenida). El
@@ -185,10 +222,14 @@ function AppContent() {
   // coordinador mientras esté activo (efecto más abajo).
   const feedbackQueue = useFeedbackQueue();
   const hasPendingOperation = pendingOperation !== null;
+  // onboarding-flow (design.md Decisión 4, mismo precedente que
+  // pendingOperation/V5): mientras el onboarding está activo, se pausa el
+  // coordinador — evita que DailyOnboardingToast/welcomeBanner se
+  // superpongan visualmente con el Paso A o el Paso B.
   useEffect(() => {
-    if (hasPendingOperation) feedbackQueue.pause();
+    if (hasPendingOperation || onboarding.isActive) feedbackQueue.pause();
     else feedbackQueue.resume();
-  }, [hasPendingOperation, feedbackQueue.pause, feedbackQueue.resume]);
+  }, [hasPendingOperation, onboarding.isActive, feedbackQueue.pause, feedbackQueue.resume]);
 
   // Puente entre el `alert` de useTransactions.js (sin cambios en su API
   // externa — showAlert/alert siguen igual para todos sus consumidores) y
@@ -285,11 +326,17 @@ function AppContent() {
   // registra el logro.
   const handleCreateIncome = (description, amount, date, currency) => {
     const result = addIncome(description, amount, date, currency, { notification: 'toast' });
+    // onboarding-flow (design.md Decisión 2) — Finalización (spec): el
+    // primer movimiento propio guardado durante el Paso B completa el
+    // onboarding. onboarding.isActive ya cubre pending/A y pending/B —
+    // completed no vuelve a dispararse (Idempotencia).
+    if (result.success && onboarding.isActive) onboarding.complete();
     return result.success;
   };
 
   const handleCreateExpense = (description, category, amount, date, currency) => {
     const result = addExpense(description, category, amount, date, currency, { notification: 'toast' });
+    if (result.success && onboarding.isActive) onboarding.complete();
     return result.success;
   };
 
@@ -409,6 +456,17 @@ function AppContent() {
                 onUpdateExpense={updateExpense}
                 movement={editingMovement}
               />
+              {/* onboarding-flow (design.md Decisión 1/6) — Paso A, opcional.
+                  `key={user.id}` fuerza remontaje al cambiar de cuenta (mismo
+                  mecanismo que newMovementSheetKey, III-C.3/IV-B). El Paso C
+                  no tiene código propio: es la ausencia de este overlay una
+                  vez completado el onboarding. */}
+              <OnboardingStepA
+                key={user.id}
+                isOpen={onboarding.isStepA}
+                onContinue={onboarding.continueStepA}
+                onSkip={onboarding.skipStepA}
+              />
               {/* Checkpoint IV-C — un único <Toast>, dirigido enteramente por
                   pendingOperation (useTransactions.js): App.jsx no decide
                   cuál de las dos operaciones (alta/baja) está viva ni qué
@@ -432,6 +490,11 @@ function AppContent() {
                   goals={goals}
                   onNavigate={setActiveTab}
                   onRegisterExpense={handleQuickAddAction}
+                  // onboarding-flow (design.md Decisión 7 / D-2) — reusa el
+                  // mecanismo ya existente del Omnibar (writeDraft + remontaje
+                  // por key, III-C.3) para preseleccionar "ingreso" en el
+                  // NewMovementSheet ya existente, sin tocarlo.
+                  onRegisterIncome={() => handleOpenNewMovementWithDraft({ activeType: 'income' })}
                   onViewAllTransactions={() => setActiveTab('movimientos')}
                 />
               )}

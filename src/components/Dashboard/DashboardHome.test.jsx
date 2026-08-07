@@ -52,7 +52,7 @@ describe('DashboardHome — estado Cargando', () => {
 });
 
 describe('DashboardHome — estado Vacío (sin transacciones)', () => {
-  it('muestra overline, párrafo explicativo y UN SOLO botón "Registrar un gasto"', () => {
+  it('muestra overline, párrafo explicativo y los botones "Registrar un gasto" / "Registrar un ingreso"', () => {
     render(
       <DashboardHome
         incomes={[]}
@@ -60,6 +60,7 @@ describe('DashboardHome — estado Vacío (sin transacciones)', () => {
         allTransactions={[]}
         loading={false}
         onRegisterExpense={vi.fn()}
+        onRegisterIncome={vi.fn()}
         onViewAllTransactions={vi.fn()}
       />
     );
@@ -67,9 +68,29 @@ describe('DashboardHome — estado Vacío (sin transacciones)', () => {
     expect(
       screen.getByText('Aquí verás tu saldo en cuanto conectes una cuenta o registres tu primer gasto.')
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(screen.getAllByRole('button')).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'Registrar un gasto' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Registrar un ingreso' })).toBeInTheDocument();
     expect(screen.queryByText(/Conectar mi banco/i)).not.toBeInTheDocument();
+  });
+
+  // Task 3.1 (tasks.md) — D-2 del Discovery, corregido: ingreso y gasto con
+  // el mismo peso, mismo Button variant="primary" (proposal, In Scope).
+  it('el CTA de ingreso tiene el mismo className (mismo variant) que el de gasto', () => {
+    render(
+      <DashboardHome
+        incomes={[]}
+        expenses={[]}
+        allTransactions={[]}
+        loading={false}
+        onRegisterExpense={vi.fn()}
+        onRegisterIncome={vi.fn()}
+        onViewAllTransactions={vi.fn()}
+      />
+    );
+    const expenseButton = screen.getByRole('button', { name: 'Registrar un gasto' });
+    const incomeButton = screen.getByRole('button', { name: 'Registrar un ingreso' });
+    expect(incomeButton.className).toBe(expenseButton.className);
   });
 
   it('muestra la sección "Movimientos recientes" en gris con su caption', () => {
@@ -80,6 +101,7 @@ describe('DashboardHome — estado Vacío (sin transacciones)', () => {
         allTransactions={[]}
         loading={false}
         onRegisterExpense={vi.fn()}
+        onRegisterIncome={vi.fn()}
         onViewAllTransactions={vi.fn()}
       />
     );
@@ -97,11 +119,30 @@ describe('DashboardHome — estado Vacío (sin transacciones)', () => {
         allTransactions={[]}
         loading={false}
         onRegisterExpense={onRegisterExpense}
+        onRegisterIncome={vi.fn()}
         onViewAllTransactions={vi.fn()}
       />
     );
     await user.click(screen.getByRole('button', { name: 'Registrar un gasto' }));
     expect(onRegisterExpense).toHaveBeenCalledTimes(1);
+  });
+
+  it('"Registrar un ingreso" dispara onRegisterIncome', async () => {
+    const user = userEvent.setup();
+    const onRegisterIncome = vi.fn();
+    render(
+      <DashboardHome
+        incomes={[]}
+        expenses={[]}
+        allTransactions={[]}
+        loading={false}
+        onRegisterExpense={vi.fn()}
+        onRegisterIncome={onRegisterIncome}
+        onViewAllTransactions={vi.fn()}
+      />
+    );
+    await user.click(screen.getByRole('button', { name: 'Registrar un ingreso' }));
+    expect(onRegisterIncome).toHaveBeenCalledTimes(1);
   });
 });
 

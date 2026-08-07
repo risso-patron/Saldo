@@ -46,9 +46,12 @@ function DashboardSkeleton() {
 }
 
 // Estado Vacío — sin "Conectar mi banco" (no existe integración bancaria
-// real, excepción constitucional documentada en integration-debt.md): un
-// único camino manual, "Registrar un gasto".
-function EmptyState({ onRegisterExpense }) {
+// real, excepción constitucional documentada en integration-debt.md): dos
+// caminos manuales con el MISMO peso, "Registrar un gasto" y "Registrar un
+// ingreso" (onboarding-flow, design.md Decisión 7 / D-2 — corrige el sesgo
+// hacia gasto que tenía el EmptyState original; contrato del Paso B de
+// onboarding-flow, no evolución de contenido del Dashboard).
+function EmptyState({ onRegisterExpense, onRegisterIncome }) {
   return (
     <div className="space-y-8">
       <div>
@@ -56,8 +59,9 @@ function EmptyState({ onRegisterExpense }) {
         <p className="text-ds-body text-ds-text-primary mt-2">
           Aquí verás tu saldo en cuanto conectes una cuenta o registres tu primer gasto.
         </p>
-        <div className="mt-4">
+        <div className="mt-4 flex gap-3">
           <Button variant="primary" onClick={onRegisterExpense}>Registrar un gasto</Button>
+          <Button variant="primary" onClick={onRegisterIncome}>Registrar un ingreso</Button>
         </div>
       </div>
       <div>
@@ -188,12 +192,13 @@ export function DashboardHome({
   goals = [],
   onNavigate,
   onRegisterExpense,
+  onRegisterIncome,
   onViewAllTransactions,
 }) {
   if (loading) return <DashboardSkeleton />;
 
   if (allTransactions.length === 0) {
-    return <EmptyState onRegisterExpense={onRegisterExpense} />;
+    return <EmptyState onRegisterExpense={onRegisterExpense} onRegisterIncome={onRegisterIncome} />;
   }
 
   return (
@@ -221,5 +226,8 @@ DashboardHome.propTypes = {
   goals: PropTypes.array,
   onNavigate: PropTypes.func,
   onRegisterExpense: PropTypes.func.isRequired,
+  // onboarding-flow (design.md D-2): CTA de ingreso con el mismo peso que
+  // onRegisterExpense — contrato del Paso B de onboarding-flow.
+  onRegisterIncome: PropTypes.func.isRequired,
   onViewAllTransactions: PropTypes.func.isRequired,
 };
