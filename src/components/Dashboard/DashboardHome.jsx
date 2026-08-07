@@ -68,7 +68,7 @@ function EmptyState({ onRegisterExpense }) {
   );
 }
 
-function DashboardContent({ expenses, balance, allTransactions, onViewAllTransactions }) {
+function DashboardContent({ expenses, balance, allTransactions, onViewAllTransactions, goals, onNavigate }) {
   const { i18n } = useTranslation();
   const { selectedCurrency } = useCurrency();
   const now = new Date();
@@ -146,6 +146,17 @@ function DashboardContent({ expenses, balance, allTransactions, onViewAllTransac
           exista un motor de IA funcional. Constitución: "Sin IA" = sin nota, sin
           hueco reservado. */}
 
+      {/* metas-exposicion (design.md Decisión 1): solo el wiring de navegación
+          hacia la vista `metas` dedicada — la composición visual de la
+          sección "Mis metas" (cards, progreso) queda para `dashboard-claridad`. */}
+      {onNavigate && (
+        <div>
+          <Button variant="link" onClick={() => onNavigate('metas')}>
+            Mis metas{goals.length > 0 ? ` (${goals.length})` : ''}
+          </Button>
+        </div>
+      )}
+
       <div>
         <h2 className="text-ds-title text-ds-text-primary">Movimientos recientes</h2>
         <div>
@@ -174,6 +185,8 @@ export function DashboardHome({
   balance = 0,
   allTransactions = [],
   loading = false,
+  goals = [],
+  onNavigate,
   onRegisterExpense,
   onViewAllTransactions,
 }) {
@@ -189,6 +202,8 @@ export function DashboardHome({
       expenses={expenses}
       balance={balance}
       allTransactions={allTransactions}
+      goals={goals}
+      onNavigate={onNavigate}
       onViewAllTransactions={onViewAllTransactions}
     />
   );
@@ -200,6 +215,11 @@ DashboardHome.propTypes = {
   balance: PropTypes.number,
   allTransactions: PropTypes.array,
   loading: PropTypes.bool,
+  // metas-exposicion (spec.md "Contrato de navegación desde el Dashboard"):
+  // goals/onNavigate habilitan el disparador mínimo hacia la vista `metas`.
+  // La composición visual completa de "Mis metas" es de `dashboard-claridad`.
+  goals: PropTypes.array,
+  onNavigate: PropTypes.func,
   onRegisterExpense: PropTypes.func.isRequired,
   onViewAllTransactions: PropTypes.func.isRequired,
 };

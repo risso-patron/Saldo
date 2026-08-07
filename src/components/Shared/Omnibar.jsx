@@ -53,7 +53,7 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
   // destino en el shell nuevo (solo 4 ítems fijos); quedan disponibles acá.
   const quickActions = [
     { id: 'movimientos', label: 'Ver Movimientos', icon: Receipt, query: 'movimientos' },
-    { id: 'planificacion', label: 'Mis Metas', icon: Target, query: 'metas' },
+    { id: 'metas', label: 'Mis Metas', icon: Target, query: 'metas' },
     { id: 'graficos', label: 'Insights', icon: ChartPieSlice, query: 'insights, tendencias, graficos' },
     { id: 'herramientas', label: 'Herramientas', icon: Wrench, query: 'herramientas, exportar, importar' },
   ];

@@ -3,9 +3,11 @@ import { Home, List, PieChart, Settings2 } from 'lucide-react';
 // Design System — Saldo Design Constitution v1.2
 // (docs/design/screens/Saldo Dashboard.dc.html)
 //
-// Los 4 destinos de navegación fijados por el diseño (regla R-08, "≤ 7
-// destinos, 4 usados"). DSSidebar (desktop/tablet) y DSBottomNav (mobile)
-// comparten esta misma lista para que shell y tabs no diverjan.
+// Los 4 destinos de navegación fijados por el diseño (regla R-08: tope duro
+// de 4 destinos de navegación — no confundir con la regla "≤ 7 destinos" del
+// Sidebar de la Constitution, que es una regla distinta). DSSidebar
+// (desktop/tablet) y DSBottomNav (mobile) comparten esta misma lista para
+// que shell y tabs no diverjan.
 // `planificacion` y `herramientas` quedan sin destino de navegación en esta
 // fase — acceso transitorio vía quick actions del Omnibar (⌘K). Ver
 // docs/design/integration-debt.md.

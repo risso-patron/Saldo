@@ -429,6 +429,8 @@ function AppContent() {
                   balance={balance}
                   allTransactions={allTransactions}
                   loading={loading}
+                  goals={goals}
+                  onNavigate={setActiveTab}
                   onRegisterExpense={handleQuickAddAction}
                   onViewAllTransactions={() => setActiveTab('movimientos')}
                 />
@@ -468,7 +470,11 @@ function AppContent() {
                   onRetrySync={refreshTransactions}
                 />
               )}
-              {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} currentBalance={balance} /></Suspense>}
+              {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /></Suspense>}
+              {/* metas-exposicion (design.md Decisión 1/2): vista dedicada, fuera de
+                  DS_NAV_ITEMS (R-08 intacto) — GoalManager ya no se apila en
+                  `planificacion` junto a otros 3 módulos (corrige H4). */}
+              {activeTab === 'metas' && <Suspense fallback={<TabLoader />}><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} /></Suspense>}
               {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></Suspense>}
               {activeTab === 'cuenta' && <Suspense fallback={<TabLoader />}><ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} constancyWindow={achievements.constancyWindow} windowSize={achievements.windowSize} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} /></Suspense>}
             </main>
