@@ -87,7 +87,7 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
     { id: 'movimientos', label: 'Ver Movimientos', icon: Receipt, query: 'movimientos' },
     { id: 'metas', label: 'Mis Metas', icon: Target, query: 'metas' },
     { id: 'planificacion', label: 'Planificación', icon: Wallet, query: 'planificacion, tarjetas, presupuestos, recurrentes, deuda, credito' },
-    { id: 'graficos', label: 'Insights', icon: ChartPieSlice, query: 'insights, tendencias, graficos' },
+    { id: 'graficos', label: 'Ideas', icon: ChartPieSlice, query: 'insights, tendencias, graficos' },
     { id: 'herramientas', label: 'Herramientas', icon: Wrench, query: 'herramientas, exportar, importar' },
   ];
 

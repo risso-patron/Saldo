@@ -54,7 +54,7 @@ describe('Omnibar — quick action "Mis Metas"', () => {
     fireEvent.click(screen.getByText('Ver Movimientos'));
     expect(onNavigate).toHaveBeenCalledWith('movimientos');
 
-    fireEvent.click(screen.getByText('Insights'));
+    fireEvent.click(screen.getByText('Ideas'));
     expect(onNavigate).toHaveBeenCalledWith('graficos');
 
     fireEvent.click(screen.getByText('Herramientas'));

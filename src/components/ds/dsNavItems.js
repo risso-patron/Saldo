@@ -14,6 +14,6 @@ import { Home, List, PieChart, Settings2 } from 'lucide-react';
 export const DS_NAV_ITEMS = [
   { id: 'resumen', label: 'Inicio', icon: Home },
   { id: 'movimientos', label: 'Movimientos', icon: List },
-  { id: 'graficos', label: 'Insights', icon: PieChart },
+  { id: 'graficos', label: 'Ideas', icon: PieChart },
   { id: 'cuenta', label: 'Ajustes', icon: Settings2 },
 ];
