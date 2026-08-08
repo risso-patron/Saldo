@@ -17,7 +17,7 @@
 | `saldo-v1-1-claridad-financiera` | `metas-exposicion` | Completed | 2026-08-06 | [`metas-exposicion-COMPLETED.md`](saldo-v1-1-claridad-financiera/metas-exposicion-COMPLETED.md) | — |
 | `saldo-v1-1-claridad-financiera` | `onboarding-flow` | Completed | 2026-08-07 | [`onboarding-flow-COMPLETED.md`](saldo-v1-1-claridad-financiera/onboarding-flow-COMPLETED.md) | — |
 | `saldo-v1-1-claridad-financiera` | `dashboard-claridad` | Waiting | 2026-08-06 | [`dashboard-claridad-product-evidence.md`](saldo-v1-1-claridad-financiera/dashboard-claridad-product-evidence.md) | Sin evidencia Nivel A todavía — `docs/research/primeros-10-minutos-2026-08/` abierta, sin entrevistas registradas. `sdd-propose` pospuesto hasta que exista. |
-| `insights-ia-real` | `insights-ia-real` | En progreso | 2026-07-15 | [`tasks.md`](insights-ia-real/tasks.md) | — |
+| `insights-ia-real` | `insights-ia-real` | Waiting | 2026-08-07 | [`tasks.md`](insights-ia-real/tasks.md) | Decisión de priorización del PO (2026-08-07): no se autoriza nuevo ciclo SDC mientras `dashboard-claridad` esté en Waiting. Sin `verify-report.md` ni `*-COMPLETED.md` — implementación parcial real, detalle en `tasks.md`. Continuación pendiente de decisión futura de priorización del PO. |
 
 ## Capabilities archivadas
 
