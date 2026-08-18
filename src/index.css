@@ -226,7 +226,7 @@ html.dark {
     line-height: 20px;
     font-weight: 400;
     letter-spacing: 0;
-    color: #6B6B6B; /* text/secondary */
+    color: var(--ds-text-secondary); /* corregido C-08 Dark Mode (2026-08-08): estaba hardcodeado a #6B6B6B, no respondía a html.dark. No sobrescribir con text-ds-text-tertiary (tertiary no cumple AA en texto). */
   }
 
   .text-ds-overline {
@@ -236,7 +236,7 @@ html.dark {
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #9E9E9E; /* text/tertiary — valor tal cual transcripción verificada de la Constitución */
+    color: var(--ds-text-secondary); /* corregido C-08 Dark Mode (2026-08-08): estaba hardcodeado a #6B6B6B, no respondía a html.dark. */
   }
 
   /* 700 reservado exclusivamente a la cifra protagonista */

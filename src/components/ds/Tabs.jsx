@@ -53,7 +53,7 @@ export function Tabs({ options, value, onChange }) {
               'pb-2 text-ds-body border-b-2 transition-colors duration-ds-fast ease-ds',
               isActive
                 ? 'border-ds-text-primary text-ds-text-primary font-semibold'
-                : 'border-transparent text-ds-text-tertiary font-normal'
+                : 'border-transparent text-ds-text-secondary font-normal'
             )}
           >
             {option.label}

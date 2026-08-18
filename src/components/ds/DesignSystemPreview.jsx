@@ -66,7 +66,7 @@ function Swatch({ name, swatch, hex }) {
     <div className="flex flex-col gap-2">
       <div className={`h-16 w-full rounded-ds-surface border border-ds-border ${swatch}`} />
       <div className="text-ds-caption text-ds-text-primary font-medium">{name}</div>
-      <div className="text-ds-caption text-ds-text-tertiary">{hex}</div>
+      <div className="text-ds-caption">{hex}</div>
     </div>
   );
 }
@@ -77,7 +77,7 @@ export function DesignSystemPreview() {
   return (
     <div className="font-ds min-h-screen bg-ds-bg-base p-12">
       <header className="mb-16">
-        <p className="text-ds-overline text-ds-text-tertiary mb-2">design system</p>
+        <p className="text-ds-overline mb-2">design system</p>
         <h1 className="text-ds-display text-ds-text-primary">Saldo — Fundación de Diseño</h1>
         <p className="text-ds-body text-ds-text-secondary mt-2">
           Especímenes de la Constitución de Diseño v1.2 para comparación lado a lado.
@@ -100,24 +100,24 @@ export function DesignSystemPreview() {
         <div className="flex flex-col gap-6">
           {TYPE_SPECIMENS.map((spec) => (
             <div key={spec.name} className="border-b border-ds-border-separator pb-6">
-              <p className="text-ds-caption text-ds-text-tertiary mb-1">{spec.name}</p>
+              <p className="text-ds-caption mb-1">{spec.name}</p>
               <p className={`${spec.className} text-ds-text-primary`}>{spec.sample}</p>
             </div>
           ))}
 
           {/* Numérica — cifra protagonista con decimales de-enfatizados */}
           <div className="border-b border-ds-border-separator pb-6">
-            <p className="text-ds-caption text-ds-text-tertiary mb-1">numeric-xl (con decimales al 50%/500/terciario)</p>
+            <p className="text-ds-caption mb-1">numeric-xl (con decimales al 50%/500/terciario)</p>
             <p className="text-ds-numeric-xl text-ds-text-primary text-left inline-flex items-baseline">
               24.860
-              <span className="text-[50%] font-medium text-ds-text-tertiary" style={{ fontVariantNumeric: 'tabular-nums' }}>
+              <span className="text-[50%] font-medium text-ds-text-secondary" style={{ fontVariantNumeric: 'tabular-nums' }}>
                 ,32&nbsp;€
               </span>
             </p>
           </div>
 
           <div>
-            <p className="text-ds-caption text-ds-text-tertiary mb-1">numeric (tabular-nums, alineada a la derecha)</p>
+            <p className="text-ds-caption mb-1">numeric (tabular-nums, alineada a la derecha)</p>
             <p className="text-ds-numeric text-ds-text-primary w-48">1.204,50 €</p>
           </div>
         </div>
@@ -129,7 +129,7 @@ export function DesignSystemPreview() {
         <div className="flex flex-col gap-8">
           {BUTTON_VARIANTS.map((variant) => (
             <div key={variant}>
-              <p className="text-ds-caption text-ds-text-tertiary mb-2">{variant}</p>
+              <p className="text-ds-caption mb-2">{variant}</p>
               <div className="flex flex-wrap items-center gap-4">
                 {BUTTON_SIZES.map((size) => (
                   <Button key={size} variant={variant} size={size}>
@@ -182,7 +182,7 @@ export function DesignSystemPreview() {
         <SectionTitle>Iconografía (Lucide, trazo 1.5)</SectionTitle>
         <div className="flex flex-col gap-6">
           <div>
-            <p className="text-ds-caption text-ds-text-tertiary mb-2">20px — interfaz densa</p>
+            <p className="text-ds-caption mb-2">20px — interfaz densa</p>
             <div className="flex items-center gap-4 text-ds-text-primary">
               {ICON_ROW.map((Icon, i) => (
                 <Icon key={i} size={20} strokeWidth={1.5} />
@@ -190,7 +190,7 @@ export function DesignSystemPreview() {
             </div>
           </div>
           <div>
-            <p className="text-ds-caption text-ds-text-tertiary mb-2">24px — navegación</p>
+            <p className="text-ds-caption mb-2">24px — navegación</p>
             <div className="flex items-center gap-4 text-ds-text-primary">
               {ICON_ROW.map((Icon, i) => (
                 <Icon key={i} size={24} strokeWidth={1.5} />

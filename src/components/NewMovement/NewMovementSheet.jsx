@@ -314,7 +314,7 @@ export function NewMovementSheet({
                   <button
                     type="button"
                     onClick={() => setShowCategorySelect(true)}
-                    className="h-8 px-3 inline-flex items-center border border-ds-border rounded-ds-control text-ds-caption text-ds-text-tertiary"
+                    className="h-8 px-3 inline-flex items-center border border-ds-border rounded-ds-control text-ds-caption"
                   >
                     Elegir categoría
                   </button>
@@ -381,7 +381,7 @@ export function NewMovementSheet({
         </div>
 
         <div className="mt-10 flex items-center justify-between">
-          <span className="text-ds-caption text-ds-text-tertiary">Esc para cerrar — lo escrito se conserva</span>
+          <span className="text-ds-caption">Esc para cerrar — lo escrito se conserva</span>
           <Button type="submit" variant="primary" disabled={!isAmountValid || !isDescriptionValid}>
             {isEditMode ? 'Guardar' : 'Añadir'}
           </Button>

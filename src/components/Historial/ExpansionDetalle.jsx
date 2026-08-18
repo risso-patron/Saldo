@@ -25,7 +25,7 @@ export function ExpansionDetalle({ movement, onEditMovement, onDeleteMovement })
     <div className="px-1 py-3 border-b border-ds-border-separator bg-ds-surface-sunken flex items-center justify-between gap-3">
       <div>
         {hasCategory && (
-          <p className="text-ds-caption text-ds-text-tertiary">Categoría: {movement.category}</p>
+          <p className="text-ds-caption">Categoría: {movement.category}</p>
         )}
       </div>
       <div className="flex gap-2">

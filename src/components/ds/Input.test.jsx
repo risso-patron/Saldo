@@ -19,9 +19,9 @@ describe('Input (ds) — Saldo Design Constitution v1.2', () => {
     expect(screen.getByPlaceholderText('x').className).toMatch(/text-ds-body\b/);
   });
 
-  it('el placeholder usa el color terciario', () => {
+  it('el placeholder usa el color secondary (C-08: tertiary no cumple AA)', () => {
     render(<Input placeholder="x" />);
-    expect(screen.getByPlaceholderText('x').className).toMatch(/placeholder-ds-text-tertiary\b/);
+    expect(screen.getByPlaceholderText('x').className).toMatch(/placeholder-ds-text-secondary\b/);
   });
 
   it('tamaño standard (default) mide 36px de alto', () => {

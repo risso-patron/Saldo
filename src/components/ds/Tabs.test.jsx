@@ -35,12 +35,12 @@ describe('Tabs (ds) — Saldo Design Constitution v1.2', () => {
     expect(active.className).toMatch(/font-semibold\b/);
   });
 
-  it('el tab inactivo tiene aria-selected=false, borde transparente y color tertiary', () => {
+  it('el tab inactivo tiene aria-selected=false, borde transparente y color secondary (C-08: tertiary no cumple AA)', () => {
     render(<Tabs options={OPTIONS} value="expense" onChange={vi.fn()} />);
     const inactive = screen.getByRole('tab', { name: 'Ingreso' });
     expect(inactive).toHaveAttribute('aria-selected', 'false');
     expect(inactive.className).toMatch(/border-transparent\b/);
-    expect(inactive.className).toMatch(/text-ds-text-tertiary\b/);
+    expect(inactive.className).toMatch(/text-ds-text-secondary\b/);
     expect(inactive.className).not.toMatch(/font-semibold\b/);
   });
 

@@ -30,7 +30,7 @@ export function EstadoSinResultados({ searchTerm, monthLabel, onSearchEverywhere
         <button
           type="button"
           onClick={onClearAllFilters}
-          className="text-ds-body text-ds-text-tertiary hover:text-ds-text-secondary"
+          className="text-ds-body text-ds-text-secondary"
         >
           Quitar filtros
         </button>

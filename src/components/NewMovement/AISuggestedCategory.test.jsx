@@ -39,13 +39,13 @@ describe('AISuggestedCategory — presentación pura (Checkpoint III-A)', () => 
     expect(container.querySelector('[aria-live="polite"]')).not.toBeEmptyDOMElement();
   });
 
-  it('el ícono Sparkles mide 14px y usa text-ds-text-tertiary', () => {
+  it('el ícono Sparkles mide 14px y usa text-ds-text-secondary (C-08: tertiary no cumple AA)', () => {
     const { container } = render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
     const icon = container.querySelector('svg');
     expect(icon).toBeInTheDocument();
     expect(icon).toHaveAttribute('width', '14');
     expect(icon).toHaveAttribute('height', '14');
-    expect(icon.getAttribute('class')).toMatch(/text-ds-text-tertiary\b/);
+    expect(icon.getAttribute('class')).toMatch(/text-ds-text-secondary\b/);
   });
 
   it('el chip de categoría usa fondo sunken, radio control y tipografía caption/medium', () => {
@@ -58,10 +58,10 @@ describe('AISuggestedCategory — presentación pura (Checkpoint III-A)', () => 
     expect(chip.className).toMatch(/text-ds-text-primary\b/);
   });
 
-  it('"Cambiar" usa color tertiary, NO acento (no es Button variant="link")', () => {
+  it('"Cambiar" usa color secondary (C-08: tertiary no cumple AA), NO acento (no es Button variant="link")', () => {
     render(<AISuggestedCategory category="Alimentación" onChangeClick={vi.fn()} />);
     const changeAction = screen.getByText('Cambiar');
-    expect(changeAction.className).toMatch(/text-ds-text-tertiary\b/);
+    expect(changeAction.className).toMatch(/text-ds-text-secondary\b/);
     expect(changeAction.className).not.toMatch(/text-ds-accent\b/);
   });
 

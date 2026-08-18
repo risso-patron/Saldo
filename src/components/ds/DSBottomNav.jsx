@@ -28,7 +28,7 @@ export function DSBottomNav({ activeTab, onTabSelect }) {
             className={cn(
               'flex flex-col items-center justify-center gap-1 h-full',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-2',
-              isActive ? 'text-ds-text-primary font-semibold' : 'text-ds-text-tertiary font-normal'
+              isActive ? 'text-ds-text-primary font-semibold' : 'text-ds-text-secondary font-normal'
             )}
           >
             <Icon width={24} height={24} strokeWidth={1.5} aria-hidden="true" />

@@ -13,7 +13,7 @@ import { cn } from './cn';
 const inputVariants = cva(
   [
     'w-full bg-ds-surface-sunken text-ds-text-primary text-ds-body',
-    'placeholder-ds-text-tertiary rounded-ds-control border',
+    'placeholder-ds-text-secondary rounded-ds-control border',
     'focus:outline-none focus:ring-2 focus:ring-ds-accent focus:ring-offset-2',
     'disabled:opacity-ds-disabled disabled:cursor-not-allowed',
     'transition-colors duration-ds-fast ease-ds',

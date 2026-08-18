@@ -358,7 +358,7 @@ export function Historial({
               type="button"
               aria-label="Quitar filtro de período"
               onClick={clearPeriodFilter}
-              className="text-ds-text-tertiary hover:text-ds-text-primary"
+              className="text-ds-text-secondary hover:text-ds-text-primary"
             >
               <X size={13} weight="bold" />
             </button>
@@ -400,21 +400,21 @@ export function Historial({
         <div className="relative flex-1 min-w-[160px]">
           <MagnifyingGlass
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ds-text-tertiary pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-ds-text-secondary pointer-events-none"
           />
           <input
             type="text"
             placeholder="Buscar…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-8 pl-8 pr-3 rounded-ds-control border border-ds-border bg-transparent text-ds-body text-ds-text-primary placeholder-ds-text-tertiary"
+            className="w-full h-8 pl-8 pr-3 rounded-ds-control border border-ds-border bg-transparent text-ds-body text-ds-text-primary placeholder-ds-text-secondary"
           />
         </div>
       </div>
 
       {/* Resumen mensual pegajoso — dos hechos, sin saldo neto moralizante. */}
       <div className="sticky top-0 z-10 bg-ds-bg-base flex items-baseline justify-between border-b border-ds-border pb-3">
-        <p className="text-ds-caption text-ds-text-tertiary tabular-nums">
+        <p className="text-ds-caption tabular-nums">
           Gastado {formatCurrency(totalExpenses)} · Ingresado {formatCurrency(totalIncomes)}
         </p>
       </div>

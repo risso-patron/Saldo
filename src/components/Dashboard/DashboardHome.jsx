@@ -110,7 +110,7 @@ function DashboardContent({ expenses, balance, allTransactions, onViewAllTransac
         <p className="text-ds-overline">Saldo disponible</p>
         <p className="text-ds-numeric-xl text-ds-text-primary">
           {balanceSplit.integerPart}
-          <span className="text-[50%] font-medium text-ds-text-tertiary align-baseline">
+          <span className="text-[50%] font-medium text-ds-text-secondary align-baseline">
             {balanceSplit.decimalPart}
           </span>
         </p>
@@ -122,7 +122,7 @@ function DashboardContent({ expenses, balance, allTransactions, onViewAllTransac
           {monthExpenseSplit.integerPart}{monthExpenseSplit.decimalPart}
         </p>
         {paceComparison && (
-          <p className="text-ds-caption text-ds-text-tertiary">
+          <p className="text-ds-caption">
             {paceComparison.diff > 0
               ? `${formatCurrency(paceComparison.diff)} menos que tu media a estas alturas del mes`
               : `${formatCurrency(Math.abs(paceComparison.diff))} más que tu media a estas alturas del mes`}

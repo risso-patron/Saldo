@@ -87,9 +87,9 @@ export function DSSidebar({ activeTab, onTabSelect, onOpenOmnibar }) {
         <Search
           strokeWidth={1.5}
           aria-hidden="true"
-          className="w-[18px] h-[18px] ds-desktop:w-[15px] ds-desktop:h-[15px] text-ds-text-tertiary shrink-0"
+          className="w-[18px] h-[18px] ds-desktop:w-[15px] ds-desktop:h-[15px] text-ds-text-secondary shrink-0"
         />
-        <span className="hidden ds-desktop:inline text-ds-caption text-ds-text-tertiary">Buscar</span>
+        <span className="hidden ds-desktop:inline text-ds-caption">Buscar</span>
         <span className="hidden ds-desktop:inline ml-auto font-mono text-[11px] text-ds-text-disabled">
           ⌘K
         </span>

@@ -44,7 +44,7 @@ export default {
           text: {
             primary: 'var(--ds-text-primary)',
             secondary: 'var(--ds-text-secondary)',
-            tertiary: 'var(--ds-text-tertiary)', // uso permitido solo en >=14px
+            tertiary: 'var(--ds-text-tertiary)', // C-08 (2026-08-07): no cumple AA como texto a ningún tamaño — reservado para uso no textual/decorativo. Para texto pequeño usar 'secondary'.
             disabled: 'var(--ds-text-disabled)',
           },
           border: {

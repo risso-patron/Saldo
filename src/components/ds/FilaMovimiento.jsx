@@ -148,7 +148,7 @@ export const FilaMovimiento = forwardRef(function FilaMovimiento({
     >
       <span style={{ gridArea: 'desc' }} className="text-ds-body text-ds-text-primary truncate">{description}</span>
       {middleColumnContent && (
-        <span style={{ gridArea: 'cat' }} className="text-ds-caption text-ds-text-tertiary truncate">{middleColumnContent}</span>
+        <span style={{ gridArea: 'cat' }} className="text-ds-caption truncate">{middleColumnContent}</span>
       )}
       <span style={{ gridArea: 'amt' }} className="text-ds-numeric text-ds-text-primary tabular-nums">
         {isExpense ? MINUS_SIGN : ''}

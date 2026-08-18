@@ -33,7 +33,7 @@ export function AISuggestedCategory({ category = null, source = 'ai', onAcceptCl
     <div aria-live="polite">
       {category && (
         <div className="flex items-center gap-2">
-          <Sparkles width={14} height={14} strokeWidth={1.5} className="text-ds-text-tertiary" aria-hidden="true" />
+          <Sparkles width={14} height={14} strokeWidth={1.5} className="text-ds-text-secondary" aria-hidden="true" />
           <span className="text-ds-caption text-ds-text-secondary">{SOURCE_LABELS[source]}</span>
           {onAcceptClick ? (
             <button
@@ -51,7 +51,7 @@ export function AISuggestedCategory({ category = null, source = 'ai', onAcceptCl
           <button
             type="button"
             onClick={onChangeClick}
-            className="text-ds-caption text-ds-text-tertiary hover:text-ds-text-secondary transition-colors duration-ds-fast ease-ds"
+            className="text-ds-caption text-ds-text-secondary transition-colors duration-ds-fast ease-ds"
           >
             Cambiar
           </button>
