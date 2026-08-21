@@ -7,6 +7,7 @@ import {
   Wrench,
   Database,
   Receipt,
+  Wallet,
   ArrowUp,
   ArrowDown
 } from '@phosphor-icons/react';
@@ -14,6 +15,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import { CurrencySelector } from '../../features/currency/CurrencySelector';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { parseMovementText } from '../../utils/newMovementParser';
+import { logDogfoodingEvent } from '../../utils/dogfoodingInstrumentation';
 
 // Fase I-C (Integración de Diseño): el shell nuevo (DSSidebar/DSBottomNav)
 // solo contempla 4 destinos de navegación (regla R-08 del diseño). Los tabs
@@ -28,16 +30,37 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
   // WRITE-DISPLAY-CURRENCY-001: mismo patrón ya usado en TransactionItem.jsx.
   const { selectedCurrency } = useCurrency();
 
+  // DOG-011 — instrumentación local: snapshot actualizado en cada render
+  // (barato, sin efecto propio) para que el cleanup del effect de abajo
+  // pueda leer el estado de búsqueda MÁS RECIENTE al momento del cierre,
+  // sin depender de `searchTerm` en el array de dependencias del effect
+  // (eso dispararía el cleanup en cada tecla, no una vez por cierre real).
+  const searchSnapshotRef = useRef({ searchTerm: '', matched: 'none' });
+
   // Focus and clear input when opened
   useEffect(() => {
     if (isOpen) {
       setSearchTerm('');
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
+      // DOG-011 — apertura real (el effect solo re-corre cuando `isOpen`
+      // cambia de valor, nunca en un render de recomposición ajeno).
+      logDogfoodingEvent('omnibar_open');
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => { document.body.style.overflow = 'unset'; };
+    return () => {
+      document.body.style.overflow = 'unset';
+      // DOG-011 — se ejecuta exactamente al cerrar (o desmontar). Usa el
+      // snapshot más reciente, no un valor capturado en el momento en que
+      // se abrió — así refleja la búsqueda real al momento del cierre, sin
+      // registrar el texto en sí (solo si hubo o no búsqueda, y qué tipo de
+      // resultado obtuvo).
+      const { searchTerm: finalTerm, matched } = searchSnapshotRef.current;
+      if (finalTerm.trim().length > 0) {
+        logDogfoodingEvent('omnibar_search_used', { matched });
+      }
+    };
   }, [isOpen]);
 
   // Cerrar presionando escape o click fuera
@@ -51,9 +74,19 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
 
   // Atajos maestros a la nube — `planificacion` y `herramientas` no tienen
   // destino en el shell nuevo (solo 4 ítems fijos); quedan disponibles acá.
+  //
+  // Corrección de regresión (Dogfooding, 2026-08-20): la entrada de
+  // `planificacion` (Tarjetas/Presupuestos/Recurrentes) se había perdido al
+  // reapuntar "Mis Metas" a la vista dedicada `metas` durante
+  // `metas-exposicion` (Fase 3, corrige H4) — ver
+  // src/__tests__/Omnibar.test.jsx:4-6. Esa quick action era la única vía de
+  // acceso a `planificacion`; su reasignación dejó el tab sin ningún punto
+  // de entrada en la UI. Se restaura como entrada propia, sin tocar la
+  // reasignación de "Mis Metas" (correcta para su propio alcance).
   const quickActions = [
     { id: 'movimientos', label: 'Ver Movimientos', icon: Receipt, query: 'movimientos' },
     { id: 'metas', label: 'Mis Metas', icon: Target, query: 'metas' },
+    { id: 'planificacion', label: 'Planificación', icon: Wallet, query: 'planificacion, tarjetas, presupuestos, recurrentes, deuda, credito' },
     { id: 'graficos', label: 'Insights', icon: ChartPieSlice, query: 'insights, tendencias, graficos' },
     { id: 'herramientas', label: 'Herramientas', icon: Wrench, query: 'herramientas, exportar, importar' },
   ];
@@ -78,6 +111,15 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
   // Lógica interactiva con fechas arriba abajo
   const totalItemsCount = searchResults.length + actionResults.length;
 
+  // DOG-011 — actualiza el snapshot que lee el cleanup del effect de
+  // apertura (arriba). Solo importa mientras `isQuerying` es true: si no hay
+  // búsqueda activa, `finalTerm.trim().length > 0` en el cleanup ya lo
+  // descarta, así que el valor de `matched` acá es irrelevante en ese caso.
+  searchSnapshotRef.current = {
+    searchTerm,
+    matched: actionResults.length > 0 ? 'action' : (searchResults.length > 0 ? 'transaction' : 'none'),
+  };
+
   // Prevent default arrow scrolling and handle it locally
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
@@ -90,10 +132,12 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
       e.preventDefault();
       // Ejecutar la acción del indíce
       if (selectedIndex < actionResults.length) {
+        logDogfoodingEvent('omnibar_navigate', { destination: actionResults[selectedIndex].id });
         onNavigate(actionResults[selectedIndex].id);
         onClose();
       } else {
         // Selecciono una transaccion
+        logDogfoodingEvent('omnibar_navigate', { destination: 'movimientos' });
         onNavigate('movimientos');
         onClose();
       }
@@ -174,7 +218,7 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
                         ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' 
                         : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
-                    onClick={() => { onNavigate(action.id); onClose(); }}
+                    onClick={() => { logDogfoodingEvent('omnibar_navigate', { destination: action.id }); onNavigate(action.id); onClose(); }}
                   >
                     <action.icon size={20} weight={i === selectedIndex ? "fill" : "regular"} />
                     <span className="font-bold">{action.label}</span>
@@ -209,7 +253,7 @@ export const Omnibar = ({ isOpen, onClose, allTransactions = [], onNavigate, onC
                           ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white' 
                           : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400'
                       }`}
-                      onClick={() => { onNavigate('movimientos'); onClose(); }}
+                      onClick={() => { logDogfoodingEvent('omnibar_navigate', { destination: 'movimientos' }); onNavigate('movimientos'); onClose(); }}
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                         isIncome ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'

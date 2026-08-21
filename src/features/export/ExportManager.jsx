@@ -8,6 +8,7 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { usePeriod } from '../../contexts/PeriodContext';
 import { filterByDateRange, calculateCategoryAnalysis, calculateTotal } from '../../utils/calculations';
 import { UpgradeModal } from '../../components/Subscription/UpgradeModal';
+import { logDogfoodingEvent } from '../../utils/dogfoodingInstrumentation';
 
 /**
  * Componente para exportar datos a CSV/PDF
@@ -141,8 +142,11 @@ export const ExportManager = ({ incomes, expenses, onExport }) => {
   const handleConfirmExport = () => {
     const type = pendingExport;
     setPendingExport(null);
-    if (type === 'csv') executeExportCSV();
-    else if (type === 'pdf') executeExportPDF();
+    // DOG-011 — inicio real: recién acá se sabe que el usuario confirmó
+    // (pasó el gate de plan y el ConfirmDialog), no en el clic inicial del
+    // botón, que puede terminar bloqueado por el paywall sin exportar nada.
+    if (type === 'csv') { logDogfoodingEvent('export_start', { format: 'csv' }); executeExportCSV(); }
+    else if (type === 'pdf') { logDogfoodingEvent('export_start', { format: 'pdf' }); executeExportPDF(); }
   };
 
   // Calcular número de transacciones en el rango

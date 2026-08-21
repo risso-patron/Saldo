@@ -11,6 +11,7 @@ import { useCurrency } from '../../contexts/CurrencyContext';
 import { Button } from '../ds/Button';
 import { FilaMovimiento } from '../ds/FilaMovimiento';
 import { cn } from '../ds/cn';
+import { logDogfoodingEvent } from '../../utils/dogfoodingInstrumentation';
 
 // Fase II — Integración del Dashboard (Saldo Design Constitution v1.2).
 // Fuente: docs/design/screens/Saldo Dashboard.dc.html.
@@ -155,7 +156,7 @@ function DashboardContent({ expenses, balance, allTransactions, onViewAllTransac
           sección "Mis metas" (cards, progreso) queda para `dashboard-claridad`. */}
       {onNavigate && (
         <div>
-          <Button variant="link" onClick={() => onNavigate('metas')}>
+          <Button variant="link" onClick={() => { logDogfoodingEvent('dashboard_metas_click'); onNavigate('metas'); }}>
             Mis metas{goals.length > 0 ? ` (${goals.length})` : ''}
           </Button>
         </div>

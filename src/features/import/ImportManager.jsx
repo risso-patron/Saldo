@@ -10,6 +10,7 @@ import { normalizeAmount, normalizeDate, cleanText } from '../../core/normalizat
 import { categorizeTransactionsFull } from '../../core/categorizationEngine';
 import TransactionPreviewTable from './TransactionPreviewTable';
 import { OnboardingBubble } from '../../components/UI/OnboardingBubble';
+import { logDogfoodingEvent } from '../../utils/dogfoodingInstrumentation';
 
 // ─── Clave de localStorage para perfiles de bancos ───────────────────────────
 const PROFILES_KEY = 'budget_import_bank_profiles';
@@ -326,6 +327,12 @@ export default function ImportManager({ onImport, onBulkImport }) {
       setError('Solo se aceptan archivos .csv o .txt');
       return;
     }
+
+    // DOG-011 — inicio real del flujo: un archivo válido va a procesarse.
+    // No se dispara en intentos con archivo inválido (return anterior), ni
+    // al simplemente abrir la pestaña de Herramientas. Sin datos del
+    // archivo ni del usuario en el evento.
+    logDogfoodingEvent('import_start');
 
     flushSync(() => {
       setError(null);

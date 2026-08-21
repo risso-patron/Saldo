@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCurrency, SUPPORTED_CURRENCIES } from '../../contexts/CurrencyContext';
+import { logDogfoodingEvent } from '../../utils/dogfoodingInstrumentation';
 
 /**
  * CurrencySelector – selector compacto para elegir la moneda de visualización.
@@ -62,7 +63,16 @@ export const CurrencySelector = ({ align = 'default' }) => {
             {SUPPORTED_CURRENCIES.map(c => (
               <li key={c.code}>
                 <button
-                  onClick={() => { setSelectedCurrency(c.code); setOpen(false); }}
+                  onClick={() => {
+                    // DOG-011 — solo cuenta como cambio real si la moneda
+                    // seleccionada difiere de la actual (re-clickear la
+                    // misma no es un cambio).
+                    if (c.code !== selectedCurrency) {
+                      logDogfoodingEvent('currency_change', { to: c.code });
+                    }
+                    setSelectedCurrency(c.code);
+                    setOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-all
                     ${c.code === selectedCurrency
                       ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-bold'
