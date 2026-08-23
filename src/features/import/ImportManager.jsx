@@ -54,10 +54,10 @@ const normalizeImportToken = (value) => String(value || '')
   .replace(/\s+/g, ' ')
   .trim();
 
-const INCOME_TYPE_ALIASES = new Set(['income', 'ingreso', 'credit', 'credito', 'abono', 'haber']);
-const EXPENSE_TYPE_ALIASES = new Set(['expense', 'gasto', 'debit', 'debito', 'cargo']);
+const INCOME_TYPE_ALIASES = new Set(['income', 'ingreso', 'ingresos', 'credit', 'credito', 'abono', 'haber']);
+const EXPENSE_TYPE_ALIASES = new Set(['expense', 'gasto', 'gastos', 'debit', 'debito', 'cargo']);
 
-const normalizeExplicitImportType = (value) => {
+const normalizeTransactionType = (value) => {
   const token = normalizeImportToken(value);
   if (INCOME_TYPE_ALIASES.has(token)) return 'income';
   if (EXPENSE_TYPE_ALIASES.has(token)) return 'expense';
@@ -183,6 +183,7 @@ const COLUMN_ALIASES = {
   tipo: [
     'tipo', 'type', 'tipo movimiento', 'tipo de movimiento',
     'dc', 'd/c', 'debito credito', 'clase', 'tipo transaccion',
+    'transaction_type', 'transaction type', 'categoria_tipo', 'categoria tipo',
   ],
   categoria: [
     'categoria', 'category', 'rubro', 'clasificacion', 'subcategoria',
@@ -339,7 +340,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
         amount = normalizeAmount(values[mapping.amount]);
         inferredType = amount >= 0 ? 'income' : 'expense';
       }
-      const explicitType = typeColIdx !== -1 ? normalizeExplicitImportType(values[typeColIdx]) : null;
+      const explicitType = typeColIdx !== -1 ? normalizeTransactionType(values[typeColIdx]) : null;
       const type = explicitType || inferredType;
 
       if (date && description) {
@@ -853,7 +854,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
         const raw = parseAmount(getVal(values, 'monto'));
         monto = Math.abs(raw);
         if (columnMap.tipo) {
-          const explicitType = normalizeExplicitImportType(getVal(values, 'tipo'));
+          const explicitType = normalizeTransactionType(getVal(values, 'tipo'));
           tipo = explicitType ? toLegacyImportType(explicitType) : (raw >= 0 ? 'ingreso' : 'gasto');
         } else {
           tipo = raw >= 0 ? 'ingreso' : 'gasto';
@@ -929,7 +930,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
         const transactionsToImport = dataToImport.map(row => {
           // Detectar si es el "nuevo" formato modular (Fase 5/6)
           if (row.date !== undefined && row.amount !== undefined) {
-            const transactionType = normalizeExplicitImportType(row.type) || (row.amount >= 0 ? 'income' : 'expense');
+            const transactionType = normalizeTransactionType(row.type) || (row.amount >= 0 ? 'income' : 'expense');
             return {
               type: transactionType,
               description: row.description,

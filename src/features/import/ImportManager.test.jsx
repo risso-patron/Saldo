@@ -362,6 +362,74 @@ describe('ImportManager - IMP-001 Import Safety Gate', () => {
     });
   });
 
+  it('IMP-002A-H01 preserves explicit tipo=gasto as expense', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildTypedCsv('tipo', 'gasto', '5', 'Cafe'));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(1\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Cafe',
+      type: 'expense',
+      amount: 5,
+      category: 'Otros',
+    });
+  });
+
+  it('IMP-002A-H01 detects transaction_type header and plural income value', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildTypedCsv('transaction_type', 'ingresos', '1000', 'Sueldo'));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(1\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Sueldo',
+      type: 'income',
+      amount: 1000,
+    });
+  });
+
+  it('IMP-002A-H01 detects categoria_tipo header and plural expense value', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildTypedCsv('categoria_tipo', 'gastos', '5', 'Cafe'));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(1\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Cafe',
+      type: 'expense',
+      amount: 5,
+      category: 'Otros',
+    });
+  });
+
   it('IMP-002A-H01 keeps previous sign inference when CSV has no type column', async () => {
     const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
 
