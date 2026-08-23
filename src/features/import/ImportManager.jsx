@@ -46,6 +46,29 @@ const buildImportMetadata = async (file) => ({
   fileSha256: await calculateFileSha256(file),
 });
 
+const normalizeImportToken = (value) => String(value || '')
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^\w\s]/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+const INCOME_TYPE_ALIASES = new Set(['income', 'ingreso', 'credit', 'credito', 'abono', 'haber']);
+const EXPENSE_TYPE_ALIASES = new Set(['expense', 'gasto', 'debit', 'debito', 'cargo']);
+
+const normalizeExplicitImportType = (value) => {
+  const token = normalizeImportToken(value);
+  if (INCOME_TYPE_ALIASES.has(token)) return 'income';
+  if (EXPENSE_TYPE_ALIASES.has(token)) return 'expense';
+  return null;
+};
+
+const toLegacyImportType = (type) => (type === 'income' ? 'ingreso' : 'gasto');
+const toSignedAmountByType = (amount, type) => (
+  type === 'expense' ? -Math.abs(amount) : Math.abs(amount)
+);
+
 const normalizeImportPreviewDate = (value) => {
   if (!value) return null;
   const date = String(value).trim();
@@ -279,6 +302,9 @@ export default function ImportManager({ onImport, onBulkImport }) {
     const normHeaders = rawHeaders.map(h =>
       h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s]/g, '').trim()
     );
+    const typeColIdx = normHeaders.findIndex(h =>
+      COLUMN_ALIASES.tipo.some(alias => h === alias || h.includes(alias) || alias.includes(h))
+    );
     const DEBIT_ALIASES  = ['cargos db', 'cargo db', 'debito', 'debit', 'cargos', 'egreso', 'retiros'];
     const CREDIT_ALIASES = ['pagos cr', 'pago cr', 'credito', 'credit', 'abonos', 'deposito', 'pagos'];
     const debitColIdx  = normHeaders.findIndex(h => DEBIT_ALIASES.some(a => h === a || h.includes(a)));
@@ -297,18 +323,27 @@ export default function ImportManager({ onImport, onBulkImport }) {
       const description = cleanText(values[mapping.description]);
 
       let amount;
+      let inferredType;
       if (hasSplitCols) {
         // Columnas separadas: crédito = ingreso (+), débito = gasto (-)
         const creditVal = normalizeAmount(values[creditColIdx]);
         const debitVal  = normalizeAmount(values[debitColIdx]);
-        if (Math.abs(creditVal) > 0) amount = Math.abs(creditVal);
-        else                         amount = -Math.abs(debitVal);
+        if (Math.abs(creditVal) > 0) {
+          amount = Math.abs(creditVal);
+          inferredType = 'income';
+        } else {
+          amount = -Math.abs(debitVal);
+          inferredType = 'expense';
+        }
       } else {
         amount = normalizeAmount(values[mapping.amount]);
+        inferredType = amount >= 0 ? 'income' : 'expense';
       }
+      const explicitType = typeColIdx !== -1 ? normalizeExplicitImportType(values[typeColIdx]) : null;
+      const type = explicitType || inferredType;
 
       if (date && description) {
-        normalized.push({ date, amount, description });
+        normalized.push({ date, amount: toSignedAmountByType(amount, type), description, type });
       }
     }
 
@@ -818,8 +853,8 @@ export default function ImportManager({ onImport, onBulkImport }) {
         const raw = parseAmount(getVal(values, 'monto'));
         monto = Math.abs(raw);
         if (columnMap.tipo) {
-          const tipoRaw = getVal(values, 'tipo').toLowerCase();
-          tipo = /c|ingreso|abono|credito|haber/.test(tipoRaw) ? 'ingreso' : 'gasto';
+          const explicitType = normalizeExplicitImportType(getVal(values, 'tipo'));
+          tipo = explicitType ? toLegacyImportType(explicitType) : (raw >= 0 ? 'ingreso' : 'gasto');
         } else {
           tipo = raw >= 0 ? 'ingreso' : 'gasto';
         }
@@ -894,12 +929,13 @@ export default function ImportManager({ onImport, onBulkImport }) {
         const transactionsToImport = dataToImport.map(row => {
           // Detectar si es el "nuevo" formato modular (Fase 5/6)
           if (row.date !== undefined && row.amount !== undefined) {
+            const transactionType = normalizeExplicitImportType(row.type) || (row.amount >= 0 ? 'income' : 'expense');
             return {
-              type: row.amount >= 0 ? 'income' : 'expense',
+              type: transactionType,
               description: row.description,
               amount: Math.abs(row.amount),
               date: row.date,
-              category: row.amount < 0 ? (row.category || 'Otros') : undefined,
+              category: transactionType === 'expense' ? (row.category || 'Otros') : undefined,
               aiCategorized: row.source === 'ai',
               aiConfidence: row.source === 'ai' ? 0.85 : 0,
             };

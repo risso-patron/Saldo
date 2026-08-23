@@ -216,6 +216,11 @@ const buildRecognizedCsv = (count) => [
   }),
 ].join('\n');
 
+const buildTypedCsv = (typeHeader, typeValue, amount, description = 'Movimiento prueba') => [
+  `fecha,description,${typeHeader},amount`,
+  `2026-01-01,${description},${typeValue},${amount}`,
+].join('\n');
+
 describe('ImportManager - IMP-001 Import Safety Gate', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -310,6 +315,108 @@ describe('ImportManager - IMP-001 Import Safety Gate', () => {
         delete File.prototype.arrayBuffer;
       }
     }
+  });
+
+  it('IMP-002A-H01 preserves explicit type=expense even when amount is positive', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildTypedCsv('type', 'expense', '5', 'Cafe'));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(1\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Cafe',
+      type: 'expense',
+      amount: 5,
+      category: 'Otros',
+    });
+  });
+
+  it('IMP-002A-H01 preserves explicit tipo=ingreso as income', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildTypedCsv('tipo', 'ingreso', '1000', 'Sueldo'));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(1\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Sueldo',
+      type: 'income',
+      amount: 1000,
+    });
+  });
+
+  it('IMP-002A-H01 keeps previous sign inference when CSV has no type column', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, [
+      'fecha,description,amount',
+      '2026-01-01,Cafe,5',
+    ].join('\n'));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(1\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Cafe',
+      type: 'income',
+      amount: 5,
+    });
+  });
+
+  it('IMP-002A-H01 parseWithColumnMap treats tipo=cargo as expense, not income', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 1, errors: 0 });
+    const mapColumnsMock = vi.fn().mockResolvedValue({
+      fecha: 'ColumnaUno',
+      descripcion: 'ColumnaDos',
+      monto: 'ColumnaTres',
+      tipo: 'ColumnaCuatro',
+    });
+
+    const { container } = render(
+      <AIProvider provider={{ mapColumns: mapColumnsMock }}>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, [
+      'ColumnaUno,ColumnaDos,ColumnaTres,ColumnaCuatro',
+      '01/01/2026,Cafe,5,cargo',
+    ].join('\n'));
+    await screen.findByText(/Modo Compatibilidad/i, {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar\s+1\s+transacciones/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0][0]).toMatchObject({
+      description: 'Cafe',
+      type: 'expense',
+      amount: 5,
+      category: 'Otros',
+    });
   });
 
   it('requires the exact confirmation phrase for previews with 25 movements or more', async () => {
