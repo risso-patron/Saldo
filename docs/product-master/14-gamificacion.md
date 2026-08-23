@@ -85,12 +85,18 @@ el tipo de decisión sin justificación que cap 08 prohíbe.
   son un segundo sistema numérico compitiendo con el único que cap 01 quiere que el usuario entienda en menos de 10
   segundos. Se descarta.
 
-**Aclaración de alcance (PM-RECON-003, 2026-07-28):** este capítulo no es gamificación tradicional. No usa
-puntos, rankings, competencia entre usuarios, streak clásico como obligación diaria, presión psicológica ni
+**Aclaración de alcance (PM-RECON-003, 2026-07-28):** este capítulo no es gamificación tradicional. No **debe**
+usar puntos, rankings, competencia entre usuarios, streak clásico como obligación diaria, presión psicológica ni
 confeti u otros mecanismos de recompensa conductual — cada uno ya está descartado arriba o en cap 13, punto por
 punto. Los reconocimientos de este capítulo representan hitos de comprensión financiera, momentos de progreso
 real y señales de avance del usuario, nunca premios. Ver Experience Constitution, anti-patrón "El casino", para
 la referencia cruzada de esta misma distinción del lado de diseño.
+
+**Corrección de redacción (PM-RECON-004, 2026-08-06):** el párrafo anterior se redactó originalmente como una
+afirmación de hecho ("no usa… ni confeti") en vez de una norma, y esa afirmación era falsa al momento de
+escribirse — `GoalManager.jsx` ya importaba `react-confetti` para el estado de meta alcanzada. Queda registrado
+como deuda técnica sin priorizar (`docs/design/integration-debt.md`, fila 2026-08-06); esta corrección es de
+redacción, no reabre la doctrina de PM-RECON-003.
 
 ## 5) Cómo motivar sin generar ansiedad (síntesis)
 No hay una técnica nueva acá — es la combinación de lo que 13 y este capítulo ya resolvieron: celebrar poco y con
