@@ -276,6 +276,7 @@ function AppContent() {
   // del banner de dominancia de "Otros" en ChartsTab (HAL-001 parte 2).
   // ExpenseList lo consume una vez al montar y lo limpia vía onInitialFilterConsumed.
   const [pendingCategoryFilter, setPendingCategoryFilter] = useState(null);
+  const [selectedImportBatch, setSelectedImportBatch] = useState(null);
   const handleReclassifyOtros = () => {
     setPendingCategoryFilter('Otros');
     setActiveTab('movimientos');
@@ -296,6 +297,24 @@ function AppContent() {
     availableYears, selectedYear, setSelectedYear,
     availableMonths, selectedMonth, setSelectedMonth,
   } = useFilters(incomes, expenses);
+
+  const selectedImportBatchId = selectedImportBatch?.id || null;
+  const historialIncomes = selectedImportBatchId
+    ? incomes.filter((movement) => movement.importBatchId === selectedImportBatchId)
+    : filteredIncomes;
+  const historialExpenses = selectedImportBatchId
+    ? expenses.filter((movement) => movement.importBatchId === selectedImportBatchId)
+    : filteredExpenses;
+  const selectedImportBatchLabel = selectedImportBatch
+    ? (selectedImportBatch.originalFilename || `Importación ${selectedImportBatch.source === 'txt_import' ? 'TXT' : 'CSV'}`)
+    : null;
+
+  const handleViewImportBatch = (batch) => {
+    setSelectedImportBatch(batch);
+    setSelectedYear(null);
+    setSelectedMonth(null);
+    setActiveTab('movimientos');
+  };
 
   const handleAddCard = (card) => { setCreditCards([...creditCards, card]); showAlert('success', `Tarjeta "${card.name}" agregada`); return true; };
   const handleUpdateDebt = (cardId, newDebt) => setCreditCards(creditCards.map(card => card.id === cardId ? { ...card, debt: newDebt } : card));
@@ -500,45 +519,57 @@ function AppContent() {
               )}
               {activeTab === 'graficos' && <Suspense fallback={<TabLoader />}><LegacyPeriodFilters availableYears={availableYears} selectedYear={selectedYear} setSelectedYear={setSelectedYear} availableMonths={availableMonths} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} /><ChartsTab filteredIncomes={filteredIncomes} filteredExpenses={filteredExpenses} filteredTotalIncome={filteredTotalIncome} filteredTotalExpenses={filteredTotalExpenses} filteredBalance={filteredBalance} categoryAnalysis={categoryAnalysis} onReclassifyOtros={handleReclassifyOtros} /></Suspense>}
               {activeTab === 'movimientos' && (
-                <Historial
-                  incomes={filteredIncomes}
-                  expenses={filteredExpenses}
-                  selectedYear={selectedYear}
-                  setSelectedYear={setSelectedYear}
-                  selectedMonth={selectedMonth}
-                  setSelectedMonth={setSelectedMonth}
-                  initialCategoryFilter={pendingCategoryFilter}
-                  onInitialFilterConsumed={() => setPendingCategoryFilter(null)}
-                  onEditMovement={setEditingMovement}
-                  onDeleteMovement={deleteMovement}
-                  loading={loading}
-                  // Checkpoint IV-F.1 — hasMovements se computa acá desde
-                  // allTransactions (el dominio SIN recortar), nunca desde
-                  // filteredIncomes/filteredExpenses (las que se le pasan
-                  // arriba, ya recortadas por mes vía useFilters). Motivo:
-                  // Historial usa hasMovements para decidir "¿existe algo en
-                  // absoluto?" (estado vacío real, sin filtros ni resumen) —
-                  // si se calculara desde los props ya filtrados por
-                  // período, un usuario con movimientos en OTROS meses pero
-                  // ninguno en el mes actualmente seleccionado vería
-                  // incorrectamente el estado "vacío real" en vez de "sin
-                  // resultados". NO reemplazar por
-                  // filteredIncomes.length + filteredExpenses.length > 0 —
-                  // sería exactamente esa regresión.
-                  hasMovements={allTransactions.length > 0}
-                  onRegisterExpense={handleQuickAddAction}
-                  onNavigateToImport={() => setActiveTab('herramientas')}
-                  syncError={syncError}
-                  lastSyncedAt={lastSyncedAt}
-                  onRetrySync={refreshTransactions}
-                />
+                <div className="space-y-3">
+                  {selectedImportBatchId && (
+                    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-primary-200 bg-primary-50 px-3 py-2 dark:border-primary-900/50 dark:bg-primary-950/20">
+                      <span className="text-xs font-black text-primary-800 dark:text-primary-300">
+                        Importación: {selectedImportBatchLabel}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Quitar filtro de importación"
+                        onClick={() => setSelectedImportBatch(null)}
+                        className="inline-flex h-6 items-center gap-1 rounded-lg px-2 text-[11px] font-black text-primary-700 hover:bg-primary-100 dark:text-primary-300 dark:hover:bg-primary-900/30"
+                      >
+                        <X size={12} weight="bold" />
+                        Limpiar filtro
+                      </button>
+                    </div>
+                  )}
+                  <Historial
+                    incomes={historialIncomes}
+                    expenses={historialExpenses}
+                    selectedYear={selectedYear}
+                    setSelectedYear={setSelectedYear}
+                    selectedMonth={selectedMonth}
+                    setSelectedMonth={setSelectedMonth}
+                    initialCategoryFilter={pendingCategoryFilter}
+                    onInitialFilterConsumed={() => setPendingCategoryFilter(null)}
+                    onEditMovement={setEditingMovement}
+                    onDeleteMovement={deleteMovement}
+                    loading={loading}
+                    // Checkpoint IV-F.1 — hasMovements se computa acá desde
+                    // allTransactions (el dominio SIN recortar), nunca desde
+                    // filteredIncomes/filteredExpenses ni desde el filtro local
+                    // por importBatchId. Motivo: Historial usa hasMovements
+                    // para decidir "¿existe algo en absoluto?" (estado vacío
+                    // real, sin filtros ni resumen). El filtro de IMP-002B es
+                    // una capacidad adicional, no una nueva fuente de verdad.
+                    hasMovements={allTransactions.length > 0}
+                    onRegisterExpense={handleQuickAddAction}
+                    onNavigateToImport={() => setActiveTab('herramientas')}
+                    syncError={syncError}
+                    lastSyncedAt={lastSyncedAt}
+                    onRetrySync={refreshTransactions}
+                  />
+                </div>
               )}
               {activeTab === 'planificacion' && <Suspense fallback={<TabLoader />}><CreditCardManager creditCards={creditCards} onAddCard={handleAddCard} onUpdateDebt={handleUpdateDebt} onRemoveCard={handleRemoveCard} /><BudgetManager expenses={filteredExpenses} /><RecurringManager recurring={recurring} onAdd={addRecurring} onToggle={toggleRecurring} onRemove={removeRecurring} /></Suspense>}
               {/* metas-exposicion (design.md Decisión 1/2): vista dedicada, fuera de
                   DS_NAV_ITEMS (R-08 intacto) — GoalManager ya no se apila en
                   `planificacion` junto a otros 3 módulos (corrige H4). */}
               {activeTab === 'metas' && <Suspense fallback={<TabLoader />}><GoalManager goals={goals} onAddGoal={handleAddGoal} onUpdateProgress={handleUpdateGoalProgress} onDeleteGoal={handleDeleteGoal} /></Suspense>}
-              {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} /></Suspense>}
+              {activeTab === 'herramientas' && <Suspense fallback={<TabLoader />}><ExportManager incomes={incomes} expenses={expenses} /><ImportManager onImport={handleImportTransaction} onBulkImport={handleBulkImportTransaction} onViewImportBatch={handleViewImportBatch} /></Suspense>}
               {activeTab === 'cuenta' && <Suspense fallback={<TabLoader />}><ProfilePage filteredTotalExpenses={filteredTotalExpenses} totalTransactions={allTransactions.length} constancyWindow={achievements.constancyWindow} windowSize={achievements.windowSize} categoryCount={categoryAnalysis.length} onNavigate={setActiveTab} onShowAlert={showAlert} /></Suspense>}
             </main>
             <InstallPWA />

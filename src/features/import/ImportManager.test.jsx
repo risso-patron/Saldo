@@ -1,3 +1,4 @@
+/* global describe, beforeEach, it, expect, vi */
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ImportManager from './ImportManager';
@@ -18,13 +19,29 @@ vi.mock('lottie-react', () => ({
 // Sin acceso (gate/consentimiento denegado), ImportManager cae a sus modos
 // no-IA existentes sin bloquear la importación.
 
-const { singleMock, fromMock, useSubscriptionMock, useAuthMock, categorizeTransactionsFullMock } = vi.hoisted(() => {
+const { singleMock, fromMock, useSubscriptionMock, useAuthMock, categorizeTransactionsFullMock, importBatchesMocks } = vi.hoisted(() => {
   const singleMock = vi.fn();
   const eq2Mock = vi.fn(() => ({ single: singleMock }));
   const eq1Mock = vi.fn(() => ({ eq: eq2Mock }));
   const selectMock = vi.fn(() => ({ eq: eq1Mock }));
   const upsertMock = vi.fn().mockResolvedValue({ data: null, error: null });
-  const fromMock = vi.fn(() => ({ select: selectMock, upsert: upsertMock }));
+
+  const importBatchesLimitMock = vi.fn();
+  const importBatchesOrderMock = vi.fn(() => ({ limit: importBatchesLimitMock }));
+  const importBatchesEqMock = vi.fn(() => ({ order: importBatchesOrderMock }));
+  const importBatchesSelectMock = vi.fn(() => ({ eq: importBatchesEqMock }));
+  const importBatchesMocks = {
+    select: importBatchesSelectMock,
+    eq: importBatchesEqMock,
+    order: importBatchesOrderMock,
+    limit: importBatchesLimitMock,
+  };
+
+  const fromMock = vi.fn((table) => (
+    table === 'import_batches'
+      ? { select: importBatchesSelectMock }
+      : { select: selectMock, upsert: upsertMock }
+  ));
   const useSubscriptionMock = vi.fn(() => ({ subscription: { plan_type: 'pro_monthly' } }));
   // `useAuthMock` es dinámico (a diferencia de un mock estático) para poder
   // simular un cambio de usuario a mitad de sesión (M1: ventana de carrera
@@ -37,7 +54,7 @@ const { singleMock, fromMock, useSubscriptionMock, useAuthMock, categorizeTransa
   // no alterar el resto de los tests, mientras permite espiar con qué
   // segundo argumento (el gate de autorización) se invoca.
   const categorizeTransactionsFullMock = vi.fn((transactions) => Promise.resolve(transactions));
-  return { singleMock, fromMock, useSubscriptionMock, useAuthMock, categorizeTransactionsFullMock };
+  return { singleMock, fromMock, useSubscriptionMock, useAuthMock, categorizeTransactionsFullMock, importBatchesMocks };
 });
 
 vi.mock('../../lib/supabase', () => ({
@@ -72,6 +89,7 @@ describe('ImportManager — migración a useAI().mapColumns (spec.md Área 7, de
     vi.clearAllMocks();
     useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
     useAuthMock.mockReturnValue({ user: { id: 'user-1' } });
+    importBatchesMocks.limit.mockResolvedValue({ data: [], error: null });
     categorizeTransactionsFullMock.mockImplementation((transactions) => Promise.resolve(transactions));
   });
 
@@ -156,6 +174,7 @@ describe('ImportManager — gate de categorización batch usa ai.isAIAuthorized 
     vi.clearAllMocks();
     useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
     useAuthMock.mockReturnValue({ user: { id: 'user-1' } });
+    importBatchesMocks.limit.mockResolvedValue({ data: [], error: null });
     categorizeTransactionsFullMock.mockImplementation((transactions) => Promise.resolve(transactions));
   });
 
@@ -227,9 +246,99 @@ describe('ImportManager - IMP-001 Import Safety Gate', () => {
     useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
     useAuthMock.mockReturnValue({ user: { id: 'user-1' } });
     singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+    importBatchesMocks.limit.mockResolvedValue({ data: [], error: null });
     categorizeTransactionsFullMock.mockImplementation((transactions) => Promise.resolve(
       transactions.map((transaction) => ({ ...transaction, category: transaction.amount < 0 ? 'Otros' : undefined }))
     ));
+  });
+
+  it('IMP-002B shows recent import batches from a single read-only query', async () => {
+    importBatchesMocks.limit.mockResolvedValue({
+      data: [{
+        id: 'batch-1',
+        source: 'csv_import',
+        original_filename: 'extracto.csv',
+        file_size_bytes: 123,
+        file_sha256: null,
+        movement_count: 2,
+        income_count: 1,
+        expense_count: 1,
+        income_total: '500.00',
+        expense_total: '25.00',
+        net_total: '475.00',
+        status: 'completed',
+        created_at: '2026-08-23T10:00:00.000Z',
+        completed_at: '2026-08-23T10:00:01.000Z',
+      }],
+      error: null,
+    });
+
+    render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={vi.fn()} />
+      </AIProvider>
+    );
+
+    expect(await screen.findByText('Importaciones recientes')).toBeInTheDocument();
+    expect(screen.getByText('extracto.csv')).toBeInTheDocument();
+    expect(screen.getByText('2 movimientos')).toBeInTheDocument();
+    expect(screen.getByText('1 ingreso · 1 gasto')).toBeInTheDocument();
+    expect(screen.getByText('Neto $475.00')).toBeInTheDocument();
+    expect(screen.getByText(/Completada/)).toBeInTheDocument();
+
+    expect(fromMock).toHaveBeenCalledWith('import_batches');
+    expect(importBatchesMocks.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(importBatchesMocks.order).toHaveBeenCalledWith('created_at', { ascending: false });
+    expect(importBatchesMocks.limit).toHaveBeenCalledWith(10);
+  });
+
+  it('IMP-002B calls onViewImportBatch when user asks to view imported movements', async () => {
+    const onViewImportBatch = vi.fn();
+    importBatchesMocks.limit.mockResolvedValue({
+      data: [{
+        id: 'batch-1',
+        source: 'txt_import',
+        original_filename: 'banco.txt',
+        movement_count: 3,
+        income_count: 1,
+        expense_count: 2,
+        income_total: '100.00',
+        expense_total: '40.00',
+        net_total: '60.00',
+        status: 'completed',
+        created_at: '2026-08-23T10:00:00.000Z',
+        completed_at: '2026-08-23T10:00:01.000Z',
+      }],
+      error: null,
+    });
+
+    render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={vi.fn()} onViewImportBatch={onViewImportBatch} />
+      </AIProvider>
+    );
+
+    await userEvent.click(await screen.findByRole('button', { name: /ver movimientos/i }));
+
+    expect(onViewImportBatch).toHaveBeenCalledWith(expect.objectContaining({
+      id: 'batch-1',
+      originalFilename: 'banco.txt',
+      movementCount: 3,
+      source: 'txt_import',
+    }));
+  });
+
+  it('IMP-002B keeps import flow available when import batch history fails', async () => {
+    importBatchesMocks.limit.mockResolvedValue({ data: null, error: { message: 'network down' } });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={vi.fn()} />
+      </AIProvider>
+    );
+
+    expect(container.querySelector('#file-upload')).toBeInTheDocument();
+    expect(await screen.findByText(/No pudimos cargar las importaciones recientes/i)).toBeInTheDocument();
   });
 
   it('imports small previews directly without an extra confirmation', async () => {
