@@ -19,6 +19,33 @@ const LARGE_IMPORT_THRESHOLD = 25;
 const buildImportConfirmationPhrase = (count) => `IMPORTAR ${count} MOVIMIENTOS`;
 const formatImportMoney = (value) => `$${value.toFixed(2)}`;
 
+const getImportSourceFromFile = (file) => (
+  file?.name?.toLowerCase().endsWith('.txt') ? 'txt_import' : 'csv_import'
+);
+
+const bufferToHex = (buffer) => Array.from(new Uint8Array(buffer))
+  .map(byte => byte.toString(16).padStart(2, '0'))
+  .join('');
+
+const calculateFileSha256 = async (file) => {
+  try {
+    const subtle = globalThis.crypto?.subtle;
+    if (!file || !subtle || typeof file.arrayBuffer !== 'function') return null;
+    const digest = await subtle.digest('SHA-256', await file.arrayBuffer());
+    return bufferToHex(digest);
+  } catch (err) {
+    console.warn('No se pudo calcular SHA-256 del archivo importado:', err);
+    return null;
+  }
+};
+
+const buildImportMetadata = async (file) => ({
+  source: getImportSourceFromFile(file),
+  originalFilename: file?.name || null,
+  fileSizeBytes: typeof file?.size === 'number' ? file.size : null,
+  fileSha256: await calculateFileSha256(file),
+});
+
 const normalizeImportPreviewDate = (value) => {
   if (!value) return null;
   const date = String(value).trim();
@@ -212,6 +239,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
   const [loadingFile, setLoadingFile] = useState(false);
   const [importSafetyGate, setImportSafetyGate] = useState(null);
   const [importConfirmationText, setImportConfirmationText] = useState('');
+  const [importFileMeta, setImportFileMeta] = useState(null);
   
   // Entrada única de IA (design.md §1, §6): gate de plan + consentimiento
   // resuelto adentro de useAI(); mapColumns degrada a null sin acceso.
@@ -418,6 +446,8 @@ export default function ImportManager({ onImport, onBulkImport }) {
     // archivo ni del usuario en el evento.
     logDogfoodingEvent('import_start');
 
+    const importMetadataPromise = buildImportMetadata(file);
+
     flushSync(() => {
       setError(null);
       setPreviewData(null);
@@ -429,6 +459,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
       setSaveProfileName('');
       setImportSafetyGate(null);
       setImportConfirmationText('');
+      setImportFileMeta(null);
       setLoadingFile(true);
     });
 
@@ -448,6 +479,8 @@ export default function ImportManager({ onImport, onBulkImport }) {
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
+        const importMetadata = await importMetadataPromise;
+        setImportFileMeta(importMetadata);
         await tryAutoDetect(event.target.result);
       } catch (err) {
         setError(`Error al leer el archivo: ${err.message}`);
@@ -892,8 +925,8 @@ export default function ImportManager({ onImport, onBulkImport }) {
 
         console.log('Transacciones preparadas:', transactionsToImport.length);
         
-        // Llamar a la funcion de importacion masiva
-        const result = await onBulkImport(transactionsToImport);
+        // Llamar a la funcion de importacion masiva con metadata del archivo.
+        const result = await onBulkImport(transactionsToImport, importFileMeta);
         
         console.log('Resultado de importacion:', result);
 
@@ -956,6 +989,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
 
       invalidateImportConfirmation();
       setPreviewData(null);
+      setImportFileMeta(null);
     } catch (err) {
       console.error('Error durante la importacion:', err);
       setError(`Error durante la importacion: ${err.message}`);

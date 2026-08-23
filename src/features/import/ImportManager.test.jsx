@@ -246,6 +246,72 @@ describe('ImportManager - IMP-001 Import Safety Gate', () => {
     expect(onBulkImport.mock.calls[0][0]).toHaveLength(2);
   });
 
+  it('IMP-002A.2 passes file import metadata to the bulk import handler', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 2, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildRecognizedCsv(2));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(2\)/i }));
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0]).toHaveLength(2);
+    expect(onBulkImport.mock.calls[0][1]).toMatchObject({
+      source: 'csv_import',
+      originalFilename: 'extracto.csv',
+      fileSizeBytes: expect.any(Number),
+    });
+    expect(onBulkImport.mock.calls[0][1].fileSizeBytes).toBeGreaterThan(0);
+    expect(
+      onBulkImport.mock.calls[0][1].fileSha256 === null
+        || /^[a-f0-9]{64}$/.test(onBulkImport.mock.calls[0][1].fileSha256)
+    ).toBe(true);
+  });
+
+  it('IMP-002A.2 keeps importing when SHA-256 calculation fails', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 2, errors: 0 });
+    const originalArrayBuffer = File.prototype.arrayBuffer;
+    Object.defineProperty(File.prototype, 'arrayBuffer', {
+      configurable: true,
+      value: vi.fn().mockRejectedValue(new Error('hash failed')),
+    });
+
+    try {
+      const { container } = render(
+        <AIProvider>
+          <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+        </AIProvider>
+      );
+
+      await uploadFile(container, buildRecognizedCsv(2));
+      await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+      await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(2\)/i }));
+
+      await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+      expect(onBulkImport.mock.calls[0][1]).toMatchObject({
+        source: 'csv_import',
+        originalFilename: 'extracto.csv',
+        fileSha256: null,
+      });
+    } finally {
+      if (originalArrayBuffer) {
+        Object.defineProperty(File.prototype, 'arrayBuffer', {
+          configurable: true,
+          value: originalArrayBuffer,
+        });
+      } else {
+        delete File.prototype.arrayBuffer;
+      }
+    }
+  });
+
   it('requires the exact confirmation phrase for previews with 25 movements or more', async () => {
     const onBulkImport = vi.fn().mockResolvedValue({ imported: 25, errors: 0 });
 

@@ -345,7 +345,7 @@ function AppContent() {
     return handleAddExpense(data.description, data.category, data.amount, data.date);
   };
 
-  const handleBulkImportTransaction = async (transactions) => addBulkTransactions(transactions, { notification: 'toast' });
+  const handleBulkImportTransaction = async (transactions, importMetadata) => addBulkTransactions(transactions, { notification: 'toast', importMetadata });
 
   const handleClearAllTransactions = () => openConfirm({
     title: t('app.clear_all_title'), message: t('app.clear_all_message', { count: incomes.length + expenses.length }), confirmLabel: t('app.clear_all_confirm'), onConfirm: () => { clearAll(); closeConfirm(); }

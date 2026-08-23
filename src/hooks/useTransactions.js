@@ -18,18 +18,29 @@ const fromSupabase = (row) => ({
   category: row.category === 'income' ? undefined : row.category,
   date: row.date,
   createdAt: row.created_at,
+  importBatchId: row.import_batch_id || null,
+  source: row.source || null,
+  importedAt: row.imported_at || null,
 });
 
-const toSupabase = (tx, userId) => ({
-  id: tx.id,
-  user_id: userId,
-  description: tx.description.trim(),
-  amount: parseFloat(tx.amount),
-  currency: tx.currency || 'USD',
-  type: tx.type,
-  category: tx.category || (tx.type === TRANSACTION_TYPES.INCOME ? 'income' : 'Otros'),
-  date: tx.date,
-});
+const toSupabase = (tx, userId) => {
+  const row = {
+    id: tx.id,
+    user_id: userId,
+    description: tx.description.trim(),
+    amount: parseFloat(tx.amount),
+    currency: tx.currency || 'USD',
+    type: tx.type,
+    category: tx.category || (tx.type === TRANSACTION_TYPES.INCOME ? 'income' : 'Otros'),
+    date: tx.date,
+  };
+
+  if (tx.importBatchId) row.import_batch_id = tx.importBatchId;
+  if (tx.source) row.source = tx.source;
+  if (tx.importedAt) row.imported_at = tx.importedAt;
+
+  return row;
+};
 
 /**
  * Custom hook para manejar toda la lógica de transacciones.
@@ -609,7 +620,7 @@ export const useTransactions = () => {
 
   // `options.notification` — ver comentario en updateIncome.
   const addBulkTransactions = useCallback((transactions, options = {}) => {
-    const { notification = 'legacy' } = options;
+    const { notification = 'legacy', importMetadata = null } = options;
     const newIncomes = [];
     const newExpenses = [];
     let errorCount = 0;
@@ -639,10 +650,74 @@ export const useTransactions = () => {
       }
     });
 
+    const total = newIncomes.length + newExpenses.length;
+
+    if (importMetadata) {
+      if (!user) {
+        return Promise.reject(new Error('La importacion requiere conexion con Supabase y una sesion activa.'));
+      }
+      if (errorCount > 0) {
+        return Promise.reject(new Error('No se pudo preparar el lote completo para importacion.'));
+      }
+      if (total === 0) {
+        return Promise.resolve({ imported: 0, errors: errorCount, total: transactions.length });
+      }
+
+      const movements = [...newIncomes, ...newExpenses];
+
+      return supabase.rpc('create_import_batch_with_transactions', {
+        p_source: importMetadata.source,
+        p_original_filename: importMetadata.originalFilename || null,
+        p_file_size_bytes: importMetadata.fileSizeBytes ?? null,
+        p_file_sha256: importMetadata.fileSha256 || null,
+        p_transactions: movements.map((tx) => ({
+          id: tx.id,
+          description: tx.description,
+          amount: tx.amount,
+          currency: tx.currency || 'USD',
+          type: tx.type,
+          category: tx.category || (tx.type === TRANSACTION_TYPES.INCOME ? 'income' : 'Otros'),
+          date: tx.date,
+        })),
+      }).then(({ data, error }) => {
+        if (error) {
+          throw new Error(error.message || 'No se pudo crear el lote de importacion.');
+        }
+
+        const importBatchId = data?.importBatchId || data?.import_batch_id || null;
+        const completedAt = data?.completedAt || data?.completed_at || new Date().toISOString();
+        const source = importMetadata.source || null;
+
+        const importedIncomes = newIncomes.map(tx => ({
+          ...tx,
+          importBatchId,
+          source,
+          importedAt: completedAt,
+        }));
+        const importedExpenses = newExpenses.map(tx => ({
+          ...tx,
+          importBatchId,
+          source,
+          importedAt: completedAt,
+        }));
+
+        if (importedIncomes.length > 0) setIncomes(prev => [...prev, ...importedIncomes]);
+        if (importedExpenses.length > 0) setExpenses(prev => [...prev, ...importedExpenses]);
+        markSaved();
+
+        return {
+          imported: total,
+          errors: 0,
+          total: transactions.length,
+          importBatchId,
+          completedAt,
+        };
+      });
+    }
+
     if (newIncomes.length > 0) setIncomes(prev => [...prev, ...newIncomes]);
     if (newExpenses.length > 0) setExpenses(prev => [...prev, ...newExpenses]);
 
-    const total = newIncomes.length + newExpenses.length;
     if (total > 0) {
       if (notification === 'legacy') showAlert('success', `${total} transacciones importadas exitosamente`);
       if (notification === 'toast') {
@@ -668,7 +743,7 @@ export const useTransactions = () => {
     }
 
     return { imported: total, errors: errorCount, total: transactions.length };
-  }, [user, showAlert, pendingOperation, finalizePendingOperation]);
+  }, [user, showAlert, pendingOperation, finalizePendingOperation, markSaved]);
 
   // ── Cálculos memoizados (Normalizados a la Moneda Principal) ─────────────
   

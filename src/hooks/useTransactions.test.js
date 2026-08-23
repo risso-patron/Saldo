@@ -31,7 +31,7 @@ vi.mock('../contexts/CurrencyContext', () => ({
 }));
 
 vi.mock('../lib/supabase', () => ({
-  supabase: { from: vi.fn() },
+  supabase: { from: vi.fn(), rpc: vi.fn() },
 }));
 
 // Chain mínima de supabase-js: cada método devuelve la misma instancia
@@ -808,6 +808,92 @@ describe('useTransactions — Deshacer en editar/importar/categorizar (RC-1.7/A4
     });
   });
 
+  describe('addBulkTransactions con importMetadata (IMP-002A.2)', () => {
+    const importMetadata = {
+      source: 'csv_import',
+      originalFilename: 'extracto.csv',
+      fileSizeBytes: 123,
+      fileSha256: null,
+    };
+
+    beforeEach(() => {
+      localStorage.getItem.mockReturnValue(null);
+      vi.mocked(useAuth).mockReturnValue({ user: { id: 'user-1' } });
+      supabase.rpc.mockReset();
+    });
+
+    it('usa RPC y actualiza estado local solo despues del OK', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      supabase.rpc.mockResolvedValue({
+        data: { ok: true, importBatchId: 'batch-1', completedAt: '2026-08-23T10:00:00.000Z' },
+        error: null,
+      });
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      let returned;
+      await act(async () => {
+        returned = await result.current.addBulkTransactions([
+          { type: 'income', description: 'Uno', amount: 10, date: '2026-07-01' },
+          { type: 'expense', description: 'Dos', category: 'Alimentacion', amount: 20, date: '2026-07-02' },
+        ], { notification: 'toast', importMetadata });
+      });
+
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        'create_import_batch_with_transactions',
+        expect.objectContaining({
+          p_source: 'csv_import',
+          p_original_filename: 'extracto.csv',
+          p_file_size_bytes: 123,
+          p_file_sha256: null,
+          p_transactions: expect.any(Array),
+        })
+      );
+      expect(chain.upsert).not.toHaveBeenCalled();
+      expect(result.current.incomes).toHaveLength(1);
+      expect(result.current.expenses).toHaveLength(1);
+      expect(result.current.incomes[0]).toMatchObject({ importBatchId: 'batch-1', source: 'csv_import', importedAt: '2026-08-23T10:00:00.000Z' });
+      expect(result.current.pendingOperation).toBeNull();
+      expect(returned).toMatchObject({ imported: 2, errors: 0, importBatchId: 'batch-1', completedAt: '2026-08-23T10:00:00.000Z' });
+    });
+
+    it('si RPC falla no modifica movimientos locales', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      supabase.rpc.mockResolvedValue({ data: null, error: { message: 'network down' } });
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      await expect(act(async () => {
+        await result.current.addBulkTransactions([
+          { type: 'income', description: 'Uno', amount: 10, date: '2026-07-01' },
+        ], { notification: 'toast', importMetadata });
+      })).rejects.toThrow('network down');
+
+      expect(result.current.incomes).toHaveLength(0);
+      expect(result.current.expenses).toHaveLength(0);
+      expect(result.current.pendingOperation).toBeNull();
+    });
+
+    it('sin importMetadata conserva el flujo manual existente con toast y upsert background', async () => {
+      const chain = makeSupabaseChain();
+      supabase.from.mockReturnValue(chain);
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      act(() => {
+        result.current.addBulkTransactions([
+          { type: 'income', description: 'Manual', amount: 10, date: '2026-07-01' },
+        ], { notification: 'toast' });
+      });
+
+      expect(supabase.rpc).not.toHaveBeenCalled();
+      expect(chain.upsert).toHaveBeenCalledTimes(1);
+      expect(result.current.pendingOperation.kind).toBe('bulkCreate');
+    });
+  });
+
   describe('addBulkTransactions con notification: "toast"', () => {
     it('NO llama showAlert y arranca una operación reversible de tipo "bulkCreate"', async () => {
       const chain = makeSupabaseChain();
@@ -925,6 +1011,66 @@ describe('useTransactions — Deshacer en editar/importar/categorizar (RC-1.7/A4
       expect(result.current.pendingOperation).toBeNull();
       expect(result.current.expenses.find((e) => e.id === expense.id).category).toBe('Alimentación');
       expect(chain.upsert).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('useTransactions - refresh metadata nullable IMP-002A.2', () => {
+    beforeEach(() => {
+      localStorage.getItem.mockReturnValue(null);
+      vi.mocked(useAuth).mockReturnValue({ user: { id: 'user-1' } });
+    });
+
+    it('mapea import metadata nullable desde Supabase sin romper la carga', async () => {
+      const chain = makeSupabaseChain({
+        data: [
+          {
+            id: 'tx-1',
+            user_id: 'user-1',
+            description: 'Importado',
+            amount: '10.00',
+            currency: 'USD',
+            type: 'income',
+            category: 'income',
+            date: '2026-07-01',
+            created_at: '2026-08-23T10:00:00.000Z',
+            import_batch_id: 'batch-1',
+            source: 'csv_import',
+            imported_at: '2026-08-23T10:00:01.000Z',
+          },
+          {
+            id: 'tx-2',
+            user_id: 'user-1',
+            description: 'Manual anterior',
+            amount: '5.00',
+            currency: 'USD',
+            type: 'expense',
+            category: 'Otros',
+            date: '2026-07-02',
+            created_at: '2026-08-23T11:00:00.000Z',
+            import_batch_id: null,
+            source: null,
+            imported_at: null,
+          },
+        ],
+        error: null,
+      });
+      supabase.from.mockReturnValue(chain);
+
+      const { result } = renderHook(() => useTransactions());
+      await flushInitialLoad();
+
+      expect(result.current.incomes[0]).toMatchObject({
+        id: 'tx-1',
+        importBatchId: 'batch-1',
+        source: 'csv_import',
+        importedAt: '2026-08-23T10:00:01.000Z',
+      });
+      expect(result.current.expenses[0]).toMatchObject({
+        id: 'tx-2',
+        importBatchId: null,
+        source: null,
+        importedAt: null,
+      });
     });
   });
 
