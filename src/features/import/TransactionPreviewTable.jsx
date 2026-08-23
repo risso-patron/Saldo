@@ -208,7 +208,7 @@ export default function TransactionPreviewTable({ transactions, onUpdateTransact
       <div className="mt-8">
         <button
           onClick={onImport}
-          disabled={isImporting || filteredTransactions.length === 0}
+          disabled={isImporting || transactions.length === 0}
           className="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg 
             hover:from-purple-700 hover:to-pink-700 
             transform hover:scale-[1.02] active:scale-[0.98]
@@ -230,7 +230,7 @@ export default function TransactionPreviewTable({ transactions, onUpdateTransact
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              <span>Terminar e Importar Seleccionadas al Dashboard ({filteredTransactions.length})</span>
+              <span>Importar TODOS los movimientos del preview ({transactions.length})</span>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

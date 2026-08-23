@@ -26,4 +26,19 @@ describe('TransactionPreviewTable — sin color permanente en Total Ingresos/Gas
     expect(screen.getByText('$1000.00')).toBeInTheDocument();
     expect(screen.getByText('−$300.00')).toBeInTheDocument();
   });
+
+  it('fixes the wording because the action imports the whole preview, not selected rows', () => {
+    render(
+      <TransactionPreviewTable
+        transactions={transactions}
+        onUpdateTransaction={() => {}}
+        onImport={() => {}}
+        isImporting={false}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(2\)/i })).toBeInTheDocument();
+    expect(screen.queryByText(/Seleccionadas/i)).not.toBeInTheDocument();
+  });
+
 });

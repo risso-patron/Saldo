@@ -205,3 +205,115 @@ describe('ImportManager — gate de categorización batch usa ai.isAIAuthorized 
     expect(categorizeTransactionsFullMock).toHaveBeenCalledWith(expect.any(Array), false);
   });
 });
+
+
+const buildRecognizedCsv = (count) => [
+  'fecha,descripcion,monto',
+  ...Array.from({ length: count }, (_, index) => {
+    const day = String((index % 28) + 1).padStart(2, '0');
+    const amount = index % 2 === 0 ? '10.00' : '-5.00';
+    return `2026-01-${day},Movimiento ${index + 1},${amount}`;
+  }),
+].join('\n');
+
+describe('ImportManager - IMP-001 Import Safety Gate', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useSubscriptionMock.mockReturnValue({ subscription: { plan_type: 'pro_monthly' } });
+    useAuthMock.mockReturnValue({ user: { id: 'user-1' } });
+    singleMock.mockResolvedValue({ data: { setting_value: true }, error: null });
+    categorizeTransactionsFullMock.mockImplementation((transactions) => Promise.resolve(
+      transactions.map((transaction) => ({ ...transaction, category: transaction.amount < 0 ? 'Otros' : undefined }))
+    ));
+  });
+
+  it('imports small previews directly without an extra confirmation', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 2, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildRecognizedCsv(2));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(2\)/i }));
+
+    expect(screen.queryByRole('dialog', { name: /confirmar importacion masiva/i })).not.toBeInTheDocument();
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0]).toHaveLength(2);
+  });
+
+  it('requires the exact confirmation phrase for previews with 25 movements or more', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 25, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildRecognizedCsv(25));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(25\)/i }));
+
+    const dialog = screen.getByRole('dialog', { name: /confirmar importacion masiva/i });
+    expect(dialog).toHaveTextContent('25 movimientos');
+    expect(dialog).toHaveTextContent('13 ingresos');
+    expect(dialog).toHaveTextContent('12 gastos');
+    expect(dialog).toHaveTextContent('$130.00');
+    expect(dialog).toHaveTextContent('$60.00');
+    expect(dialog).toHaveTextContent('$70.00');
+    expect(screen.getByText('IMPORTAR 25 MOVIMIENTOS')).toBeInTheDocument();
+    expect(onBulkImport).not.toHaveBeenCalled();
+  });
+
+  it('executes a large import only after the user types the exact phrase', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 25, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildRecognizedCsv(25));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(25\)/i }));
+
+    const confirmButton = screen.getByRole('button', { name: /confirmar importacion/i });
+    expect(confirmButton).toBeDisabled();
+
+    await userEvent.type(screen.getByLabelText(/frase exacta de confirmacion/i), 'IMPORTAR 25 MOVIMIENTOS');
+    expect(confirmButton).toBeEnabled();
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => expect(onBulkImport).toHaveBeenCalledTimes(1));
+    expect(onBulkImport.mock.calls[0][0]).toHaveLength(25);
+  });
+
+  it('invalidates the confirmation if the preview changes before final confirm', async () => {
+    const onBulkImport = vi.fn().mockResolvedValue({ imported: 25, errors: 0 });
+
+    const { container } = render(
+      <AIProvider>
+        <ImportManager onImport={vi.fn()} onBulkImport={onBulkImport} />
+      </AIProvider>
+    );
+
+    await uploadFile(container, buildRecognizedCsv(25));
+    await screen.findByText('Vista Previa de Movimientos', {}, { timeout: 3000 });
+    await userEvent.click(screen.getByRole('button', { name: /Importar TODOS los movimientos del preview \(25\)/i }));
+    await userEvent.type(screen.getByLabelText(/frase exacta de confirmacion/i), 'IMPORTAR 25 MOVIMIENTOS');
+
+    const firstDescription = screen.getByDisplayValue('Movimiento 1');
+    await userEvent.clear(firstDescription);
+    await userEvent.type(firstDescription, 'Movimiento editado');
+
+    expect(screen.queryByRole('dialog', { name: /confirmar importacion masiva/i })).not.toBeInTheDocument();
+    expect(onBulkImport).not.toHaveBeenCalled();
+  });
+});

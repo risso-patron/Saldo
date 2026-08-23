@@ -15,6 +15,82 @@ import { logDogfoodingEvent } from '../../utils/dogfoodingInstrumentation';
 // ─── Clave de localStorage para perfiles de bancos ───────────────────────────
 const PROFILES_KEY = 'budget_import_bank_profiles';
 
+const LARGE_IMPORT_THRESHOLD = 25;
+const buildImportConfirmationPhrase = (count) => `IMPORTAR ${count} MOVIMIENTOS`;
+const formatImportMoney = (value) => `$${value.toFixed(2)}`;
+
+const normalizeImportPreviewDate = (value) => {
+  if (!value) return null;
+  const date = String(value).trim();
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(date)) {
+    const [day, month, year] = date.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+  return date.slice(0, 10);
+};
+
+const buildImportPreviewSignature = (rows = []) => JSON.stringify(
+  rows.map((row) => ({
+    type: row.type ?? row.tipo ?? null,
+    description: row.description ?? row.descripcion ?? '',
+    amount: row.amount ?? row.monto ?? null,
+    currency: row.currency ?? row.moneda ?? null,
+    date: row.date ?? row.fecha ?? '',
+    category: row.category ?? row.categoria ?? '',
+    source: row.source ?? null,
+  }))
+);
+
+const buildImportPreflight = (rows = []) => {
+  const summary = rows.reduce((acc, row) => {
+    const isModular = row.date !== undefined && row.amount !== undefined;
+    const rawAmount = isModular ? Number(row.amount || 0) : Number(row.monto || 0);
+    const isIncome = isModular
+      ? rawAmount >= 0
+      : row.tipo?.toLowerCase() === 'ingreso';
+    const amount = Math.abs(rawAmount);
+    const normalizedDate = normalizeImportPreviewDate(isModular ? row.date : row.fecha);
+
+    if (isIncome) {
+      acc.incomeCount += 1;
+      acc.incomeTotalCents += Math.round(amount * 100);
+    } else {
+      acc.expenseCount += 1;
+      acc.expenseTotalCents += Math.round(amount * 100);
+    }
+
+    if (normalizedDate) {
+      acc.dates.push(normalizedDate);
+    }
+
+    return acc;
+  }, {
+    total: rows.length,
+    incomeCount: 0,
+    expenseCount: 0,
+    incomeTotalCents: 0,
+    expenseTotalCents: 0,
+    dates: [],
+  });
+
+  const sortedDates = [...summary.dates].sort();
+  const incomeTotal = summary.incomeTotalCents / 100;
+  const expenseTotal = summary.expenseTotalCents / 100;
+
+  return {
+    total: summary.total,
+    incomeCount: summary.incomeCount,
+    expenseCount: summary.expenseCount,
+    incomeTotal,
+    expenseTotal,
+    net: incomeTotal - expenseTotal,
+    minDate: sortedDates[0] || null,
+    maxDate: sortedDates[sortedDates.length - 1] || null,
+    requiresConfirmation: summary.total >= LARGE_IMPORT_THRESHOLD,
+    confirmationPhrase: buildImportConfirmationPhrase(summary.total),
+  };
+};
+
 // ─── Diccionario de aliases: campo interno → nombres posibles de columna ────
 const COLUMN_ALIASES = {
   fecha: [
@@ -134,12 +210,20 @@ export default function ImportManager({ onImport, onBulkImport }) {
   const [saveProfileName, setSaveProfileName] = useState('');
   const [mappingMode, setMappingMode] = useState(null); // 'template'|'profile'|'pattern'|'ai'|'manual'|'modular'
   const [loadingFile, setLoadingFile] = useState(false);
+  const [importSafetyGate, setImportSafetyGate] = useState(null);
+  const [importConfirmationText, setImportConfirmationText] = useState('');
   
   // Entrada única de IA (design.md §1, §6): gate de plan + consentimiento
   // resuelto adentro de useAI(); mapColumns degrada a null sin acceso.
   const ai = useAI();
 
+  const invalidateImportConfirmation = () => {
+    setImportSafetyGate(null);
+    setImportConfirmationText('');
+  };
+
   const handleUpdateTransaction = (index, field, value) => {
+    invalidateImportConfirmation();
     setPreviewData(prev => {
       const newData = [...prev];
       newData[index] = { ...newData[index], [field]: value };
@@ -343,6 +427,8 @@ export default function ImportManager({ onImport, onBulkImport }) {
       setRawCSVMeta(null);
       setManualMap({});
       setSaveProfileName('');
+      setImportSafetyGate(null);
+      setImportConfirmationText('');
       setLoadingFile(true);
     });
 
@@ -427,6 +513,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
       }
       setError(null);
       setShowColumnMapper(false);
+      invalidateImportConfirmation();
       setPreviewData(parsed);
     } catch (err) {
       setError(`Error al aplicar el mapa: ${err.message}`);
@@ -759,20 +846,16 @@ export default function ImportManager({ onImport, onBulkImport }) {
     return { valid: true };
   };
 
-  // Ejecutar importación
-  const handleImport = async () => {
-    if (!previewData || previewData.length === 0) return;
-
+  // Ejecutar importacion
+  const executeImport = async (dataToImport) => {
     setImporting(true);
     setError(null);
     setCategorizingProgress(null);
 
     try {
-      console.log('🚀 Preparando', previewData.length, 'transacciones para importación masiva');
+      console.log('Preparando', dataToImport.length, 'transacciones para importacion masiva');
 
-      let dataToImport = previewData;
-
-      // Si existe onBulkImport, usar importación masiva (más rápido)
+      // Si existe onBulkImport, usar importacion masiva (mas rapido)
       if (onBulkImport) {
         // Preparar todas las transacciones en un solo array
         const transactionsToImport = dataToImport.map(row => {
@@ -807,12 +890,12 @@ export default function ImportManager({ onImport, onBulkImport }) {
           };
         });
 
-        console.log('📦 Transacciones preparadas:', transactionsToImport.length);
+        console.log('Transacciones preparadas:', transactionsToImport.length);
         
-        // Llamar a la función de importación masiva
+        // Llamar a la funcion de importacion masiva
         const result = await onBulkImport(transactionsToImport);
         
-        console.log('✅ Resultado de importación:', result);
+        console.log('Resultado de importacion:', result);
 
         setImportStats({
           total: dataToImport.length,
@@ -821,31 +904,31 @@ export default function ImportManager({ onImport, onBulkImport }) {
           aiCategorized: transactionsToImport.filter(r => r.aiCategorized).length,
         });
       } else {
-        // Fallback: Importación secuencial (para compatibilidad)
-        console.warn('⚠️ onBulkImport no disponible, usando importación secuencial');
+        // Fallback: Importacion secuencial (para compatibilidad)
+        console.warn('onBulkImport no disponible, usando importacion secuencial');
         
         const stats = {
-          total: previewData.length,
+          total: dataToImport.length,
           imported: 0,
           errors: 0,
         };
 
-        for (const row of previewData) {
+        for (const row of dataToImport) {
           try {
             // Convertir fecha si es DD/MM/YYYY
-            let date = row.fecha;
+            let date = row.fecha || row.date;
             if (date.includes('/')) {
               const [day, month, year] = date.split('/');
               date = `${year}-${month}-${day}`;
             }
 
-            // Determinar categoría (solo para gastos en fallback)
+            // Determinar categoria (solo para gastos en fallback)
             const category = row.categoria || row.category || 'Otros';
             const mType = row.tipo ? row.tipo.toLowerCase() : (row.amount >= 0 ? 'ingreso' : 'gasto');
             const amt = row.monto !== undefined ? parseFloat(row.monto) : Math.abs(row.amount);
             const desc = row.descripcion || row.description;
 
-            // Llamar a la función onImport del parent
+            // Llamar a la funcion onImport del parent
             if (mType === 'ingreso') {
               await onImport('income', {
                 description: desc,
@@ -871,13 +954,48 @@ export default function ImportManager({ onImport, onBulkImport }) {
         setImportStats(stats);
       }
 
+      invalidateImportConfirmation();
       setPreviewData(null);
     } catch (err) {
-      console.error('❌ Error durante la importación:', err);
-      setError(`Error durante la importación: ${err.message}`);
+      console.error('Error durante la importacion:', err);
+      setError(`Error durante la importacion: ${err.message}`);
     } finally {
       setImporting(false);
     }
+  };
+
+  const handleImport = async () => {
+    if (!previewData || previewData.length === 0) return;
+
+    const preflight = buildImportPreflight(previewData);
+
+    if (preflight.requiresConfirmation) {
+      setImportSafetyGate({
+        preflight,
+        previewSignature: buildImportPreviewSignature(previewData),
+      });
+      setImportConfirmationText('');
+      return;
+    }
+
+    await executeImport(previewData);
+  };
+
+  const handleConfirmLargeImport = async () => {
+    if (!importSafetyGate || !previewData || previewData.length === 0) return;
+
+    const currentSignature = buildImportPreviewSignature(previewData);
+    if (currentSignature !== importSafetyGate.previewSignature) {
+      setError('El preview cambio despues de abrir la confirmacion. Revisa el resumen y vuelve a confirmar.');
+      invalidateImportConfirmation();
+      return;
+    }
+
+    if (importConfirmationText.trim() !== importSafetyGate.preflight.confirmationPhrase) return;
+
+    const currentPreview = [...previewData];
+    invalidateImportConfirmation();
+    await executeImport(currentPreview);
   };
 
   // Descargar plantilla CSV
@@ -1093,6 +1211,94 @@ gasto,Amazon,75.99,2025-11-30,Compras`;
       {error && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
           <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
+      {importSafetyGate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-6">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="import-safety-gate-title"
+            className="w-full max-w-2xl rounded-[2rem] border-2 border-amber-200 dark:border-amber-800 bg-white dark:bg-slate-900 p-6 shadow-2xl"
+          >
+            <div className="mb-5">
+              <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-amber-600 dark:text-amber-400">
+                Import Safety Gate
+              </p>
+              <h4 id="import-safety-gate-title" className="text-2xl font-black text-slate-900 dark:text-white">
+                Confirmar importacion masiva
+              </h4>
+              <p className="mt-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                Estas por importar {importSafetyGate.preflight.total} movimientos. Revisa el resumen antes de continuar.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+              <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Cantidad</p>
+                <p className="text-xl font-black text-slate-900 dark:text-white">{importSafetyGate.preflight.total} movimientos</p>
+              </div>
+              <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ingresos</p>
+                <p className="text-xl font-black text-slate-900 dark:text-white">
+                  {importSafetyGate.preflight.incomeCount} ingresos - {formatImportMoney(importSafetyGate.preflight.incomeTotal)}
+                </p>
+              </div>
+              <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Gastos</p>
+                <p className="text-xl font-black text-slate-900 dark:text-white">
+                  {importSafetyGate.preflight.expenseCount} gastos - {formatImportMoney(importSafetyGate.preflight.expenseTotal)}
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-5 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm font-bold text-slate-700 dark:text-slate-300">
+                <span>Balance neto: {formatImportMoney(importSafetyGate.preflight.net)}</span>
+                <span>Desde: {importSafetyGate.preflight.minDate || 'N/D'}</span>
+                <span>Hasta: {importSafetyGate.preflight.maxDate || 'N/D'}</span>
+              </div>
+            </div>
+
+            <div className="mb-6 rounded-2xl bg-amber-50 dark:bg-amber-950/20 p-4 text-sm text-amber-900 dark:text-amber-200">
+              <p className="font-bold">Para confirmar, escribe exactamente:</p>
+              <code className="mt-2 block rounded-xl bg-white dark:bg-slate-950 px-3 py-2 font-black tracking-wide text-slate-900 dark:text-white">
+                {importSafetyGate.preflight.confirmationPhrase}
+              </code>
+            </div>
+
+            <label htmlFor="large-import-confirmation" className="mb-2 block text-sm font-black text-slate-700 dark:text-slate-200">
+              Frase exacta de confirmacion
+            </label>
+            <input
+              id="large-import-confirmation"
+              type="text"
+              value={importConfirmationText}
+              onChange={(event) => setImportConfirmationText(event.target.value)}
+              className="mb-6 w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 font-bold text-slate-900 dark:text-white outline-none focus:border-amber-500"
+              autoFocus
+            />
+
+            <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end">
+              <button
+                type="button"
+                onClick={invalidateImportConfirmation}
+                disabled={importing}
+                className="rounded-xl px-5 py-3 font-black text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmLargeImport}
+                disabled={importing || importConfirmationText.trim() !== importSafetyGate.preflight.confirmationPhrase}
+                className="rounded-xl bg-amber-500 px-5 py-3 font-black text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Confirmar importacion
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
