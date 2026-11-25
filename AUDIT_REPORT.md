@@ -15,7 +15,7 @@
 #### `docs/transacciones-banco-listo.csv` ⚠️ **CRÍTICO**
 - **Estado**: RASTREADO por Git (visible en GitHub)
 - **Problema**: Contiene 60 transacciones reales con:
-  - Nombres de personas: "OLIMER KAROLINA BLASCO DORANTE", "EDUARDO LUIS SAGEL CASTRO"
+  - Nombres de personas: "[nombre omitido]", "[nombre omitido]"
   - Movimientos bancarios reales con fechas y montos
   - Transferencias Yappy identificables
 - **Riesgo**: Exposición de información financiera personal
@@ -178,8 +178,8 @@ git commit -m "chore: eliminar config de Vercel (no utilizada)"
 1. `docs/plantilla-transacciones.csv` ✅ **MANTENER**
    - Plantilla genérica, datos ficticios
    
-2. `docs/plantilla-transacciones-banco.csv` ✅ **MANTENER**
-   - Plantilla formato bancario, datos ejemplo
+2. `docs/plantilla-transacciones-banco.csv` ❌ **ELIMINADO (P0-PRIV-001, 2026-11-25)**
+   - Contenía movimientos bancarios reales con nombres de personas, no datos de ejemplo
    
 3. `docs/transacciones-banco-listo.csv` ❌ **ELIMINAR URGENTE**
    - Datos reales (ya analizado arriba)
