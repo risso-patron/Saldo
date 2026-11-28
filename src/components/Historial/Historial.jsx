@@ -13,6 +13,8 @@ import { HistorialSkeleton } from './HistorialSkeleton';
 import { EstadoVacio } from './EstadoVacio';
 import { EstadoSinResultados } from './EstadoSinResultados';
 import { BannerErrorSincronizacion } from './BannerErrorSincronizacion';
+import { EditDiscoveryHint } from './EditDiscoveryHint';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Sheet } from '../ds/Sheet';
 import { rowInteractionReducer, ROW_INTERACTION_INITIAL } from './rowInteractionReducer';
 import { useIsDesktop, useIsMobileRow } from '../../hooks/useMediaQuery';
@@ -140,6 +142,23 @@ export function Historial({
     ROW_INTERACTION_INITIAL
   );
   const { expandedId, swipedId } = rowInteraction;
+
+  // Mejora de descubribilidad — Dogfooding (DOG-004, 2026-08-20): se muestra
+  // una sola vez, solo mientras hay movimientos visibles (nunca en vacío/sin-
+  // resultados, ambos se resuelven con un return temprano más abajo antes de
+  // llegar al render del hint). "Visto" se persiste apenas se renderiza —no
+  // hace falta que el usuario lo cierre a mano para que no vuelva a aparecer.
+  const [hasSeenEditHint, setHasSeenEditHint] = useLocalStorage('budgetrp_ui_hasSeenEditHint', false);
+  // Estado local, independiente de `hasSeenEditHint`: decide si el hint está
+  // visible EN ESTA sesión. Se inicializa leyendo el flag persistido una sola
+  // vez (perfil ya visitado antes → no vuelve a aparecer) y luego vive suelto
+  // — así, marcar el flag como visto (abajo) no lo hace desaparecer a mitad
+  // de la sesión actual; solo evita que reaparezca en una futura.
+  const [editHintVisible, setEditHintVisible] = useState(!hasSeenEditHint);
+  useEffect(() => {
+    if (editHintVisible) setHasSeenEditHint(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // La intención ("¿abrir o cerrar?") se resuelve ACÁ, mirando el estado
   // actual — el reducer nunca inspecciona el estado previo, solo ejecuta.
@@ -428,6 +447,9 @@ export function Historial({
         />
       ) : (
         <div className="flex flex-col gap-7">
+          {editHintVisible && (
+            <EditDiscoveryHint onDismiss={() => setEditHintVisible(false)} />
+          )}
           {groups.map((group) => (
             <div key={group.key}>
               <p className="text-ds-overline">{group.label}</p>

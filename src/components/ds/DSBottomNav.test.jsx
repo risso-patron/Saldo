@@ -15,21 +15,21 @@ describe('DSBottomNav (ds) — Saldo Design Constitution v1.2', () => {
     expect(screen.getAllByRole('button')).toHaveLength(4);
     expect(screen.getByText('Inicio')).toBeInTheDocument();
     expect(screen.getByText('Movimientos')).toBeInTheDocument();
-    expect(screen.getByText('Insights')).toBeInTheDocument();
+    expect(screen.getByText('Ideas')).toBeInTheDocument();
     expect(screen.getByText('Ajustes')).toBeInTheDocument();
   });
 
   it('el ítem activo tiene peso 600 y texto primario', () => {
     render(<DSBottomNav activeTab="graficos" onTabSelect={vi.fn()} />);
-    const activeItem = screen.getByText('Insights').closest('button');
+    const activeItem = screen.getByText('Ideas').closest('button');
     expect(activeItem.className).toMatch(/font-semibold\b/);
     expect(activeItem.className).toMatch(/text-ds-text-primary\b/);
   });
 
-  it('los ítems inactivos usan texto terciario', () => {
+  it('los ítems inactivos usan texto secondary (C-08: tertiary no cumple AA)', () => {
     render(<DSBottomNav activeTab="graficos" onTabSelect={vi.fn()} />);
     const inactiveItem = screen.getByText('Inicio').closest('button');
-    expect(inactiveItem.className).toMatch(/text-ds-text-tertiary\b/);
+    expect(inactiveItem.className).toMatch(/text-ds-text-secondary\b/);
     expect(inactiveItem.className).not.toMatch(/font-semibold\b/);
   });
 

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
-import Confetti from 'react-confetti';
 import { Card } from '../../components/Shared/Card';
 import { Button } from '../../components/Shared/Button';
 import { GoalProgress } from './GoalProgress';
-import { RocketWebP, TrophyWebP } from '../../components/Shared/WebPAnimation';
+import { RocketWebP } from '../../components/Shared/WebPAnimation';
 import { useSubscription } from '../../hooks/useSubscription';
 import { UpgradeModal } from '../../components/Subscription/UpgradeModal';
 
@@ -23,7 +22,6 @@ export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal }
   const [targetAmount, setTargetAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState('');
   const [targetDate, setTargetDate] = useState('');
-  const [showConfetti, setShowConfetti] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const handleSubmit = (e) => {
@@ -60,12 +58,6 @@ export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal }
   };
 
   const handleProgressUpdate = (goalId, newAmount) => {
-    const goal = goals.find(g => g.id === goalId);
-    if (goal && newAmount >= goal.targetAmount) {
-      // Meta alcanzada - mostrar confetti
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 5000);
-    }
     onUpdateProgress(goalId, newAmount);
   };
 
@@ -100,15 +92,6 @@ export const GoalManager = ({ goals, onAddGoal, onUpdateProgress, onDeleteGoal }
 
   return (
     <>
-      {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          recycle={false}
-          numberOfPieces={500}
-        />
-      )}
-
       <Card>
         <div className="flex items-center gap-3 mb-6">
           <RocketWebP size="sm" />

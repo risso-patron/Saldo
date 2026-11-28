@@ -25,7 +25,7 @@ describe('DSSidebar (ds) — Saldo Design Constitution v1.2', () => {
     expect(buttons).toHaveLength(4);
     expect(screen.getByText('Inicio')).toBeInTheDocument();
     expect(screen.getByText('Movimientos')).toBeInTheDocument();
-    expect(screen.getByText('Insights')).toBeInTheDocument();
+    expect(screen.getByText('Ideas')).toBeInTheDocument();
     expect(screen.getByText('Ajustes')).toBeInTheDocument();
   });
 
@@ -50,7 +50,7 @@ describe('DSSidebar (ds) — Saldo Design Constitution v1.2', () => {
     const user = userEvent.setup();
     const onTabSelect = vi.fn();
     render(<DSSidebar activeTab="resumen" onTabSelect={onTabSelect} onOpenOmnibar={vi.fn()} />);
-    await user.click(screen.getByText('Insights').closest('button'));
+    await user.click(screen.getByText('Ideas').closest('button'));
     expect(onTabSelect).toHaveBeenCalledWith('graficos');
   });
 

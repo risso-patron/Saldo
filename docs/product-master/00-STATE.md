@@ -573,6 +573,40 @@ presentación.
 Sin cambios en `convertCurrency()`, `CurrencyContext`, `useFilters()`, `useTransactions()`, base de datos, ni
 modelo financiero.
 
+## PM-RECON-004 — Ratificación de la superficie Metas en el Product Blueprint (cerrado 2026-08-06)
+Normalización documental derivada del cierre de `metas-exposicion` (ciclo SDD, commit `8de52e5`) y de
+`docs/governance/GOV-001-jerarquia-documental-de-producto.md` (aprobado conceptualmente por el Product Owner,
+2026-08-06). Ejecuta la Fase A de `docs/governance/PLAN-NORM-001-normalizacion-documental.md`.
+
+- **Decisión (Normalización):** la vista `metas` — Dashboard (sección "Mis metas") + vista dedicada, sin destino
+  propio de navegación — queda ratificada como superficie oficial de `Saldo Product Blueprint.dc.html` §02. La
+  decisión de producto ya estaba tomada (`openspec/changes/saldo-v1-1-claridad-financiera/design.md:26-36,98,104`,
+  PO 2026-08-06); esta entrada cumple la obligación de registro formal que esa decisión había diferido a
+  `sdd-archive` (`design.md:105`) y que no se había ejecutado.
+- **Alcance ampliado (Normalización):** el mismo Mapa del producto (§02) omitía además `planificacion`
+  (Tarjetas/Presupuestos/Recurrentes) y `herramientas` (Exportar/Importar), ambas ya en producción sin destino de
+  navegación (`docs/design/integration-debt.md:14,31`). Se agregan con el mismo tratamiento que Metas, por
+  decisión del PO al aprobar GOV-001.
+- **R-08 (Normalización):** se corrige la cita de "≤ 7 destinos" en `Saldo Design Constitution.dc.html` (componente
+  Sidebar) y en `Saldo Dashboard.dc.html` (notas de construcción) — ambos textos habilitaban lecturas de un
+  presupuesto de navegación mayor a 4, contradiciendo R-08 (`Saldo Design Review Guide.dc.html:144`, tope duro,
+  "para siempre" según `Saldo Product Blueprint.dc.html:255`). Sin cambio de código: `dsNavItems.js` ya está en 4
+  desde `metas-exposicion`, con guardia de regresión (`src/__tests__/dsNavItems.test.js`).
+- **Cap 14 — corrección de redacción, no de doctrina (Normalización):** `14-gamificacion.md` afirmaba como hecho
+  que el producto "no usa… ni confeti"; `GoalManager.jsx` ya importa `react-confetti` desde antes de esa redacción
+  (PM-RECON-003, 2026-07-28). Se corrige la afirmación de hecho a una declaración normativa que remite a la deuda
+  ya registrada (`integration-debt.md`, fila 2026-08-06, ticket sin priorizar). No reabre la doctrina de
+  PM-RECON-003/C1.
+
+**Archivos modificados por esta entrada:** `Saldo Product Blueprint.dc.html`, `Saldo Design Constitution.dc.html`,
+`Saldo Dashboard.dc.html`, `14-gamificacion.md`, `docs/design/integration-debt.md`, más este archivo e `INDEX.md`.
+Ningún archivo de código.
+
+**Explícitamente fuera de esta entrada (Fase B de `PLAN-NORM-001`, pendiente de decisión del PO):** el rótulo
+"Insights" en navegación (vocabulario prohibido, cap 04) permanece sin cambios en documentos ni en código; la fila
+de "arquitectura emocional" de Metas en Blueprint §03 sigue sin completar (requiere insumo del PO); C-06 (mecanismo
+de crecimiento del Dashboard) sigue abierta.
+
 ## Decisiones fundacionales (no tocar sin avisar)
 - Mision: disminuir ansiedad financiera, no "administrar dinero"
 - Vision: responder "donde se fue mi dinero" en menos de 10 segundos
@@ -632,7 +666,7 @@ modelo financiero.
 - Personas Luis y José evolucionadas (cap 02, 2026-07-26 PV-003): SALDO no incorpora un modelo de clientes ni administración de negocio pequeño/separación caja personal-negocio — decisión de alcance del Product Owner (PV-003). Luis pasa a representar ingresos variables sin eje de "cliente"; José pasa a representar rutina diaria de bajo perfil técnico sin eje de "negocio". Reconciliado en PM-RECON-001 (2026-07-27): cap 04, 05, 06, 07, 08, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20 actualizados; cap 12 nunca dependió de esto en su propio texto — ver entrada PM-RECON-001
 - PLAN-001 cerrado como arquitectura estratégica (2026-07-26), consolidado en PRICING-STRATEGY.md: pricing vigente ($4.99/mes, $49/año, $79 lifetime) queda como hipótesis inicial validada, no como decisión definitiva — cualquier cambio de precio requiere evidencia sostenida (3+ meses) de las métricas del documento, nunca intuición. Lifetime queda fijado como herramienta estratégica/táctica, no pilar de ingreso recurrente — ese rol es de Pro mensual/anual
 - `docs/technical/MONETIZATION_STRATEGY.md` (documento antiguo, confirmado stale durante PLAN-001) no fue tocado — pendiente de decisión futura sobre si se audita, reemplaza o archiva
-- Aclaración de alcance de gamificación (cap 14, PM-RECON-003, 2026-07-28): los reconocimientos de hitos financieros de Saldo no constituyen gamificación tradicional ni activan el anti-patrón "El casino" (Experience Constitution) — sin puntos, sin rankings, sin competencia, sin streak-obligación diaria, sin presión psicológica, sin confeti
+- Aclaración de alcance de gamificación (cap 14, PM-RECON-003, 2026-07-28): los reconocimientos de hitos financieros de Saldo no constituyen gamificación tradicional ni activan el anti-patrón "El casino" (Experience Constitution) — sin puntos, sin rankings, sin competencia, sin streak-obligación diaria, sin presión psicológica, sin confeti como doctrina normativa. **Corrección de redacción (PM-RECON-004, 2026-08-06):** esta era una afirmación de hecho, no solo una norma, y era falsa al momento de escribirse — `GoalManager.jsx` ya usaba `react-confetti`. El estado real es deuda registrada y sin priorizar (`docs/design/integration-debt.md`, fila 2026-08-06), no una propiedad ya cumplida del producto.
 - Invitación a Pro (cap 21, Bloque B, ratificada en PM-RECON-003, 2026-07-28): vive como página propia en Perfil, invitación contextual de frecuencia mensual, sin contadores ni urgencia — modelo de Product Blueprint §02, ya no es una decisión pendiente
 - "Saldo disponible" (cap 01, PM-RECON-003/D1, 2026-07-28): representa flujo operativo del período (ingresos menos gastos), no patrimonio acumulado — distinción completa preservada sin abrir en PM-DISCOVERY-003
 - Catálogo de categorías (cap 03, PM-CAT-001, 2026-07-28): canónico protegido por el sistema, personalizadas del usuario solo bajo demanda (Product Blueprint §04) — no reintroducir un modelo de personalización libre o de catálogo cerrado sin discutirlo de nuevo acá

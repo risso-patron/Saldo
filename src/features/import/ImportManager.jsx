@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 import Lottie from 'lottie-react';
 import loadingAnimation from '../../assets/loading-csv.json';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import { useAI } from '../../contexts/AIContext';
 import { parseRawText } from '../../core/parserEngine';
 import { findHeaderIndex, normalizeHeader } from '../../core/headerDetector';
@@ -18,6 +20,23 @@ const PROFILES_KEY = 'budget_import_bank_profiles';
 const LARGE_IMPORT_THRESHOLD = 25;
 const buildImportConfirmationPhrase = (count) => `IMPORTAR ${count} MOVIMIENTOS`;
 const formatImportMoney = (value) => `$${value.toFixed(2)}`;
+const IMPORT_BATCH_LIMIT = 10;
+const IMPORT_BATCH_SELECT = `
+  id,
+  source,
+  original_filename,
+  file_size_bytes,
+  file_sha256,
+  movement_count,
+  income_count,
+  expense_count,
+  income_total,
+  expense_total,
+  net_total,
+  status,
+  created_at,
+  completed_at
+`;
 
 const getImportSourceFromFile = (file) => (
   file?.name?.toLowerCase().endsWith('.txt') ? 'txt_import' : 'csv_import'
@@ -45,6 +64,145 @@ const buildImportMetadata = async (file) => ({
   fileSizeBytes: typeof file?.size === 'number' ? file.size : null,
   fileSha256: await calculateFileSha256(file),
 });
+
+const toNumber = (value) => Number(value || 0);
+
+const normalizeImportBatch = (row) => ({
+  id: row.id,
+  source: row.source,
+  originalFilename: row.original_filename || null,
+  fileSizeBytes: row.file_size_bytes ?? null,
+  fileSha256: row.file_sha256 || null,
+  movementCount: row.movement_count || 0,
+  incomeCount: row.income_count || 0,
+  expenseCount: row.expense_count || 0,
+  incomeTotal: toNumber(row.income_total),
+  expenseTotal: toNumber(row.expense_total),
+  netTotal: toNumber(row.net_total),
+  status: row.status,
+  createdAt: row.created_at,
+  completedAt: row.completed_at || null,
+});
+
+const formatImportBatchSource = (source) => (source === 'txt_import' ? 'TXT' : 'CSV');
+
+const formatImportBatchDate = (value) => {
+  if (!value) return 'Fecha pendiente';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Fecha pendiente';
+  return new Intl.DateTimeFormat('es-PA', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+};
+
+const IMPORT_BATCH_STATUS_LABELS = {
+  pending: 'Pendiente',
+  completed: 'Completada',
+  failed: 'Fallida',
+  reverted: 'Revertida',
+};
+
+const formatImportBatchStatus = (status) => IMPORT_BATCH_STATUS_LABELS[status] || status || 'Sin estado';
+
+function ImportBatchHistory({ batches, loading, error, onRetry, onViewImportBatch }) {
+  return (
+    <section
+      aria-labelledby="recent-import-batches-title"
+      className="mt-8 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/30 p-4"
+    >
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <h4 id="recent-import-batches-title" className="text-sm font-black text-slate-900 dark:text-white">
+            Importaciones recientes
+          </h4>
+          <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+            Trazabilidad básica de archivos importados. Solo lectura.
+          </p>
+        </div>
+        {error && (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-black text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800"
+          >
+            Reintentar
+          </button>
+        )}
+      </div>
+
+      {loading && (
+        <p className="rounded-xl bg-white dark:bg-slate-800 px-3 py-3 text-xs font-bold text-slate-500 dark:text-slate-400">
+          Cargando importaciones recientes…
+        </p>
+      )}
+
+      {!loading && error && (
+        <p className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20 px-3 py-3 text-xs font-bold text-amber-800 dark:text-amber-300">
+          No pudimos cargar las importaciones recientes. Puedes seguir importando normalmente.
+        </p>
+      )}
+
+      {!loading && !error && batches.length === 0 && (
+        <p className="rounded-xl bg-white dark:bg-slate-800 px-3 py-3 text-xs font-bold text-slate-500 dark:text-slate-400">
+          Todavía no hay importaciones registradas.
+        </p>
+      )}
+
+      {!loading && !error && batches.length > 0 && (
+        <div className="space-y-3">
+          {batches.map((batch) => (
+            <article
+              key={batch.id}
+              className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4"
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-sm font-black text-slate-900 dark:text-white">
+                    {batch.originalFilename || `Archivo ${formatImportBatchSource(batch.source)}`}
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+                    {formatImportBatchSource(batch.source)} · {formatImportBatchDate(batch.completedAt || batch.createdAt)} · {formatImportBatchStatus(batch.status)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onViewImportBatch?.(batch)}
+                  className="rounded-xl bg-primary-600 px-4 py-2 text-xs font-black text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={!onViewImportBatch}
+                >
+                  Ver movimientos
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Cantidad</p>
+                  <p className="text-sm font-black text-slate-900 dark:text-white">{batch.movementCount} movimientos</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Composición</p>
+                  <p className="text-sm font-black text-slate-900 dark:text-white">{batch.incomeCount} ingreso · {batch.expenseCount} gasto</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Totales</p>
+                  <p className="text-sm font-black text-slate-900 dark:text-white">
+                    {formatImportMoney(batch.incomeTotal)} / {formatImportMoney(batch.expenseTotal)}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Neto</p>
+                  <p className="text-sm font-black text-slate-900 dark:text-white">Neto {formatImportMoney(batch.netTotal)}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
 
 const normalizeImportToken = (value) => String(value || '')
   .toLowerCase()
@@ -246,11 +404,15 @@ const saveProfile = (normalizedHeaders, columnMap, profileName) => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function ImportManager({ onImport, onBulkImport }) {
+export default function ImportManager({ onImport, onBulkImport, onViewImportBatch }) {
+  const { user } = useAuth();
   const [previewData, setPreviewData] = useState(null);
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState(null);
   const [importStats, setImportStats] = useState(null);
+  const [importBatches, setImportBatches] = useState([]);
+  const [importBatchesLoading, setImportBatchesLoading] = useState(false);
+  const [importBatchesError, setImportBatchesError] = useState(null);
   const [, setCategorizingProgress] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -268,6 +430,39 @@ export default function ImportManager({ onImport, onBulkImport }) {
   // Entrada única de IA (design.md §1, §6): gate de plan + consentimiento
   // resuelto adentro de useAI(); mapColumns degrada a null sin acceso.
   const ai = useAI();
+
+  const loadImportBatches = useCallback(async () => {
+    if (!user?.id) {
+      setImportBatches([]);
+      setImportBatchesError(null);
+      setImportBatchesLoading(false);
+      return;
+    }
+
+    setImportBatchesLoading(true);
+    setImportBatchesError(null);
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('import_batches')
+        .select(IMPORT_BATCH_SELECT)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(IMPORT_BATCH_LIMIT);
+
+      if (fetchError) throw fetchError;
+      setImportBatches((data || []).map(normalizeImportBatch));
+    } catch (err) {
+      console.warn('No se pudieron cargar importaciones recientes:', err);
+      setImportBatches([]);
+      setImportBatchesError(err?.message || 'No se pudieron cargar las importaciones recientes.');
+    } finally {
+      setImportBatchesLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    loadImportBatches();
+  }, [loadImportBatches]);
 
   const invalidateImportConfirmation = () => {
     setImportSafetyGate(null);
@@ -973,6 +1168,7 @@ export default function ImportManager({ onImport, onBulkImport }) {
           errors: result.errors || 0,
           aiCategorized: transactionsToImport.filter(r => r.aiCategorized).length,
         });
+        void loadImportBatches();
       } else {
         // Fallback: Importacion secuencial (para compatibilidad)
         console.warn('onBulkImport no disponible, usando importacion secuencial');
@@ -1500,6 +1696,14 @@ gasto,Amazon,75.99,2025-11-30,Compras`;
           </div>
         </div>
       )}
+
+      <ImportBatchHistory
+        batches={importBatches}
+        loading={importBatchesLoading}
+        error={importBatchesError}
+        onRetry={loadImportBatches}
+        onViewImportBatch={onViewImportBatch}
+      />
     </div>
   );
 }
